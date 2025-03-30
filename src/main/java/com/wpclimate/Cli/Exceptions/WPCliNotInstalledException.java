@@ -1,4 +1,4 @@
-package com.wpclimate.Cli.exceptions;
+package com.wpclimate.Cli.Exceptions;
 
 public class WPCliNotInstalledException extends Exception 
 {

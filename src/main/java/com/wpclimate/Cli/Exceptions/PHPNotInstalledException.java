@@ -1,4 +1,4 @@
-package com.wpclimate.Cli.exceptions;
+package com.wpclimate.Cli.Exceptions;
 
 /**
  * Exception thrown when PHP is not installed.
