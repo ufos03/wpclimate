@@ -1,12 +1,8 @@
 package com.wpclimate.Cli.Core;
 
 import com.wpclimate.Configurator.Configurator;
-import com.wpclimate.Shell.CommandOutput;
 import com.wpclimate.Shell.Shell;
-
-// TODO: Aggiugngere un logger (ERR, DBG, INF).
-// TODO: Aggiungere un EventLogger
-
+import com.wpclimate.Constants.FileManager;
 
 /**
  * The {@code Context} class provides a centralized container for managing
@@ -19,6 +15,7 @@ import com.wpclimate.Shell.Shell;
  *   <li>{@link WpCliModel} - The model containing WP-CLI configuration data.</li>
  *   <li>{@link Shell} - The shell interface for executing commands.</li>
  *   <li>{@link Configurator} - The configurator for managing configuration persistence.</li>
+ *   <li>{@link FileManager} - The file manager for handling file operations and the working directory.</li>
  * </ul>
  * 
  * <p>
@@ -31,6 +28,7 @@ public class Context
     private final Shell shell; // The shell interface for executing commands
     private final Configurator configurator; // The configurator for managing configuration persistence
     private final WpCliModel wpModel; // The WP-CLI configuration model
+    private final FileManager fileManager; // The file manager for handling file operations
 
     /**
      * Constructs a {@code Context} instance with the specified components.
@@ -38,13 +36,14 @@ public class Context
      * @param wpModel      The {@link WpCliModel} instance containing WP-CLI configuration data.
      * @param shell        The {@link Shell} instance for executing commands.
      * @param configurator The {@link Configurator} instance for managing configuration persistence.
-     * @param commandOutput The {@link CommandOutput} instance to store and analyze the output of a command.
+     * @param fileManager  The {@link FileManager} instance for handling file operations.
      */
-    public Context(WpCliModel wpModel, Shell shell, Configurator configurator) 
+    public Context(WpCliModel wpModel, Shell shell, Configurator configurator, FileManager fileManager) 
     {
         this.wpModel = wpModel;
         this.shell = shell;
         this.configurator = configurator;
+        this.fileManager = fileManager;
     }
 
     /**
@@ -75,5 +74,15 @@ public class Context
     public Configurator getConfigurator() 
     {
         return this.configurator;
+    }
+
+    /**
+     * Retrieves the file manager for handling file operations.
+     *
+     * @return The {@link FileManager} instance for handling file operations.
+     */
+    public FileManager getFileManager() 
+    {
+        return this.fileManager;
     }
 }
