@@ -15,7 +15,6 @@ import com.wpclimate.Configurator.Model.Token;
 public class ConfiguratorIO 
 {
     private final String filePath; // Path to the configuration file
-    private final String fileName = "/wpCliConf.json";
     private final Gson gson; // Gson instance for JSON serialization and deserialization
 
     /**
@@ -25,7 +24,7 @@ public class ConfiguratorIO
      */
     public ConfiguratorIO(String filePath) 
     {
-        this.filePath = filePath.concat(fileName);
+        this.filePath = filePath;
         this.gson = new Gson();
     }
 
@@ -38,7 +37,7 @@ public class ConfiguratorIO
      */
     public void write(Model config) throws IOException 
     {
-        try (FileWriter writer = new FileWriter(filePath)) 
+        try (FileWriter writer = new FileWriter(this.filePath)) 
         {
             String json = gson.toJson(config.getTokensList());
             writer.write(json);
