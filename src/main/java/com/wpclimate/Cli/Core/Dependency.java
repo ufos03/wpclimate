@@ -1,7 +1,7 @@
 package com.wpclimate.Cli.Core;
 
-import com.wpclimate.Cli.exceptions.PHPNotInstalledException;
-import com.wpclimate.Cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.Cli.Exceptions.PHPNotInstalledException;
+import com.wpclimate.Cli.Exceptions.WPCliNotInstalledException;
 import com.wpclimate.Shell.CommandOutput;
 import com.wpclimate.Shell.Shell;
 
