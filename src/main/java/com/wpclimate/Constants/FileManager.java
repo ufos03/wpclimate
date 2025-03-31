@@ -1,6 +1,7 @@
 package com.wpclimate.Constants;
 
 import java.io.File;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The {@code FileManager} class provides utility methods for managing configuration files.
@@ -9,6 +10,7 @@ import java.io.File;
 public class FileManager 
 {
     private final File workingDirectory;
+        private final ReentrantLock lock = new ReentrantLock();
 
     /**
      * Constructs a {@code FileManager} with the specified working directory.
@@ -17,13 +19,12 @@ public class FileManager
      */
     public FileManager(String workingDirectory) 
     {
-        if (workingDirectory == null || workingDirectory.isEmpty()) {
+        if (workingDirectory == null || workingDirectory.isEmpty())
             throw new IllegalArgumentException("Working directory cannot be null or empty.");
-        }
+
         this.workingDirectory = new File(workingDirectory);
-        if (!this.workingDirectory.exists() || !this.workingDirectory.isDirectory()) {
+        if (!this.workingDirectory.exists() || !this.workingDirectory.isDirectory())
             throw new IllegalArgumentException("The specified working directory does not exist or is not a directory.");
-        }
     }
 
     /**
@@ -41,7 +42,15 @@ public class FileManager
      */
     public File getWorkingDirectory() 
     {
-        return this.workingDirectory;
+        this.lock.lock();
+        try
+        {
+            return this.workingDirectory;
+        }
+        finally
+        {
+            lock.unlock();
+        }
     }
 
     /**
@@ -52,8 +61,16 @@ public class FileManager
      */
     public boolean fileExists(FileName fileName) 
     {
-        File file = new File(this.workingDirectory, fileName.getFileName());
-        return file.exists();
+        this.lock.lock();
+        try
+        {
+            File file = new File(this.workingDirectory, fileName.getFileName());
+            return file.exists();
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
     }
 
     /**
@@ -64,8 +81,16 @@ public class FileManager
      */
     public String getFilePath(FileName fileName) 
     {
-        File file = new File(this.workingDirectory, fileName.getFileName());
-        return file.getAbsolutePath();
+        this.lock.lock();
+        try
+        {
+            File file = new File(this.workingDirectory, fileName.getFileName());
+            return file.getAbsolutePath();
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
     }
 
     /**
@@ -77,10 +102,17 @@ public class FileManager
      */
     public boolean createFileIfNotExists(FileName fileName) throws Exception 
     {
-        File file = new File(this.workingDirectory, fileName.getFileName());
-        if (!file.exists()) {
-            return file.createNewFile();
+        this.lock.lock();
+        try 
+        {
+            File file = new File(this.workingDirectory, fileName.getFileName());
+            if (!file.exists()) 
+                return file.createNewFile();
+            return false;
+        } 
+        finally 
+        {
+            lock.unlock();
         }
-        return false;
     }
 }
