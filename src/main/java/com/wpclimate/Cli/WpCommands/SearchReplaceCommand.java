@@ -28,15 +28,17 @@ public class SearchReplaceCommand extends BaseWpCommand
 
         String command = String.format
         (
-            "%s %s search-replace '%s' '%s' %s %s",
-            context.getWpModel().getPhp(),
-            context.getWpModel().getWp(),
+            "%s %s search-replace --path=%s '%s' '%s' %s %s",
+            this.context.getWpModel().getPhp(),
+            this.context.getWpModel().getWp(),
+            this.context.getFileManager().getWorkingDirectory(),
             this.oldValue,
             this.newValue,
             this.allTables ? "--all-tables" : "",
             this.dryRun ? "--dry-run" : ""
         );
-
+        //System.out.println(this.context.getFileManager().getWorkingDirectory());
+        //System.out.println(command);
         return context.getShell().executeCommand(command);
     }
 }
