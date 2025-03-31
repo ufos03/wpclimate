@@ -5,6 +5,8 @@ import com.wpclimate.Cli.Exceptions.WPCliNotInstalledException;
 import com.wpclimate.Shell.CommandOutput;
 import com.wpclimate.Shell.Shell;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * The {@code Dependency} class checks the availability of PHP, WP-CLI, and WordPress.
  * It uses the {@link Shell} to execute commands and the {@link WpCliModel} for configuration.
@@ -17,7 +19,7 @@ public final class Dependency
 
     private final Shell shell;
     private final WpCliModel model;
-    private CommandOutput commandOutput;
+    private final ReentrantLock lock = new ReentrantLock();
 
     /**
      * Constructs a {@code Dependency} instance with the specified {@code Context}.
@@ -28,7 +30,6 @@ public final class Dependency
     public Dependency(Context context) 
     {
         if (context == null)
-
             throw new IllegalStateException("The context must be provided.");
 
         this.shell = context.getShell();
@@ -43,14 +44,19 @@ public final class Dependency
      */
     public boolean isPHPInstalled() throws PHPNotInstalledException 
     {
-        this.validatePhpPath();
-
-        this.commandOutput = this.executeCommand(this.model.getPhp(), PHP_VERSION_COMMAND);
-        
-        if (this.commandOutput.hasErrors())
-            throw new PHPNotInstalledException("PHP is not installed on your system.");
-
-        return true;
+        this.lock.lock();
+        try 
+        {
+            this.validatePhpPath();
+            CommandOutput output = executeCommand(model.getPhp(), PHP_VERSION_COMMAND);
+            if (output.hasErrors())
+                throw new PHPNotInstalledException("PHP is not installed.");
+            return true;
+        } 
+        finally 
+        {
+            lock.unlock();
+        }
     }
 
     /**
@@ -62,17 +68,23 @@ public final class Dependency
      */
     public boolean isWpCliInstalled() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        if (isPHPInstalled()) 
+        lock.lock();
+        try 
         {
-            this.validateWpCliPath();
-            this.commandOutput = this.executeCommand(this.model.getPhp(), this.model.getWp(), WPCLI_VERSION_COMMAND);
-
-            if (this.commandOutput.hasErrors())
-                throw new WPCliNotInstalledException("WP-CLI is not installed on your system.");
-
-            return true;
+            if (isPHPInstalled()) 
+            {
+                validateWpCliPath();
+                CommandOutput output = executeCommand(model.getPhp(), model.getWp(), WPCLI_VERSION_COMMAND);
+                if (output.hasErrors())
+                    throw new WPCliNotInstalledException("WP-CLI is not installed.");
+                return true;
+            }
+            return false;
+        } 
+        finally 
+        {
+            lock.unlock();
         }
-        return false;
     }
 
     /**
@@ -84,12 +96,20 @@ public final class Dependency
      */
     public boolean isAWordpressDirectory() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        if (isWpCliInstalled()) 
+        lock.lock();
+        try 
         {
-            this.commandOutput = this.executeCommand(this.model.getPhp(), this.model.getWp(), WP_CORE_VERSION_COMMAND);
-            return this.commandOutput.isSuccessful();
+            if (isWpCliInstalled()) 
+            {
+                CommandOutput output = executeCommand(model.getPhp(), model.getWp(), WP_CORE_VERSION_COMMAND);
+                return output.isSuccessful();
+            }
+            return false;
+        } 
+        finally 
+        {
+            lock.unlock();
         }
-        return false;
     }
 
     /**
@@ -101,7 +121,7 @@ public final class Dependency
     private CommandOutput executeCommand(String... commandParts) 
     {
         String command = String.join(" ", commandParts);
-        return this.shell.executeCommand(command);
+        return shell.executeCommand(command);
     }
 
     /**
@@ -111,8 +131,8 @@ public final class Dependency
      */
     private void validatePhpPath() throws PHPNotInstalledException 
     {
-        if (this.model.getPhp() == null || this.model.getPhp().isEmpty())
-            throw new PHPNotInstalledException("PHP path is not configured in the model.");
+        if (model.getPhp() == null || model.getPhp().isEmpty())
+            throw new PHPNotInstalledException("PHP path is not configured.");
     }
 
     /**
@@ -122,7 +142,7 @@ public final class Dependency
      */
     private void validateWpCliPath() throws WPCliNotInstalledException 
     {
-        if (this.model.getWp() == null || this.model.getWp().isEmpty())
-            throw new WPCliNotInstalledException("WP-CLI path is not configured in the model.");
+        if (model.getWp() == null || model.getWp().isEmpty())
+            throw new WPCliNotInstalledException("WP-CLI path is not configured.");
     }
 }
