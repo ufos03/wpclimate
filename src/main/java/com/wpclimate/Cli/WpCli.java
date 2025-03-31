@@ -5,13 +5,15 @@ import com.wpclimate.Cli.Core.Dependency;
 import com.wpclimate.Cli.Core.WpCliModel;
 import com.wpclimate.Cli.Exceptions.PHPNotInstalledException;
 import com.wpclimate.Cli.Exceptions.WPCliNotInstalledException;
-import com.wpclimate.Cli.WpCommands.SearchReplaceCommand;
-import com.wpclimate.Configurator.*;
+import com.wpclimate.Configurator.Configurator;
+import com.wpclimate.Configurator.Configuration;
 import com.wpclimate.Constants.FileManager;
 import com.wpclimate.Constants.FileName;
 import com.wpclimate.Shell.Command;
-import com.wpclimate.Shell.CommandOutput;
 import com.wpclimate.Shell.Shell;
+
+import com.wpclimate.Cli.WpCommands.FlushTransientCommand;
+import com.wpclimate.Cli.WpCommands.SearchReplaceCommand;
 
 import java.util.Scanner;
 
@@ -42,6 +44,12 @@ public class WpCli
         this.dependency = new Dependency(this.context);
 
         this.performDependencyChecks();
+    }
+
+
+    public WpCli(Context context, Dependency dependency) {
+        this.context = context;
+        this.dependency = dependency;
     }
 
     /**
@@ -155,6 +163,13 @@ public class WpCli
     {
         SearchReplaceCommand cmd = new SearchReplaceCommand(this.context, this.dependency, oldVal, newVal, allTables, dryRun);
         
+        return cmd.execute().isSuccessful();
+    }
+
+    public boolean doFlushTransient() throws PHPNotInstalledException, WPCliNotInstalledException
+    {
+        FlushTransientCommand cmd = new FlushTransientCommand(this.context, this.dependency);
+
         return cmd.execute().isSuccessful();
     }
 }
