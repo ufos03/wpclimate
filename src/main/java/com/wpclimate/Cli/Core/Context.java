@@ -1,5 +1,7 @@
 package com.wpclimate.Cli.Core;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import com.wpclimate.Configurator.Configurator;
 import com.wpclimate.Shell.Shell;
 import com.wpclimate.Constants.FileManager;
@@ -30,6 +32,8 @@ public class Context
     private final WpCliModel wpModel; // The WP-CLI configuration model
     private final FileManager fileManager; // The file manager for handling file operations
 
+    private final ReentrantLock lock = new ReentrantLock(); // Allows sync on methods 
+
     /**
      * Constructs a {@code Context} instance with the specified components.
      *
@@ -53,7 +57,16 @@ public class Context
      */
     public WpCliModel getWpModel() 
     {
-        return this.wpModel;
+        this.lock.lock();
+        try 
+        {
+            return this.wpModel;
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
+
     }
 
     /**
@@ -63,7 +76,15 @@ public class Context
      */
     public Shell getShell() 
     {
-        return this.shell;
+        this.lock.lock();
+        try 
+        {
+            return this.shell;
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
     }
 
     /**
@@ -73,7 +94,15 @@ public class Context
      */
     public Configurator getConfigurator() 
     {
-        return this.configurator;
+        this.lock.lock();
+        try 
+        {
+            return this.configurator;
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
     }
 
     /**
@@ -83,6 +112,14 @@ public class Context
      */
     public FileManager getFileManager() 
     {
-        return this.fileManager;
+        this.lock.lock();
+        try 
+        {
+            return this.fileManager;
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
     }
 }
