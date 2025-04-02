@@ -1,3 +1,5 @@
 /.vscode
 *.jar
 *.class
+*.txt
+*.xml
