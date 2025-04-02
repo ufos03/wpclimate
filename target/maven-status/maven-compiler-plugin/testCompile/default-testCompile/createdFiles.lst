@@ -1,0 +1,4 @@
+com/wpclimate/cli/WpCliTest.class
+com/wpclimate/cli/WpCliCommandExecutorTest.class
+com/wpclimate/cli/CommandOutputHandlerTest.class
+com/wpclimate/cli/ContextTest.class
