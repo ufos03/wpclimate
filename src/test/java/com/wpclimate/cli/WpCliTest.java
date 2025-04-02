@@ -1,20 +1,26 @@
 package com.wpclimate.cli;
 
-import com.wpclimate.Cli.WpCli;
-import com.wpclimate.Cli.Core.Context;
-import com.wpclimate.Cli.Core.Dependency;
-import com.wpclimate.Cli.Exceptions.PHPNotInstalledException;
-import com.wpclimate.Cli.Exceptions.WPCliNotInstalledException;
-import com.wpclimate.Configurator.Configurator;
-import com.wpclimate.Constants.FileManager;
-import com.wpclimate.Shell.CommandOutput;
-import com.wpclimate.Shell.Shell;
+import com.wpclimate.cli.WpCli;
+import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.Dependency;
+import com.wpclimate.cli.core.WpCliModel;
+import com.wpclimate.cli.exceptions.PHPNotInstalledException;
+import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.configurator.Configurator;
+import com.wpclimate.constants.FileManager;
+import com.wpclimate.shell.CommandOutput;
+import com.wpclimate.shell.Shell;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+
+import java.io.File;
 
 class WpCliTest {
 
@@ -26,7 +32,8 @@ class WpCliTest {
     private Shell mockShell;
 
     @BeforeEach
-    void setUp() throws PHPNotInstalledException, WPCliNotInstalledException {
+    void setUp() throws PHPNotInstalledException, WPCliNotInstalledException 
+    {
         // Mock dependencies
         mockContext = mock(Context.class);
         mockDependency = mock(Dependency.class);
@@ -34,13 +41,24 @@ class WpCliTest {
         mockConfigurator = mock(Configurator.class);
         mockShell = mock(Shell.class);
 
+        // Simulate a valid WordPress installation path
+        String wordpressPath = "/home/ufos/Documents/test-wpclimate/";
+        when(mockFileManager.getWorkingDirectory()).thenReturn(new File(wordpressPath));
+
         // Mock behavior for dependency checks
         when(mockDependency.isPHPInstalled()).thenReturn(true);
         when(mockDependency.isWpCliInstalled()).thenReturn(true);
+        when(mockDependency.isAWordpressDirectory()).thenReturn(true);
+
+        // Mock WpCliModel
+        WpCliModel mockWpCliModel = mock(WpCliModel.class);
+        when(mockWpCliModel.getPhp()).thenReturn("/usr/bin/php");
+        when(mockWpCliModel.getWp()).thenReturn("/usr/local/bin/wp");
 
         // Mock context behavior
         when(mockContext.getFileManager()).thenReturn(mockFileManager);
         when(mockContext.getShell()).thenReturn(mockShell);
+        when(mockContext.getWpModel()).thenReturn(mockWpCliModel);
 
         // Initialize WpCli with mocked dependencies
         wpCli = new WpCli(mockContext, mockDependency);
@@ -88,12 +106,14 @@ class WpCliTest {
 
         // Verify behavior and assert result
         assertTrue(result);
-        verify(mockShell, times(1)).executeCommand(contains("flush-transients"));
+        verify(mockShell, times(1)).executeCommand(
+            eq("/usr/bin/php /usr/local/bin/wp --path=/home/ufos/Documents/test-wpclimate transient delete --all")
+        );
     }
 
     @Test
     void testDoFlushTransient_Failure() throws PHPNotInstalledException, WPCliNotInstalledException {
-        // Mock CommandOutput for failed execution
+        // Mock CommandOutput for successful execution
         CommandOutput mockOutput = mock(CommandOutput.class);
         when(mockOutput.isSuccessful()).thenReturn(false);
         when(mockShell.executeCommand(anyString())).thenReturn(mockOutput);
@@ -103,7 +123,9 @@ class WpCliTest {
 
         // Verify behavior and assert result
         assertFalse(result);
-        verify(mockShell, times(1)).executeCommand(contains("flush-transients"));
+        verify(mockShell, times(1)).executeCommand(
+            eq("/usr/bin/php /usr/local/bin/wp --path=/home/ufos/Documents/test-wpclimate transient delete --all")
+        );
     }
 
     @Test
