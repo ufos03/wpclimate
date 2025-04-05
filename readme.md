@@ -65,8 +65,8 @@ With wpCliMate, developers can manage their entire WordPress workflow — from p
 
 ## 📅 Roadmap
 
-### ✅ Phase 1 – MVP *(4–6 weeks)*
-- Basic JavaFX UI
+### 🔜 Phase 1 – MVP *(4–6 weeks)*
+- Implementation of Core utilities
 - Execute key WP-CLI commands
 - Git integration: clone, push, pull
 

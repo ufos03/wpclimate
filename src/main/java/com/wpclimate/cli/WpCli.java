@@ -254,4 +254,18 @@ public class WpCli
             return false;
         }
     }
+
+    public boolean doFlushCaches() 
+    {
+        try 
+        {
+            CommandOutput output = this.commandExecutor.doFlushCaches();
+            this.printOutputToConsole(output);
+            return output.isSuccessful();
+        } 
+        catch (Exception e) 
+        {
+            return false;
+        }
+    }
 }

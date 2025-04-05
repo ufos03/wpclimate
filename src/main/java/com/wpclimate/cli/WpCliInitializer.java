@@ -156,8 +156,13 @@ public class WpCliInitializer
         System.out.print("Enter the path to the WP-CLI executable: ");
         String wpCliPath = scanner.nextLine();
 
+        System.out.print("Enter the path to the SQL-DUMP executable: ");
+        String sqlDumpPath = scanner.nextLine();
+
         model.setPhp(phpPath);
         model.setWp(wpCliPath);
+        model.setSQLDump(sqlDumpPath);
+
 
         try 
         {

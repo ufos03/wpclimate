@@ -4,10 +4,13 @@ import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.cli.wpcommands.FlushCachesCommand;
 import com.wpclimate.cli.wpcommands.FlushTransientCommand;
 import com.wpclimate.cli.wpcommands.RewriteCommand;
 import com.wpclimate.cli.wpcommands.SearchReplaceCommand;
+import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.CommandOutput;
+import com.wpclimate.shell.Shell;
 
 /**
  * The {@code WpCliCommandExecutor} class is responsible for executing WP-CLI commands.
@@ -157,6 +160,25 @@ public class WpCliCommandExecutor
     public CommandOutput doRewriteRules() throws PHPNotInstalledException, WPCliNotInstalledException
     {
         RewriteCommand cmd = new RewriteCommand(context, dependency);
+        return cmd.execute();
+    }
+
+    /**
+     * Executes a command to flush all caches in the WordPress installation.
+     *
+     * <p>
+     * This command clears all cached data stored in the WordPress database, ensuring that
+     * the site operates with the most up-to-date information. It is particularly useful
+     * for troubleshooting or after making significant changes to the site.
+     * </p>
+     *
+     * @return A {@link CommandOutput} object containing the result of the command execution.
+     * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
+     * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
+     */
+    public CommandOutput doFlushCaches() throws PHPNotInstalledException, WPCliNotInstalledException
+    {
+        FlushCachesCommand cmd = new FlushCachesCommand(context, dependency);
         return cmd.execute();
     }
 }

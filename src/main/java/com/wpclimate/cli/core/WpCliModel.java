@@ -11,9 +11,11 @@ public class WpCliModel extends Model
 {
     private static final String PHP_KEY = "PHP"; // Key for the PHP executable path
     private static final String WPCLI_KEY = "WPCLI"; // Key for the WP-CLI executable path
+    private static final String MYSQLDUMP_KEY = "MSQLDUMP";
 
     private String php; // Path to the PHP executable
     private String wp; // Path to the WP-CLI executable
+    private String sqlDump; // Path to the MySQL dump executable
 
     /**
      * Default constructor.
@@ -39,6 +41,9 @@ public class WpCliModel extends Model
         
         if (model.containsKey(WPCLI_KEY))
             this.setWp(model.get(WPCLI_KEY));
+
+        if (model.containsKey(MYSQLDUMP_KEY))
+            this.setSQLDump(model.get(MYSQLDUMP_KEY));
     }
 
     /**
@@ -58,6 +63,9 @@ public class WpCliModel extends Model
         
         if (model.containsKey(WPCLI_KEY))
             newWpCliModel.setWp(model.get(WPCLI_KEY));
+        
+        if (model.containsKey(MYSQLDUMP_KEY))
+            newWpCliModel.setSQLDump(model.get(MYSQLDUMP_KEY));
 
         return newWpCliModel;
     }
@@ -82,6 +90,9 @@ public class WpCliModel extends Model
         
         if (model.containsKey(WPCLI_KEY))
             this.setWp(model.get(WPCLI_KEY));
+
+        if (model.containsKey(MYSQLDUMP_KEY))
+            this.setSQLDump(model.get(MYSQLDUMP_KEY));
     }
 
     /**
@@ -109,6 +120,18 @@ public class WpCliModel extends Model
     }
 
     /**
+     * Sets the path to the SQL-DUMP executable.
+     * Updates the underlying model with the new SQL-DUMP path.
+     * 
+     * @param sqlDump The SQL-PATH executable path to set.
+     */
+    public void setSQLDump(String sqlDump)
+    {
+        this.sqlDump = sqlDump;
+        super.set(MYSQLDUMP_KEY, this.sqlDump, false);
+    }
+
+    /**
      * Gets the path to the WP-CLI executable.
      *
      * @return The WP-CLI executable path.
@@ -127,5 +150,15 @@ public class WpCliModel extends Model
     public String getPhp() 
     {
         return this.php;
+    }
+
+    /**
+     * Gets the path to the SQL-DUMP executable.
+     *
+     * @return The SQL-DUMP executable path.
+     */
+    public String getSQLDump() 
+    {
+        return this.sqlDump;
     }
 }
