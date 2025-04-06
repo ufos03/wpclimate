@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -25,18 +26,20 @@ import java.util.concurrent.locks.ReentrantLock;
  *   <li>Handles standard output and error streams from the executed processes.</li>
  *   <li>Provides a mechanism to terminate running processes.</li>
  *   <li>Thread-safe implementation using {@link ReentrantLock}.</li>
+ *   <li>Supports custom environment variables for command execution.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
  * <p>
  * To execute a command, create an instance of {@code CommandExecutor} with the 
- * desired working directory and command, then call the {@link #execute()} method.
+ * desired working directory, command, and environment variables, then call the {@link #execute()} method.
  * </p>
  * 
  * <h2>Example:</h2>
  * <pre>
  * CommandBuilder commandBuilder = new CommandBuilder("ls -la");
- * CommandExecutor executor = new CommandExecutor("/path/to/directory", commandBuilder);
+ * Map<String, String> envVars = Map.of("MY_ENV_VAR", "value");
+ * CommandExecutor executor = new CommandExecutor("/path/to/directory", commandBuilder, envVars);
  * CommandOutput output = executor.execute();
  * System.out.println("Standard Output: " + output.getStandardOutput());
  * System.out.println("Error Output: " + output.getErrorOutput());
@@ -44,39 +47,52 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class CommandExecutor 
 {
-    private ProcessBuilder processBuilder; // The ProcessBuilder for executing commands
+    private final ProcessBuilder processBuilder; // The ProcessBuilder for executing commands
     private Process process; // The process for a single command
     private List<Process> pipelineProcesses; // List of processes for a pipeline
     private final int WAIT_TO_TERMINATE = 1; // Timeout in seconds for process termination
-    private CommandBuilder command; // The command to execute
-    private File workDir; // The working directory for the command
+    private final CommandBuilder command; // The command to execute
+    private final File workDir; // The working directory for the command
+    private final Map<String, String> envVars; // Environment variables for the command
     private final ReentrantLock lock = new ReentrantLock(); // Lock for thread safety
 
     /**
-     * Default constructor.
+     * Constructs a {@code CommandExecutor} with the specified working directory, command, and environment variables.
+     *
+     * @param directory The working directory in which the command will be executed.
+     * @param commandToExecute The {@link CommandBuilder} object representing the command.
+     * @param envVars A map of environment variables to set for the command execution.
      */
-    public CommandExecutor() {}
+    public CommandExecutor(String directory, CommandBuilder commandToExecute, Map<String, String> envVars) 
+    {
+        this.command = commandToExecute;
+        this.workDir = new File(directory);
+        this.envVars = envVars;
+        this.processBuilder = new ProcessBuilder();
+    }
 
     /**
-     * Constructs a {@code CommandExecutor} with the specified working directory and command.
+     * Constructs a {@code CommandExecutor} using the current working directory and environment variables.
      *
+     * @param commandToExecute The {@link CommandBuilder} object representing the command.
+     * @param envVars A map of environment variables to set for the command execution.
+     */
+    public CommandExecutor(CommandBuilder commandToExecute, Map<String, String> envVars) 
+    {
+        this(getCurrentDir(), commandToExecute, envVars);
+    }
+
+    /**
+     * Constructs a {@code CommandExecutor} with the specified working directory, command.
      * @param directory The working directory in which the command will be executed.
      * @param commandToExecute The {@link CommandBuilder} object representing the command.
      */
     public CommandExecutor(String directory, CommandBuilder commandToExecute) 
     {
-        this.command = commandToExecute;
         this.workDir = new File(directory);
-    }
-
-    /**
-     * Constructs a {@code CommandExecutor} using the current working directory.
-     *
-     * @param commandToExecute The {@link CommandBuilder} object representing the command.
-     */
-    public CommandExecutor(CommandBuilder commandToExecute) 
-    {
-        this(getCurrentDir(), commandToExecute);
+        this.command = commandToExecute;
+        this.envVars = null;
+        this.processBuilder = new ProcessBuilder();
     }
 
     /**
@@ -101,9 +117,9 @@ public class CommandExecutor
         try 
         {
             CommandOutput commandOutput = new CommandOutput();
-            List<List<String>> commandsList = command.getCommand();
+            List<List<String>> commandsList = this.command.getCommand();
 
-            if (command.isPipeline()) 
+            if (this.command.isPipeline()) 
             {
                 // Handle pipeline execution
                 List<ProcessBuilder> builders = new ArrayList<>();
@@ -111,6 +127,11 @@ public class CommandExecutor
                 {
                     ProcessBuilder pb = new ProcessBuilder(cmdTokens);
                     pb.directory(workDir);
+
+                    // Set environment variables
+                    if (envVars != null)
+                        pb.environment().putAll(envVars);
+
                     builders.add(pb);
                 }
                 pipelineProcesses = ProcessBuilder.startPipeline(builders);
@@ -128,17 +149,21 @@ public class CommandExecutor
                     commandOutput.appendErrorOutput(line);
 
                 lastProcess.waitFor();
-            } 
-            else 
+            } else 
             {
                 // Handle single command execution
                 if (commandsList.isEmpty())
                     throw new IllegalStateException("Command not initialized.");
 
                 List<String> simpleCommand = commandsList.get(0);
-                processBuilder = new ProcessBuilder(simpleCommand);
-                processBuilder.directory(workDir);
-                process = processBuilder.start();
+                this.processBuilder.command(simpleCommand);
+                this.processBuilder.directory(workDir);
+
+                // Set environment variables
+                if (envVars != null)
+                    this.processBuilder.environment().putAll(envVars);
+
+                process = this.processBuilder.start();
 
                 // Handle standard output
                 BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -160,7 +185,7 @@ public class CommandExecutor
         } 
         finally 
         {
-            lock.unlock();
+            this.lock.unlock();
         }
     }
 
@@ -170,7 +195,7 @@ public class CommandExecutor
      */
     public void stop() 
     {
-        lock.lock();
+        this.lock.lock();
         try 
         {
             if (command.isPipeline() && pipelineProcesses != null) 
@@ -197,7 +222,7 @@ public class CommandExecutor
         } 
         finally 
         {
-            lock.unlock();
+            this.lock.unlock();
         }
     }
 }
