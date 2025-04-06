@@ -1,5 +1,6 @@
 package com.wpclimate.cli.wpcommands;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.wpclimate.cli.core.Context;
@@ -29,6 +30,7 @@ import com.wpclimate.shell.Shell;
  *   <li>Provides access to the {@link Dependency} object, which is used to check for required dependencies like PHP and WP-CLI.</li>
  *   <li>Defines an abstract {@link #execute()} method that subclasses must implement to define the behavior of a specific command.</li>
  *   <li>Provides utility methods, such as {@link #configureEnvironmentVariables(String)}, to assist with command execution.</li>
+ *   <li>Maintains a registry of available commands for dynamic command creation.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -73,6 +75,8 @@ public abstract class BaseWpCommand
     /** The {@link Dependency} object used to check for required dependencies like PHP and WP-CLI. */
     protected final Dependency dependency;
 
+    private static final Map<String, Class<? extends BaseWpCommand>> COMMAND_REGISTRY = new HashMap<>();
+
     /**
      * Constructs a {@code BaseWpCommand} with the specified {@link Context} and {@link Dependency}.
      *
@@ -101,14 +105,46 @@ public abstract class BaseWpCommand
      */
     public Map<String, String> configureEnvironmentVariables(String path) 
     {
-        if (path.equals(null) || path.isEmpty())
+        if (path == null || path.isEmpty()) {
             throw new IllegalArgumentException("The path cannot be null or empty");
+        }
 
         String currentPath = System.getenv("PATH");
-        String mysqlcheckPath = path;
-        String updatedPath = mysqlcheckPath + ":" + currentPath;
+        String updatedPath = path + ":" + currentPath;
 
         return Map.of("PATH", updatedPath);
+    }
+
+    /**
+     * Registers a command in the registry.
+     *
+     * <p>
+     * This method allows dynamic registration of WP-CLI commands. Each command is associated
+     * with a unique name, which can be used to retrieve and execute the command dynamically.
+     * </p>
+     *
+     * @param name  The name of the command.
+     * @param clazz The class of the command.
+     */
+    public static void registerCommand(String name, Class<? extends BaseWpCommand> clazz) 
+    {
+        COMMAND_REGISTRY.put(name, clazz);
+    }
+
+    /**
+     * Retrieves the command class from the registry.
+     *
+     * <p>
+     * This method retrieves the class of a registered command by its name. If the command
+     * is not found, it returns {@code null}.
+     * </p>
+     *
+     * @param name The name of the command.
+     * @return The class of the command, or {@code null} if the command is not registered.
+     */
+    public static Class<? extends BaseWpCommand> getCommandClass(String name) 
+    {
+        return COMMAND_REGISTRY.get(name);
     }
 
     /**
