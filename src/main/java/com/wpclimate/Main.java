@@ -1,4 +1,6 @@
 package com.wpclimate;
+import java.util.Map;
+
 import com.wpclimate.cli.WpCli;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
@@ -7,11 +9,20 @@ public class Main {
     public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException 
     {
         WpCli wp = new WpCli("/home/ufos/Documents/test-wpclimate/");
-        wp.setShowOutput(false);
-        wp.doSearchReplace("http://test.local", "http://test2.local", true, true);
-        wp.doFlushTransient();
+
+
+        wp.setShowOutput(true);
+        wp.execute("rewrite", null);
+        wp.execute("search-replace", Map.of(
+            "oldValue", "http://test.local",
+            "newValue", "http://test2.local",
+            "allTables", true,
+            "dryRun", true
+        ));
+        //wp.doSearchReplace("http://test.local", "http://test2.local", true, true);
+        /*wp.doFlushTransient();
         wp.setShowOutput(true);
         wp.doFlushCaches();
-        wp.doDBCheck();
+        wp.doDBCheck();*/
     }
 }
