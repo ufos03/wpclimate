@@ -1,5 +1,6 @@
 package com.wpclimate.cli;
 
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.wpclimate.cli.core.Context;
@@ -83,7 +84,6 @@ import com.wpclimate.shell.Shell;
  */
 public class WpCli 
 {
-
     private final ReentrantLock lock = new ReentrantLock();
     private final Dependency dependency;
     private final Context context;
@@ -180,105 +180,24 @@ public class WpCli
     }
 
     /**
-     * Executes a search-and-replace command using WP-CLI.
+     * Executes a WP-CLI command by name with optional parameters.
      *
-     * <p>
-     * This command replaces occurrences of a specific value in the WordPress database
-     * with a new value. It supports additional options such as targeting all tables
-     * and performing a dry run to preview the changes without applying them.
-     * </p>
-     *
-     * @param oldVal    The value to search for.
-     * @param newVal    The value to replace with.
-     * @param allTables Whether to target all tables in the database.
-     * @param dryRun    Whether to perform a dry run (preview changes without applying them).
+     * @param commandName The name of the command.
+     * @param params      A map of parameters to pass to the command, or {@code null} if no parameters are required.
      * @return {@code true} if the command was successful, {@code false} otherwise.
      */
-    public boolean doSearchReplace(String oldVal, String newVal, boolean allTables, boolean dryRun) 
+    public boolean execute(String commandName, Map<String, Object> params) 
     {
         try 
         {
-            CommandOutput output = this.commandExecutor.doSearchReplace(oldVal, newVal, allTables, dryRun);
-            printOutputToConsole(output);
-            return output.isSuccessful();
-        } 
-        catch (WPCliNotInstalledException | PHPNotInstalledException e) 
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Executes a command to flush all transients stored in the WordPress database.
-     *
-     * <p>
-     * Transients are temporary options stored in the WordPress database, often used
-     * for caching purposes. This command deletes all transients.
-     * </p>
-     *
-     * @return {@code true} if the command was successful, {@code false} otherwise.
-     */
-    public boolean doFlushTransient() 
-    {
-        try 
-        {
-            CommandOutput output = this.commandExecutor.doFlushTransient();
-            this.printOutputToConsole(output);
-            return output.isSuccessful();
-        } 
-        catch (WPCliNotInstalledException | PHPNotInstalledException e) 
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Executes a command to rewrite WordPress rules.
-     *
-     * <p>
-     * This command regenerates the rewrite rules for the WordPress installation.
-     * </p>
-     *
-     * @return {@code true} if the command was successful, {@code false} otherwise.
-     */
-    public boolean doRewriteRules() 
-    {
-        try 
-        {
-            CommandOutput output = this.commandExecutor.doRewriteRules();
+            // Pass the parameters to the command executor
+            CommandOutput output = commandExecutor.executeCommand(commandName, params);
             this.printOutputToConsole(output);
             return output.isSuccessful();
         } 
         catch (Exception e) 
         {
-            return false;
-        }
-    }
-
-    public boolean doFlushCaches() 
-    {
-        try 
-        {
-            CommandOutput output = this.commandExecutor.doFlushCaches();
-            this.printOutputToConsole(output);
-            return output.isSuccessful();
-        } 
-        catch (Exception e) 
-        {
-            return false;
-        }
-    }
-
-    public boolean doDBCheck() 
-    {
-        try 
-        {
-            CommandOutput output = this.commandExecutor.doDBCheck();
-            this.printOutputToConsole(output);
-            return output.isSuccessful();
-        } 
-        catch (Exception e) 
-        {
+            e.printStackTrace();
             return false;
         }
     }
