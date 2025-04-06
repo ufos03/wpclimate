@@ -268,4 +268,18 @@ public class WpCli
             return false;
         }
     }
+
+    public boolean doDBCheck() 
+    {
+        try 
+        {
+            CommandOutput output = this.commandExecutor.doDBCheck();
+            this.printOutputToConsole(output);
+            return output.isSuccessful();
+        } 
+        catch (Exception e) 
+        {
+            return false;
+        }
+    }
 }
