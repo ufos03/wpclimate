@@ -1,123 +1,109 @@
 package com.wpclimate.cli.wpcommands;
 
+import java.util.Map;
+
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.shell.CommandOutput;
 
 /**
- * The {@code SearchReplaceCommand} class represents a WP-CLI command for performing
- * a search-and-replace operation on a WordPress database.
- * 
+ * The {@code SearchReplaceCommand} class implements the WP-CLI "search-replace" command.
+ *
  * <p>
- * This command allows replacing occurrences of a specific value in the database
- * with a new value. It supports additional options such as targeting all tables
- * and performing a dry run to preview the changes without applying them.
+ * This command is used to search and replace text in the WordPress database. It supports
+ * additional options such as performing the operation on all tables and running in dry-run mode.
+ * The parameters for the command are passed as a {@link Map} and extracted during initialization.
  * </p>
- * 
+ *
  * <h2>Responsibilities:</h2>
  * <ul>
- *   <li>Constructs the WP-CLI command for search-and-replace operations.</li>
- *   <li>Executes the command using the {@link Shell} provided by the {@link Context}.</li>
- *   <li>Validates that WP-CLI is installed before executing the command.</li>
+ *   <li>Extracts and validates parameters required for the "search-replace" command.</li>
+ *   <li>Constructs the WP-CLI command string based on the provided parameters.</li>
+ *   <li>Executes the command and returns the result.</li>
  * </ul>
- * 
+ *
  * <h2>Usage:</h2>
  * <p>
- * To use this class, create an instance by providing the required parameters
- * (e.g., old value, new value, whether to target all tables, and whether to perform a dry run),
- * and then call the {@link #execute()} method to run the command.
+ * This class is instantiated dynamically by the {@link WpCommandFactory} and executed via the
+ * {@link WpCliCommandExecutor}. The parameters for the command must include:
  * </p>
- * 
+ * <ul>
+ *   <li>{@code oldValue}: The value to search for in the database.</li>
+ *   <li>{@code newValue}: The value to replace the search value with.</li>
+ *   <li>{@code allTables} (optional): A boolean indicating whether to perform the operation on all tables.</li>
+ *   <li>{@code dryRun} (optional): A boolean indicating whether to run the command in dry-run mode.</li>
+ * </ul>
+ *
  * <h2>Example:</h2>
  * <pre>
- * Context context = ...; // Obtain the application context
- * Dependency dependency = ...; // Obtain the dependency checker
- * 
- * SearchReplaceCommand command = new SearchReplaceCommand(
- *     context,
- *     dependency,
- *     "http://old-url.com",
- *     "http://new-url.com",
- *     true,  // Target all tables
- *     false  // Do not perform a dry run
+ * Map<String, Object> params = Map.of(
+ *     "oldValue", "http://old-url.com",
+ *     "newValue", "http://new-url.com",
+ *     "allTables", true,
+ *     "dryRun", true
  * );
- * 
- * try {
- *     CommandOutput output = command.execute();
- *     if (output.isSuccessful()) {
- *         System.out.println("Search-replace operation completed successfully.");
- *     } else {
- *         System.err.println("Search-replace operation failed: " + output.getErrorOutput());
- *     }
- * } catch (PHPNotInstalledException | WPCliNotInstalledException e) {
- *     System.err.println("Error: " + e.getMessage());
- * }
+ * SearchReplaceCommand command = new SearchReplaceCommand(context, dependency, params);
+ * CommandOutput output = command.execute();
  * </pre>
- * 
- * <h2>Parameters:</h2>
- * <ul>
- *   <li>{@code oldValue} - The value to search for in the database.</li>
- *   <li>{@code newValue} - The value to replace the old value with.</li>
- *   <li>{@code allTables} - Whether to target all tables in the database.</li>
- *   <li>{@code dryRun} - Whether to perform a dry run (preview changes without applying them).</li>
- * </ul>
- * 
- * <h2>Dependencies:</h2>
- * <p>
- * This class relies on the following components:
- * </p>
- * <ul>
- *   <li>{@link Context} - Provides access to the core components of the application, such as the {@link Shell} and {@link FileManager}.</li>
- *   <li>{@link Dependency} - Ensures that WP-CLI is installed before executing the command.</li>
- * </ul>
- * 
+ *
  * @see BaseWpCommand
- * @see CommandOutput
+ * @see WpCommandFactory
+ * @see WpCliCommandExecutor
  */
+@WpCommand("search-replace")
 public class SearchReplaceCommand extends BaseWpCommand 
 {
-    private final String oldValue;
-    private final String newValue;
-    private final boolean allTables;
-    private final boolean dryRun;
+    private String oldValue;
+    private String newValue;
+    private boolean allTables;
+    private boolean dryRun;
 
     /**
-     * Constructs a {@code SearchReplaceCommand} instance with the specified parameters.
+     * Constructs a {@code SearchReplaceCommand} with the specified context, dependency, and parameters.
      *
-     * @param context The {@link Context} object providing access to core components.
-     * @param dependency The {@link Dependency} object used to check for required dependencies.
-     * @param oldValue The value to search for in the database.
-     * @param newValue The value to replace the old value with.
-     * @param allTables Whether to target all tables in the database.
-     * @param dryRun Whether to perform a dry run (preview changes without applying them).
+     * <p>
+     * The parameters are extracted from the provided {@link Map} and used to configure the command.
+     * </p>
+     *
+     * @param context    The application context, providing access to core components.
+     * @param dependency The dependency checker, ensuring required dependencies are available.
+     * @param params     A map of parameters for the command. Must include {@code oldValue} and {@code newValue}.
      */
-    public SearchReplaceCommand(Context context, Dependency dependency, String oldValue, String newValue, boolean allTables, boolean dryRun) 
+    public SearchReplaceCommand(Context context, Dependency dependency, Map<String, Object> params) 
     {
         super(context, dependency);
-        this.oldValue = oldValue;
-        this.newValue = newValue;
-        this.allTables = allTables;
-        this.dryRun = dryRun;
+
+        // Extract parameters from the map
+        this.oldValue = (String) params.get("oldValue");
+        this.newValue = (String) params.get("newValue");
+        this.allTables = params.getOrDefault("allTables", false) instanceof Boolean && (Boolean) params.get("allTables");
+        this.dryRun = params.getOrDefault("dryRun", false) instanceof Boolean && (Boolean) params.get("dryRun");
     }
 
     /**
-     * Executes the search-and-replace command using WP-CLI.
+     * Executes the "search-replace" WP-CLI command.
      *
      * <p>
-     * This method constructs the WP-CLI command based on the provided parameters
-     * and executes it using the {@link Shell} from the {@link Context}.
+     * This method constructs the WP-CLI command string based on the provided parameters and executes it.
+     * It validates that both {@code oldValue} and {@code newValue} are not {@code null} before execution.
      * </p>
      *
-     * @return A {@link CommandOutput} object containing the result of the command execution.
+     * @return The output of the command as a {@link CommandOutput} object.
      * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
      * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
+     * @throws IllegalArgumentException If {@code oldValue} or {@code newValue} is {@code null}.
      */
     @Override
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
         // Ensure WP-CLI is installed
         dependency.isWpCliInstalled();
+
+        // Validate that oldValue and newValue are not null
+        if (this.oldValue == null || this.newValue == null) {
+            throw new IllegalArgumentException("Both 'oldValue' and 'newValue' must be provided.");
+        }
 
         // Construct the WP-CLI command
         String command = String.format(
@@ -130,8 +116,7 @@ public class SearchReplaceCommand extends BaseWpCommand
             this.allTables ? "--all-tables" : "",
             this.dryRun ? "--dry-run" : ""
         );
-
-        // Execute the command and return the result
+        
         return context.getShell().executeCommand(command);
     }
 }

@@ -54,9 +54,10 @@ import com.wpclimate.shell.CommandOutput;
  * @see PHPNotInstalledException
  * @see WPCliNotInstalledException
  */
+
+@WpCommand("flush-caches")
 public class FlushCachesCommand extends BaseWpCommand 
 {
-
     /**
      * Constructs a new {@code FlushCachesCommand} with the specified context and dependency.
      *

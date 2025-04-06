@@ -4,7 +4,9 @@ import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.CommandOutput;
+import com.wpclimate.shell.Shell;
 
 /**
  * The {@code FlushTransientCommand} class represents a WP-CLI command for deleting
@@ -60,6 +62,8 @@ import com.wpclimate.shell.CommandOutput;
  * @see BaseWpCommand
  * @see CommandOutput
  */
+
+@WpCommand("flush-transient")
 public class FlushTransientCommand extends BaseWpCommand
 {
     /**

@@ -6,7 +6,7 @@ import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.shell.CommandOutput;
 
-
+@WpCommand("rewrite")
 public class RewriteCommand extends BaseWpCommand
 {
     public RewriteCommand(Context context, Dependency dependency)
