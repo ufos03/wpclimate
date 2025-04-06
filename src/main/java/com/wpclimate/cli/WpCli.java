@@ -6,8 +6,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.core.WpCliModel;
-import com.wpclimate.cli.exceptions.PHPNotInstalledException;
-import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.CommandOutputHandler;
