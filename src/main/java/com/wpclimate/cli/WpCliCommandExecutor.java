@@ -4,6 +4,7 @@ import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.cli.wpcommands.CheckDBCommand;
 import com.wpclimate.cli.wpcommands.FlushCachesCommand;
 import com.wpclimate.cli.wpcommands.FlushTransientCommand;
 import com.wpclimate.cli.wpcommands.RewriteCommand;
@@ -179,6 +180,12 @@ public class WpCliCommandExecutor
     public CommandOutput doFlushCaches() throws PHPNotInstalledException, WPCliNotInstalledException
     {
         FlushCachesCommand cmd = new FlushCachesCommand(context, dependency);
+        return cmd.execute();
+    }
+
+    public CommandOutput doDBCheck() throws PHPNotInstalledException, WPCliNotInstalledException
+    {
+        CheckDBCommand cmd = new CheckDBCommand(context, dependency);
         return cmd.execute();
     }
 }
