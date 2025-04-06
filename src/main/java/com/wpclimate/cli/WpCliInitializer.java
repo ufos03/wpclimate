@@ -161,7 +161,7 @@ public class WpCliInitializer
 
         model.setPhp(phpPath);
         model.setWp(wpCliPath);
-        model.setSQLDump(sqlDumpPath);
+        model.setMYSQL(sqlDumpPath);
 
 
         try 
