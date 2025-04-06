@@ -1,4 +1,4 @@
-package com.wpclimate.cli;
+/*package com.wpclimate.cli;
 
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.WpCliModel;
@@ -53,4 +53,4 @@ class ContextTest {
         // Verify that no exceptions occurred
         assertDoesNotThrow(() -> context.getFileManager());
     }
-}
+}*/

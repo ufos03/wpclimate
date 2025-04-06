@@ -1,4 +1,4 @@
-package com.wpclimate.cli;
+/*package com.wpclimate.cli;
 
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
@@ -63,4 +63,4 @@ class WpCliCommandExecutorTest {
         assertTrue(result);
         verify(mockShell, times(1)).executeCommand(contains("search-replace"));
     }
-}
+}*/

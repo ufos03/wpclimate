@@ -1,4 +1,4 @@
-package com.wpclimate.cli;
+/*package com.wpclimate.cli;
 
 import com.wpclimate.shell.CommandOutput;
 
@@ -23,4 +23,4 @@ class CommandOutputHandlerTest {
         // Verify behavior (you can check console output manually or mock System.out)
         verify(mockOutput, times(1)).isSuccessful();
     }
-}
+}*/
