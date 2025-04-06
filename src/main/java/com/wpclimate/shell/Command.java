@@ -1,5 +1,7 @@
 package com.wpclimate.shell;
 
+import java.util.Map;
+
 /**
  * The Command class implements the Shell interface and provides methods to execute shell commands.
  */
@@ -45,14 +47,30 @@ public class Command implements Shell
      * Executes a shell command in a specified directory.
      *
      * @param commandLine The command line to execute.
-     * @param directory The directory in which to execute the command.
+     * @param environment A map of environment variables to set for the command.
      * @return A CommandOutput object containing the standard output and error output of the command.
      */
     @Override
-    public CommandOutput executeCommand(String commandLine, String directory) 
+    public CommandOutput executeCommand(String commandLine, Map<String, String> environment) 
     {
         CommandBuilder command = new CommandBuilder(commandLine);
-        executor = new CommandExecutor(this.workingDirectory, command);
+        executor = new CommandExecutor(this.workingDirectory, command, environment);
+        return executor.execute();
+    }
+
+    /**
+     * Executes a shell command in a specified directory.
+     *
+     * @param commandLine The command line to execute.
+     * @param directory The directory in which to execute the command.
+     * @param environment A map of environment variables to set for the command.
+     * @return A CommandOutput object containing the standard output and error output of the command.
+     */
+    @Override
+    public CommandOutput executeCommand(String commandLine, String directory, Map<String, String> environment) 
+    {
+        CommandBuilder command = new CommandBuilder(commandLine);
+        executor = new CommandExecutor(this.workingDirectory, command, environment);
         return executor.execute();
     }
 }
