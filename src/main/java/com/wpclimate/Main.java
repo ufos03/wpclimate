@@ -12,5 +12,6 @@ public class Main {
         wp.doFlushTransient();
         wp.setShowOutput(true);
         wp.doFlushCaches();
+        wp.doDBCheck();
     }
 }
