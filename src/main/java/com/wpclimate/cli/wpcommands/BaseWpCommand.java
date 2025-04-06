@@ -1,9 +1,14 @@
 package com.wpclimate.cli.wpcommands;
 
+import java.util.Map;
+
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
+import com.wpclimate.configurator.Configurator;
+import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.CommandOutput;
+import com.wpclimate.shell.Shell;
 
 /**
  * The {@code BaseWpCommand} class serves as an abstract base class for all WP-CLI commands.
@@ -23,6 +28,7 @@ import com.wpclimate.shell.CommandOutput;
  *   <li>Provides access to the {@link Context} object, which contains the core components of the application.</li>
  *   <li>Provides access to the {@link Dependency} object, which is used to check for required dependencies like PHP and WP-CLI.</li>
  *   <li>Defines an abstract {@link #execute()} method that subclasses must implement to define the behavior of a specific command.</li>
+ *   <li>Provides utility methods, such as {@link #configureEnvironmentVariables(String)}, to assist with command execution.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -46,6 +52,18 @@ import com.wpclimate.shell.CommandOutput;
  *     }
  * }
  * </pre>
+ * 
+ * <h2>Thread Safety:</h2>
+ * <p>
+ * This class is not thread-safe. If multiple threads need to execute commands concurrently,
+ * synchronization must be handled externally.
+ * </p>
+ * 
+ * @see Context
+ * @see Dependency
+ * @see CommandOutput
+ * @see PHPNotInstalledException
+ * @see WPCliNotInstalledException
  */
 public abstract class BaseWpCommand 
 {
@@ -65,6 +83,32 @@ public abstract class BaseWpCommand
     {
         this.context = context;
         this.dependency = dependency;
+    }
+
+    /**
+     * Configures the environment variables required for executing WP-CLI commands.
+     *
+     * <p>
+     * This method updates the {@code PATH} environment variable by appending the specified path
+     * to the current {@code PATH}. This ensures that WP-CLI can locate required executables,
+     * such as {@code mysqlcheck}, during command execution.
+     * </p>
+     *
+     * @param path The path to be added to the {@code PATH} environment variable. 
+     *             Must not be {@code null} or empty.
+     * @return A {@link Map} containing the updated environment variables, including the modified {@code PATH}.
+     * @throws IllegalArgumentException If the specified path is {@code null} or empty.
+     */
+    public Map<String, String> configureEnvironmentVariables(String path) 
+    {
+        if (path.equals(null) || path.isEmpty())
+            throw new IllegalArgumentException("The path cannot be null or empty");
+
+        String currentPath = System.getenv("PATH");
+        String mysqlcheckPath = path;
+        String updatedPath = mysqlcheckPath + ":" + currentPath;
+
+        return Map.of("PATH", updatedPath);
     }
 
     /**
