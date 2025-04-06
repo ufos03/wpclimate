@@ -11,11 +11,11 @@ public class WpCliModel extends Model
 {
     private static final String PHP_KEY = "PHP"; // Key for the PHP executable path
     private static final String WPCLI_KEY = "WPCLI"; // Key for the WP-CLI executable path
-    private static final String MYSQLDUMP_KEY = "MSQLDUMP";
+    private static final String MYSQL_KEY = "MSQLDUMP";
 
     private String php; // Path to the PHP executable
     private String wp; // Path to the WP-CLI executable
-    private String sqlDump; // Path to the MySQL dump executable
+    private String mysql; // Path to the MySQL dump executable
 
     /**
      * Default constructor.
@@ -42,8 +42,8 @@ public class WpCliModel extends Model
         if (model.containsKey(WPCLI_KEY))
             this.setWp(model.get(WPCLI_KEY));
 
-        if (model.containsKey(MYSQLDUMP_KEY))
-            this.setSQLDump(model.get(MYSQLDUMP_KEY));
+        if (model.containsKey(MYSQL_KEY))
+            this.setMYSQL(model.get(MYSQL_KEY));
     }
 
     /**
@@ -64,8 +64,8 @@ public class WpCliModel extends Model
         if (model.containsKey(WPCLI_KEY))
             newWpCliModel.setWp(model.get(WPCLI_KEY));
         
-        if (model.containsKey(MYSQLDUMP_KEY))
-            newWpCliModel.setSQLDump(model.get(MYSQLDUMP_KEY));
+        if (model.containsKey(MYSQL_KEY))
+            newWpCliModel.setMYSQL(model.get(MYSQL_KEY));
 
         return newWpCliModel;
     }
@@ -91,8 +91,8 @@ public class WpCliModel extends Model
         if (model.containsKey(WPCLI_KEY))
             this.setWp(model.get(WPCLI_KEY));
 
-        if (model.containsKey(MYSQLDUMP_KEY))
-            this.setSQLDump(model.get(MYSQLDUMP_KEY));
+        if (model.containsKey(MYSQL_KEY))
+            this.setMYSQL(model.get(MYSQL_KEY));
     }
 
     /**
@@ -120,15 +120,15 @@ public class WpCliModel extends Model
     }
 
     /**
-     * Sets the path to the SQL-DUMP executable.
-     * Updates the underlying model with the new SQL-DUMP path.
+     * Sets the path to the MYSQL library.
+     * Updates the underlying model with the new MYSQL path.
      * 
      * @param sqlDump The SQL-PATH executable path to set.
      */
-    public void setSQLDump(String sqlDump)
+    public void setMYSQL(String sqlDump)
     {
-        this.sqlDump = sqlDump;
-        super.set(MYSQLDUMP_KEY, this.sqlDump, false);
+        this.mysql = sqlDump;
+        super.set(MYSQL_KEY, this.mysql, false);
     }
 
     /**
@@ -153,12 +153,12 @@ public class WpCliModel extends Model
     }
 
     /**
-     * Gets the path to the SQL-DUMP executable.
+     * Gets the path to the MYSQL library.
      *
-     * @return The SQL-DUMP executable path.
+     * @return The MYSQL executable path.
      */
-    public String getSQLDump() 
+    public String getMYSQL() 
     {
-        return this.sqlDump;
+        return this.mysql;
     }
 }
