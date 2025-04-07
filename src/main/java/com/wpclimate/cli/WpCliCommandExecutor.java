@@ -5,8 +5,8 @@ import java.util.Map;
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.wpcommands.BaseWpCommand;
-import com.wpclimate.cli.wpcommands.CommandRegistrar;
-import com.wpclimate.cli.wpcommands.WpCommandFactory;
+import com.wpclimate.cli.wpcommands.registrar.CommandRegistrar;
+import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -27,15 +27,14 @@ import com.wpclimate.shell.CommandOutput;
  *
  * <h2>Usage:</h2>
  * <p>
- * Create an instance of this class by providing the application {@link Context} and {@link Dependency}.
+ * Create an instance of this class by providing the application {@link Context}.
  * Use the {@link #executeCommand(String)} method to execute a WP-CLI command by its name.
  * </p>
  *
  * <h2>Example:</h2>
  * <pre>
- * Context context = new Context();
- * Dependency dependency = new Dependency();
- * WpCliCommandExecutor executor = new WpCliCommandExecutor(context, dependency);
+ * Context context = new Context(..params);
+ * WpCliCommandExecutor executor = new WpCliCommandExecutor(context);
  *
  * try {
  *     CommandOutput output = executor.executeCommand("rewrite");
@@ -57,22 +56,19 @@ public class WpCliCommandExecutor
 {
 
     private final Context context;
-    private final Dependency dependency;
 
     /**
-     * Constructs a {@code WpCliCommandExecutor} with the specified {@link Context} and {@link Dependency}.
+     * Constructs a {@code WpCliCommandExecutor} with the specified {@link Context}.
      *
      * <p>
      * This constructor initializes the command registry by calling {@link CommandRegistrar#registerAllCommands()}.
      * </p>
      *
      * @param context    The application context, providing access to core components.
-     * @param dependency The dependency checker, ensuring required dependencies are available.
      */
-    public WpCliCommandExecutor(Context context, Dependency dependency) 
+    public WpCliCommandExecutor(Context context) 
     {
         this.context = context;
-        this.dependency = dependency;
         CommandRegistrar.registerAllCommands();
     }
 
@@ -92,7 +88,7 @@ public class WpCliCommandExecutor
      */
     public CommandOutput executeCommand(String commandName, Map<String, Object> params) throws Exception 
     {
-        BaseWpCommand command = WpCommandFactory.createCommand(commandName, context, dependency, params);
+        BaseWpCommand command = WpCommandFactory.createCommand(commandName, this.context, this.context.getDependency(), params);
         return command.execute();
     }
 }
