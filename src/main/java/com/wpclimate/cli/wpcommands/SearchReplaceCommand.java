@@ -2,6 +2,7 @@ package com.wpclimate.cli.wpcommands;
 
 import java.util.Map;
 
+import com.wpclimate.cli.WpCliCommandExecutor;
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
@@ -70,9 +71,9 @@ public class SearchReplaceCommand extends BaseWpCommand
      * @param dependency The dependency checker, ensuring required dependencies are available.
      * @param params     A map of parameters for the command. Must include {@code oldValue} and {@code newValue}.
      */
-    public SearchReplaceCommand(Context context, Dependency dependency, Map<String, Object> params) 
+    public SearchReplaceCommand(Context context, Map<String, Object> params) 
     {
-        super(context, dependency);
+        super(context);
 
         // Extract parameters from the map
         this.oldValue = (String) params.get("oldValue");
@@ -98,7 +99,10 @@ public class SearchReplaceCommand extends BaseWpCommand
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
         // Ensure WP-CLI is installed
-        dependency.isWpCliInstalled();
+        super.context.getDependency().isWpCliInstalled();
+        
+        // Ensure WP-CLI is installed
+        super.context.getDependency().isWpCliInstalled();
 
         // Validate that oldValue and newValue are not null
         if (this.oldValue == null || this.newValue == null) {

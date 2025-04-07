@@ -28,7 +28,7 @@ import com.wpclimate.shell.Shell;
  * <h2>Usage:</h2>
  * <p>
  * To use this class, create an instance by providing the required {@link Context}
- * and {@link Dependency}, and then call the {@link #execute()} method to run the command.
+ * and then call the {@link #execute()} method to run the command.
  * </p>
  * 
  * <h2>Example:</h2>
@@ -70,11 +70,10 @@ public class FlushTransientCommand extends BaseWpCommand
      * Constructs a {@code FlushTransientCommand} instance with the specified parameters.
      *
      * @param context The {@link Context} object providing access to core components.
-     * @param dependency The {@link Dependency} object used to check for required dependencies.
      */
     public FlushTransientCommand(Context context, Dependency dependency)
     {
-        super(context, dependency);
+        super(context);
     }
 
     /**
@@ -92,8 +91,8 @@ public class FlushTransientCommand extends BaseWpCommand
     @Override
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        super.dependency.isWpCliInstalled();
-        super.dependency.isAWordpressDirectory();
+        super.context.getDependency().isWpCliInstalled();
+        super.context.getDependency().isAWordpressDirectory();
 
         String command = String.format(
             "%s %s --path=%s transient delete --all", 

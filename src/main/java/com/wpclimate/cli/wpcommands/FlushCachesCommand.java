@@ -1,7 +1,6 @@
 package com.wpclimate.cli.wpcommands;
 
 import com.wpclimate.cli.core.Context;
-import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.shell.CommandOutput;
 
@@ -62,11 +61,10 @@ public class FlushCachesCommand extends BaseWpCommand
      * Constructs a new {@code FlushCachesCommand} with the specified context and dependency.
      *
      * @param context    The {@link Context} object providing access to the environment and configuration.
-     * @param dependency The {@link Dependency} object for checking prerequisites.
      */
-    public FlushCachesCommand(Context context, Dependency dependency) 
+    public FlushCachesCommand(Context context) 
     {
-        super(context, dependency);
+        super(context);
     }
 
     /**
@@ -85,8 +83,8 @@ public class FlushCachesCommand extends BaseWpCommand
     @Override
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        super.dependency.isWpCliInstalled();
-        super.dependency.isAWordpressDirectory();
+        super.context.getDependency().isWpCliInstalled();
+        super.context.getDependency().isAWordpressDirectory();
 
         String command = String.format(
             "%s %s --path=%s cache flush", 
