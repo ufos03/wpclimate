@@ -5,6 +5,9 @@ import com.wpclimate.cli.WpCli;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 
+// TODO: Aggiornare documentazione dei comandi.
+// TODO: Fattorizzare wpcommands: separare i comandi e la logica di caricamento/esecuzione
+
 public class Main {
     public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException 
     {
