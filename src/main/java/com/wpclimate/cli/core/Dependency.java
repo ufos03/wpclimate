@@ -22,18 +22,18 @@ public class Dependency
     private final ReentrantLock lock = new ReentrantLock();
 
     /**
-     * Constructs a {@code Dependency} instance with the specified {@code Context}.
+     * Constructs a {@code Dependency} instance with the specified {@link Shell} and {@link WpCliModel}.
      *
-     * @param context The {@link Context} containing the shell and WP-CLI model.
-     * @throws IllegalStateException If the context is {@code null}.
+     * @param shell The {@link Shell} instance for executing commands.
+     * @param model The {@link WpCliModel} instance containing WP-CLI configuration data.
      */
-    public Dependency(Context context) 
+    public Dependency(Shell shell, WpCliModel model) 
     {
-        if (context == null)
-            throw new IllegalStateException("The context must be provided.");
+        if (shell == null || model == null)
+            throw new IllegalArgumentException("Shell and WpCliModel must not be null.");
 
-        this.shell = context.getShell();
-        this.model = context.getWpModel();
+        this.shell = shell;
+        this.model = model;
     }
 
     /**
