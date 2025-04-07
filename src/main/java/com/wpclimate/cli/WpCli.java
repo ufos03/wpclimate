@@ -83,7 +83,6 @@ import com.wpclimate.shell.Shell;
 public class WpCli 
 {
     private final ReentrantLock lock = new ReentrantLock();
-    private final Dependency dependency;
     private final Context context;
     private final WpCliCommandExecutor commandExecutor;
     private boolean showOutput;
@@ -108,10 +107,10 @@ public class WpCli
         FileManager fileManager = initializer.initializeFileManager(workingDirectory);
         Shell shell = initializer.initializeShell(fileManager);
         WpCliModel model = initializer.initializeModel(initializer.initializeConfigurator(fileManager));
+        Dependency dependency = new Dependency(shell, model);
 
-        this.context = new Context(model, shell, initializer.initializeConfigurator(fileManager), fileManager);
-        this.dependency = new Dependency(context);
-        this.commandExecutor = new WpCliCommandExecutor(context, dependency);
+        this.context = new Context(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);
+        this.commandExecutor = new WpCliCommandExecutor(this.context, this.context.getDependency());
         this.showOutput = false;
         this.outputHandler = new ConsoleOutputHandler();
     }
