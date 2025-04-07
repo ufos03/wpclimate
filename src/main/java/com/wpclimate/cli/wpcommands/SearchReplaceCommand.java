@@ -4,8 +4,9 @@ import java.util.Map;
 
 import com.wpclimate.cli.WpCliCommandExecutor;
 import com.wpclimate.cli.core.Context;
-import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
+import com.wpclimate.cli.wpcommands.registrar.WpCommand;
+import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -44,8 +45,13 @@ import com.wpclimate.shell.CommandOutput;
  *     "allTables", true,
  *     "dryRun", true
  * );
- * SearchReplaceCommand command = new SearchReplaceCommand(context, dependency, params);
+ * SearchReplaceCommand command = new SearchReplaceCommand(context, params);
  * CommandOutput output = command.execute();
+ * if (output.isSuccessful()) {
+ *     System.out.println("Search and replace completed successfully.");
+ * } else {
+ *     System.err.println("Search and replace failed: " + output.getErrorOutput());
+ * }
  * </pre>
  *
  * @see BaseWpCommand
@@ -68,7 +74,6 @@ public class SearchReplaceCommand extends BaseWpCommand
      * </p>
      *
      * @param context    The application context, providing access to core components.
-     * @param dependency The dependency checker, ensuring required dependencies are available.
      * @param params     A map of parameters for the command. Must include {@code oldValue} and {@code newValue}.
      */
     public SearchReplaceCommand(Context context, Map<String, Object> params) 

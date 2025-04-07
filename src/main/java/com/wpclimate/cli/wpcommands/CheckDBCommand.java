@@ -1,9 +1,10 @@
 package com.wpclimate.cli.wpcommands;
 
 import com.wpclimate.cli.core.Context;
-import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.cli.wpcommands.registrar.WpCommand;
+import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -30,7 +31,7 @@ import com.wpclimate.shell.CommandOutput;
  *
  * <h2>Example:</h2>
  * <pre>
- * CheckDBCommand command = new CheckDBCommand(context, dependency);
+ * CheckDBCommand command = new CheckDBCommand(context);
  * CommandOutput output = command.execute();
  * if (output.isSuccessful()) {
  *     System.out.println("Database check passed.");

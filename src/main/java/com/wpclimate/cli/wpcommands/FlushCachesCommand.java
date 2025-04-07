@@ -2,11 +2,11 @@ package com.wpclimate.cli.wpcommands;
 
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.exceptions.*;
+import com.wpclimate.cli.wpcommands.registrar.WpCommand;
 import com.wpclimate.shell.CommandOutput;
 
 /**
- * The {@code FlushCachesCommand} class is responsible for executing the WP-CLI command
- * to flush all caches in a WordPress installation.
+ * The {@code FlushCachesCommand} class implements the WP-CLI "cache flush" command.
  *
  * <p>
  * This command clears all cached data stored in the WordPress database, ensuring that
@@ -14,46 +14,34 @@ import com.wpclimate.shell.CommandOutput;
  * for troubleshooting or after making significant changes to the site.
  * </p>
  *
+ * <h2>Responsibilities:</h2>
+ * <ul>
+ *   <li>Validates that WP-CLI and PHP are installed and accessible.</li>
+ *   <li>Ensures that the current directory is a valid WordPress installation.</li>
+ *   <li>Constructs and executes the "cache flush" WP-CLI command.</li>
+ * </ul>
+ *
  * <h2>Usage:</h2>
  * <p>
- * To use this command, ensure that the environment meets the following requirements:
+ * This class is instantiated dynamically by the {@link WpCommandFactory} and executed via the
+ * {@link WpCliCommandExecutor}. It does not require additional parameters.
  * </p>
- * <ul>
- *   <li>WP-CLI is installed and accessible.</li>
- *   <li>The current working directory is a valid WordPress installation.</li>
- *   <li>PHP is installed and accessible.</li>
- * </ul>
  *
  * <h2>Example:</h2>
  * <pre>
- * Context context = ...; // Initialize the context
- * Dependency dependency = ...; // Initialize the dependency
- * 
- * FlushCachesCommand command = new FlushCachesCommand(context, dependency);
- * try {
- *     CommandOutput output = command.execute();
- *     if (output.isSuccessful()) {
- *         System.out.println("Caches flushed successfully.");
- *     } else {
- *         System.err.println("Failed to flush caches: " + output.getErrorOutput());
- *     }
- * } catch (PHPNotInstalledException | WPCliNotInstalledException e) {
- *     System.err.println("Error: " + e.getMessage());
+ * FlushCachesCommand command = new FlushCachesCommand(context);
+ * CommandOutput output = command.execute();
+ * if (output.isSuccessful()) {
+ *     System.out.println("Caches flushed successfully.");
+ * } else {
+ *     System.err.println("Failed to flush caches: " + output.getErrorOutput());
  * }
  * </pre>
  *
- * <h2>Thread Safety:</h2>
- * <p>
- * This class is not thread-safe. If multiple threads need to execute this command,
- * synchronization must be handled externally.
- * </p>
- *
  * @see BaseWpCommand
- * @see CommandOutput
- * @see PHPNotInstalledException
- * @see WPCliNotInstalledException
+ * @see WpCommandFactory
+ * @see WpCliCommandExecutor
  */
-
 @WpCommand("flush-caches")
 public class FlushCachesCommand extends BaseWpCommand 
 {

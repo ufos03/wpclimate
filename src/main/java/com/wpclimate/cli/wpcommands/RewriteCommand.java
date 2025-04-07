@@ -1,9 +1,10 @@
 package com.wpclimate.cli.wpcommands;
 
 import com.wpclimate.cli.core.Context;
-import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.cli.wpcommands.registrar.WpCommand;
+import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -31,7 +32,7 @@ import com.wpclimate.shell.CommandOutput;
  *
  * <h2>Example:</h2>
  * <pre>
- * RewriteCommand command = new RewriteCommand(context, dependency);
+ * RewriteCommand command = new RewriteCommand(context);
  * CommandOutput output = command.execute();
  * if (output.isSuccessful()) {
  *     System.out.println("Rewrite rules flushed successfully.");
@@ -51,7 +52,6 @@ public class RewriteCommand extends BaseWpCommand
      * Constructs a {@code RewriteCommand} with the specified context and dependency.
      *
      * @param context    The application context, providing access to core components.
-     * @param dependency The dependency checker, ensuring required dependencies are available.
      */
     public RewriteCommand(Context context)
     {

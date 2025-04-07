@@ -4,65 +4,47 @@ import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
-import com.wpclimate.constants.FileManager;
+import com.wpclimate.cli.wpcommands.registrar.WpCommand;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.Shell;
 
 /**
- * The {@code FlushTransientCommand} class represents a WP-CLI command for deleting
- * all transients from a WordPress installation.
- * 
+ * The {@code FlushTransientCommand} class implements the WP-CLI "cache flush" command.
+ *
  * <p>
- * Transients are temporary options stored in the WordPress database, often used
- * for caching purposes. This command allows you to delete all transients, which
- * can be useful for clearing cached data or troubleshooting issues.
+ * This command clears all cached data stored in the WordPress database, ensuring that
+ * the site operates with the most up-to-date information. It is particularly useful
+ * for troubleshooting or after making significant changes to the site.
  * </p>
- * 
+ *
  * <h2>Responsibilities:</h2>
  * <ul>
- *   <li>Constructs the WP-CLI command for deleting all transients.</li>
- *   <li>Executes the command using the {@link Shell} provided by the {@link Context}.</li>
- *   <li>Validates that WP-CLI is installed before executing the command.</li>
+ *   <li>Validates that WP-CLI and PHP are installed and accessible.</li>
+ *   <li>Ensures that the current directory is a valid WordPress installation.</li>
+ *   <li>Constructs and executes the "cache flush" WP-CLI command.</li>
  * </ul>
- * 
+ *
  * <h2>Usage:</h2>
  * <p>
- * To use this class, create an instance by providing the required {@link Context}
- * and then call the {@link #execute()} method to run the command.
+ * This class is instantiated dynamically by the {@link WpCommandFactory} and executed via the
+ * {@link WpCliCommandExecutor}. It does not require additional parameters.
  * </p>
- * 
+ *
  * <h2>Example:</h2>
  * <pre>
- * Context context = ...; // Obtain the application context
- * Dependency dependency = ...; // Obtain the dependency checker
- * 
- * FlushTransientCommand command = new FlushTransientCommand(context, dependency);
- * 
- * try {
- *     CommandOutput output = command.execute();
- *     if (output.isSuccessful()) {
- *         System.out.println("All transients deleted successfully.");
- *     } else {
- *         System.err.println("Failed to delete transients: " + output.getErrorOutput());
- *     }
- * } catch (PHPNotInstalledException | WPCliNotInstalledException e) {
- *     System.err.println("Error: " + e.getMessage());
+ * FlushTransientCommand command = new FlushTransientCommand(context);
+ * CommandOutput output = command.execute();
+ * if (output.isSuccessful()) {
+ *     System.out.println("Transients flushed successfully.");
+ * } else {
+ *     System.err.println("Failed to flush transients: " + output.getErrorOutput());
  * }
  * </pre>
- * 
- * <h2>Dependencies:</h2>
- * <p>
- * This class relies on the following components:
- * </p>
- * <ul>
- *   <li>{@link Context} - Provides access to the core components of the application, such as the {@link Shell} and {@link FileManager}.</li>
- *   <li>{@link Dependency} - Ensures that WP-CLI is installed before executing the command.</li>
- * </ul>
- * 
+ *
  * @see BaseWpCommand
- * @see CommandOutput
+ * @see WpCommandFactory
+ * @see WpCliCommandExecutor
  */
-
 @WpCommand("flush-transient")
 public class FlushTransientCommand extends BaseWpCommand
 {
