@@ -110,7 +110,7 @@ public class WpCli
         Dependency dependency = new Dependency(shell, model);
 
         this.context = new Context(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);
-        this.commandExecutor = new WpCliCommandExecutor(this.context, this.context.getDependency());
+        this.commandExecutor = new WpCliCommandExecutor(this.context);
         this.showOutput = false;
         this.outputHandler = new ConsoleOutputHandler();
     }
