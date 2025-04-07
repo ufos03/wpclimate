@@ -83,13 +83,13 @@ public class WpCommandFactory
 
         try 
         {
-            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(Context.class, Dependency.class, Map.class);
-            return constructor.newInstance(context, dependency, params != null ? params : Map.of());
+            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(Context.class, Map.class);
+            return constructor.newInstance(context, params != null ? params : Map.of());
         } 
         catch (NoSuchMethodException e) 
         {
-            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(Context.class, Dependency.class);
-            return constructor.newInstance(context, dependency);
+            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(Context.class);
+            return constructor.newInstance(context);
         }
     }
 }
