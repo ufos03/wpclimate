@@ -72,21 +72,17 @@ public abstract class BaseWpCommand
     /** The {@link Context} object providing access to core components like the {@link FileManager}, {@link Shell}, and {@link Configurator}. */
     protected final Context context;
 
-    /** The {@link Dependency} object used to check for required dependencies like PHP and WP-CLI. */
-    protected final Dependency dependency;
-
     private static final Map<String, Class<? extends BaseWpCommand>> COMMAND_REGISTRY = new HashMap<>();
 
     /**
-     * Constructs a {@code BaseWpCommand} with the specified {@link Context} and {@link Dependency}.
+     * Constructs a {@code BaseWpCommand} with the specified {@link Context}}.
      *
      * @param context    The {@link Context} object providing access to core components.
      * @param dependency The {@link Dependency} object used to check for required dependencies.
      */
-    public BaseWpCommand(Context context, Dependency dependency) 
+    public BaseWpCommand(Context context) 
     {
         this.context = context;
-        this.dependency = dependency;
     }
 
     /**
