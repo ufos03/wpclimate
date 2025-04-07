@@ -1,7 +1,8 @@
-package com.wpclimate.cli.wpcommands;
+package com.wpclimate.cli.wpcommands.registrar;
 
 import com.wpclimate.cli.core.Context;
 import com.wpclimate.cli.core.Dependency;
+import com.wpclimate.cli.wpcommands.BaseWpCommand;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;

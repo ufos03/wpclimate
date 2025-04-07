@@ -1,4 +1,4 @@
-package com.wpclimate.cli.wpcommands;
+package com.wpclimate.cli.wpcommands.registrar;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

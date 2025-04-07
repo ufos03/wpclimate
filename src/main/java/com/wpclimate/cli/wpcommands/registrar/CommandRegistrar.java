@@ -1,7 +1,9 @@
-package com.wpclimate.cli.wpcommands;
+package com.wpclimate.cli.wpcommands.registrar;
 
 import java.util.Set;
 import org.reflections.Reflections;
+
+import com.wpclimate.cli.wpcommands.BaseWpCommand;
 
 /**
  * The {@code CommandRegistrar} class is responsible for dynamically scanning and registering
