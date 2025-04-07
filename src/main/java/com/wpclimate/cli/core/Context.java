@@ -77,6 +77,7 @@ public class Context
     private final Configurator configurator; // The configurator for managing configuration persistence
     private final WpCliModel wpModel; // The WP-CLI configuration model
     private final FileManager fileManager; // The file manager for handling file operations
+    private final Dependency dependency; // The dependency to check is the below system has all the requirements for wp-cli.
 
     private final ReentrantLock lock = new ReentrantLock(); // Allows thread-safe access to components
 
@@ -88,12 +89,13 @@ public class Context
      * @param configurator The {@link Configurator} instance for managing configuration persistence.
      * @param fileManager  The {@link FileManager} instance for handling file operations.
      */
-    public Context(WpCliModel wpModel, Shell shell, Configurator configurator, FileManager fileManager) 
+    public Context(WpCliModel wpModel, Shell shell, Configurator configurator, FileManager fileManager, Dependency dependency) 
     {
         this.wpModel = wpModel;
         this.shell = shell;
         this.configurator = configurator;
         this.fileManager = fileManager;
+        this.dependency = dependency;
     }
 
     /**
@@ -181,6 +183,19 @@ public class Context
         try 
         {
             return this.fileManager;
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
+    }
+
+    public Dependency getDependency()
+    {
+        this.lock.lock();
+        try 
+        {
+            return this.dependency;
         }
         finally
         {
