@@ -3,7 +3,6 @@ package com.wpclimate.cli;
 import java.util.Map;
 
 import com.wpclimate.cli.core.Context;
-import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.wpcommands.BaseWpCommand;
 import com.wpclimate.cli.wpcommands.registrar.CommandRegistrar;
 import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;

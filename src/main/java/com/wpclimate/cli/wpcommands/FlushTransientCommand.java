@@ -1,7 +1,6 @@
 package com.wpclimate.cli.wpcommands;
 
 import com.wpclimate.cli.core.Context;
-import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
@@ -53,7 +52,7 @@ public class FlushTransientCommand extends BaseWpCommand
      *
      * @param context The {@link Context} object providing access to core components.
      */
-    public FlushTransientCommand(Context context, Dependency dependency)
+    public FlushTransientCommand(Context context)
     {
         super(context);
     }
