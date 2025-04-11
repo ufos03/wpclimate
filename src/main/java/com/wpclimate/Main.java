@@ -4,11 +4,12 @@ import java.util.Map;
 import com.wpclimate.cli.WpCli;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.git.Git;
 
 public class Main {
     public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        WpCli wp = new WpCli("/home/ufos/Documents/test-wpclimate/");
+        /*WpCli wp = new WpCli("/home/ufos/Documents/test-wpclimate/");
 
 
         wp.setShowOutput(true);
@@ -31,6 +32,8 @@ public class Main {
 
         wp.execute("import-db", Map.of(
             "fileName", "../test.sql"
-        ));
+        ));*/
+
+        Git g = new Git();
     }
 }
