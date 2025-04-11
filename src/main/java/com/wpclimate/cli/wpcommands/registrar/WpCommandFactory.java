@@ -1,6 +1,6 @@
 package com.wpclimate.cli.wpcommands.registrar;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.wpcommands.BaseWpCommand;
 
@@ -75,7 +75,7 @@ public class WpCommandFactory
      * @return An instance of the specified command.
      * @throws Exception If the command cannot be instantiated.
      */
-    public static BaseWpCommand createCommand(String name, Context context, Dependency dependency, Map<String, Object> params) throws Exception 
+    public static BaseWpCommand createCommand(String name, WpCliContext context, Dependency dependency, Map<String, Object> params) throws Exception 
     {
         Class<? extends BaseWpCommand> commandClass = BaseWpCommand.getCommandClass(name);
         
@@ -84,12 +84,12 @@ public class WpCommandFactory
 
         try 
         {
-            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(Context.class, Map.class);
+            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(WpCliContext.class, Map.class);
             return constructor.newInstance(context, params != null ? params : Map.of());
         } 
         catch (NoSuchMethodException e) 
         {
-            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(Context.class);
+            Constructor<? extends BaseWpCommand> constructor = commandClass.getConstructor(WpCliContext.class);
             return constructor.newInstance(context);
         }
     }

@@ -1,6 +1,6 @@
 package com.wpclimate.cli.wpcommands;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
 import com.wpclimate.shell.CommandOutput;
@@ -48,9 +48,9 @@ public class FlushCachesCommand extends BaseWpCommand
     /**
      * Constructs a new {@code FlushCachesCommand} with the specified context and dependency.
      *
-     * @param context    The {@link Context} object providing access to the environment and configuration.
+     * @param context    The {@link WpCliContext} object providing access to the environment and configuration.
      */
-    public FlushCachesCommand(Context context) 
+    public FlushCachesCommand(WpCliContext context) 
     {
         super(context);
     }

@@ -1,6 +1,6 @@
 package com.wpclimate.cli.wpcommands;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
@@ -50,9 +50,9 @@ public class FlushTransientCommand extends BaseWpCommand
     /**
      * Constructs a {@code FlushTransientCommand} instance with the specified parameters.
      *
-     * @param context The {@link Context} object providing access to core components.
+     * @param context The {@link WpCliContext} object providing access to core components.
      */
-    public FlushTransientCommand(Context context)
+    public FlushTransientCommand(WpCliContext context)
     {
         super(context);
     }
@@ -62,7 +62,7 @@ public class FlushTransientCommand extends BaseWpCommand
      *
      * <p>
      * This method constructs the WP-CLI command for deleting all transients and
-     * executes it using the {@link Shell} from the {@link Context}.
+     * executes it using the {@link Shell} from the {@link WpCliContext}.
      * </p>
      *
      * @return A {@link CommandOutput} object containing the result of the command execution.

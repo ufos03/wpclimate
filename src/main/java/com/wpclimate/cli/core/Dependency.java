@@ -11,6 +11,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * The {@code Dependency} class checks the availability of PHP, WP-CLI, and WordPress.
  * It uses the {@link Shell} to execute commands and the {@link WpCliModel} for configuration.
  */
+
+//TODO: Implementare autoload di WPCLI se non installato nell'OS.
 public class Dependency 
 {
     private static final String PHP_VERSION_COMMAND = "--version";

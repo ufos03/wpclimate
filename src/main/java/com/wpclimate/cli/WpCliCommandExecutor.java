@@ -2,7 +2,7 @@ package com.wpclimate.cli;
 
 import java.util.Map;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.wpcommands.BaseWpCommand;
 import com.wpclimate.cli.wpcommands.registrar.CommandRegistrar;
 import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
@@ -26,7 +26,7 @@ import com.wpclimate.shell.CommandOutput;
  *
  * <h2>Usage:</h2>
  * <p>
- * Create an instance of this class by providing the application {@link Context}.
+ * Create an instance of this class by providing the application {@link WpCliContext}.
  * Use the {@link #executeCommand(String)} method to execute a WP-CLI command by its name.
  * </p>
  *
@@ -54,10 +54,10 @@ import com.wpclimate.shell.CommandOutput;
 public class WpCliCommandExecutor 
 {
 
-    private final Context context;
+    private final WpCliContext context;
 
     /**
-     * Constructs a {@code WpCliCommandExecutor} with the specified {@link Context}.
+     * Constructs a {@code WpCliCommandExecutor} with the specified {@link WpCliContext}.
      *
      * <p>
      * This constructor initializes the command registry by calling {@link CommandRegistrar#registerAllCommands()}.
@@ -65,7 +65,7 @@ public class WpCliCommandExecutor
      *
      * @param context    The application context, providing access to core components.
      */
-    public WpCliCommandExecutor(Context context) 
+    public WpCliCommandExecutor(WpCliContext context) 
     {
         this.context = context;
         CommandRegistrar.registerAllCommands();

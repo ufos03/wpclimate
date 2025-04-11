@@ -1,6 +1,6 @@
 package com.wpclimate.cli.wpcommands;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
@@ -52,7 +52,7 @@ public class CheckDBCommand extends BaseWpCommand
      *
      * @param context    The application context, providing access to core components.
      */
-    public CheckDBCommand(Context context) 
+    public CheckDBCommand(WpCliContext context) 
     {
         super(context);
     }

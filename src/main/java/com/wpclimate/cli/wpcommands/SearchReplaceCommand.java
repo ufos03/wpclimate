@@ -3,7 +3,7 @@ package com.wpclimate.cli.wpcommands;
 import java.util.Map;
 
 import com.wpclimate.cli.WpCliCommandExecutor;
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
 import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
@@ -76,7 +76,7 @@ public class SearchReplaceCommand extends BaseWpCommand
      * @param context    The application context, providing access to core components.
      * @param params     A map of parameters for the command. Must include {@code oldValue} and {@code newValue}.
      */
-    public SearchReplaceCommand(Context context, Map<String, Object> params) 
+    public SearchReplaceCommand(WpCliContext context, Map<String, Object> params) 
     {
         super(context);
 

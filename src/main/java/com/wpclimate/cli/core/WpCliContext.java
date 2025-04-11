@@ -71,7 +71,7 @@ import com.wpclimate.shell.Shell;
  * @see Configurator
  * @see FileManager
  */
-public class Context 
+public class WpCliContext 
 {
     private final Shell shell; // The shell interface for executing commands
     private final Configurator configurator; // The configurator for managing configuration persistence
@@ -89,7 +89,7 @@ public class Context
      * @param configurator The {@link Configurator} instance for managing configuration persistence.
      * @param fileManager  The {@link FileManager} instance for handling file operations.
      */
-    public Context(WpCliModel wpModel, Shell shell, Configurator configurator, FileManager fileManager, Dependency dependency) 
+    public WpCliContext(WpCliModel wpModel, Shell shell, Configurator configurator, FileManager fileManager, Dependency dependency) 
     {
         this.wpModel = wpModel;
         this.shell = shell;

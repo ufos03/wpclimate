@@ -3,7 +3,7 @@ package com.wpclimate.cli.wpcommands;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.configurator.Configurator;
@@ -26,7 +26,7 @@ import com.wpclimate.shell.Shell;
  * 
  * <h2>Responsibilities:</h2>
  * <ul>
- *   <li>Provides access to the {@link Context} object, which contains the core components of the application.</li>
+ *   <li>Provides access to the {@link WpCliContext} object, which contains the core components of the application.</li>
  *   <li>Provides access to the {@link Dependency} object, which is used to check for required dependencies like PHP and WP-CLI.</li>
  *   <li>Defines an abstract {@link #execute()} method that subclasses must implement to define the behavior of a specific command.</li>
  *   <li>Provides utility methods, such as {@link #configureEnvironmentVariables(String)}, to assist with command execution.</li>
@@ -61,7 +61,7 @@ import com.wpclimate.shell.Shell;
  * synchronization must be handled externally.
  * </p>
  * 
- * @see Context
+ * @see WpCliContext
  * @see Dependency
  * @see CommandOutput
  * @see PHPNotInstalledException
@@ -69,18 +69,18 @@ import com.wpclimate.shell.Shell;
  */
 public abstract class BaseWpCommand 
 {
-    /** The {@link Context} object providing access to core components like the {@link FileManager}, {@link Shell}, and {@link Configurator}. */
-    protected final Context context;
+    /** The {@link WpCliContext} object providing access to core components like the {@link FileManager}, {@link Shell}, and {@link Configurator}. */
+    protected final WpCliContext context;
 
     private static final Map<String, Class<? extends BaseWpCommand>> COMMAND_REGISTRY = new HashMap<>();
 
     /**
-     * Constructs a {@code BaseWpCommand} with the specified {@link Context}}.
+     * Constructs a {@code BaseWpCommand} with the specified {@link WpCliContext}}.
      *
-     * @param context    The {@link Context} object providing access to core components.
+     * @param context    The {@link WpCliContext} object providing access to core components.
      * @param dependency The {@link Dependency} object used to check for required dependencies.
      */
-    public BaseWpCommand(Context context) 
+    public BaseWpCommand(WpCliContext context) 
     {
         this.context = context;
     }

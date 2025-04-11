@@ -2,7 +2,7 @@ package com.wpclimate.cli.wpcommands;
 
 import java.util.Map;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
@@ -57,7 +57,7 @@ public class ExportDBCommand extends BaseWpCommand
      * @param fileName The name of the file to which the database will be exported.
      * @throws IllegalArgumentException If the file name is null or empty.
      */
-    public ExportDBCommand(Context context, Map<String, String> fileName) 
+    public ExportDBCommand(WpCliContext context, Map<String, String> fileName) 
     {
         super(context);
         if (fileName == null || fileName.isEmpty()) {

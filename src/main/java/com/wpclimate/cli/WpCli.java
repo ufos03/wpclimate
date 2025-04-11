@@ -3,7 +3,7 @@ package com.wpclimate.cli;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.core.WpCliModel;
 import com.wpclimate.constants.FileManager;
@@ -24,7 +24,7 @@ import com.wpclimate.shell.Shell;
  * <h2>Responsibilities:</h2>
  * <ul>
  *   <li>Initializes the core components required by the WP-CLI application, such as
- *       {@link Context}, {@link Dependency}, and {@link WpCliCommandExecutor}.</li>
+ *       {@link WpCliContext}, {@link Dependency}, and {@link WpCliCommandExecutor}.</li>
  *   <li>Provides methods for executing WP-CLI commands, including search-and-replace,
  *       flushing transients, and rewriting rules.</li>
  *   <li>Handles the output of commands using a customizable {@link CommandOutputHandler}.</li>
@@ -83,7 +83,7 @@ import com.wpclimate.shell.Shell;
 public class WpCli 
 {
     private final ReentrantLock lock = new ReentrantLock();
-    private final Context context;
+    private final WpCliContext context;
     private final WpCliCommandExecutor commandExecutor;
     private boolean showOutput;
     private CommandOutputHandler outputHandler;
@@ -93,7 +93,7 @@ public class WpCli
      *
      * <p>
      * This constructor initializes the core components required by the WP-CLI application,
-     * including the {@link Context}, {@link Dependency}, and {@link WpCliCommandExecutor}.
+     * including the {@link WpCliContext}, {@link Dependency}, and {@link WpCliCommandExecutor}.
      * By default, the output handler is set to {@link ConsoleOutputHandler}, and the
      * {@code showOutput} flag is set to {@code false}.
      * </p>
@@ -109,7 +109,7 @@ public class WpCli
         WpCliModel model = initializer.initializeModel(initializer.initializeConfigurator(fileManager));
         Dependency dependency = new Dependency(shell, model);
 
-        this.context = new Context(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);
+        this.context = new WpCliContext(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);
         this.commandExecutor = new WpCliCommandExecutor(this.context);
         this.showOutput = false;
         this.outputHandler = new ConsoleOutputHandler();

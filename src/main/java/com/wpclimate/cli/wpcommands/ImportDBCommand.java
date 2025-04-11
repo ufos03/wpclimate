@@ -2,7 +2,7 @@ package com.wpclimate.cli.wpcommands;
 
 import java.util.Map;
 
-import com.wpclimate.cli.core.Context;
+import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
@@ -58,7 +58,7 @@ public class ImportDBCommand extends BaseWpCommand
      * @param fileName A map containing the name of the file from which the database will be imported.
      * @throws IllegalArgumentException If the file name is null or empty.
      */
-    public ImportDBCommand(Context context, Map<String, String> fileName) 
+    public ImportDBCommand(WpCliContext context, Map<String, String> fileName) 
     {
         super(context);
         if (fileName == null || fileName.isEmpty()) {
