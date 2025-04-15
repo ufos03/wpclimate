@@ -25,7 +25,6 @@ public class Configuration implements Configurator
 
     /**
      * Reads the configuration data from the file.
-     * @param <T>
      *
      * @return A Model object containing the configuration data.
      * @throws IllegalStateException If the ConfiguratorIO instance is not initialized.
