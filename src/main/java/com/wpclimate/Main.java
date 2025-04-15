@@ -7,7 +7,7 @@ import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.git.Git;
 
 public class Main {
-    public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException 
+    public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException, Exception
     {
         /*WpCli wp = new WpCli("/home/ufos/Documents/test-wpclimate/");
 
