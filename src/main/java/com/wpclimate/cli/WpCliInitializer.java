@@ -21,7 +21,7 @@ import java.util.Scanner;
  *   <li>{@link FileManager} - Manages file operations and the working directory.</li>
  *   <li>{@link Configurator} - Handles the persistence and retrieval of configuration data.</li>
  *   <li>{@link WpCliModel} - Represents the WP-CLI configuration model, including paths
- *       to the PHP executable and WP-CLI executable.</li>
+ *       to the PHP executable, WP-CLI executable, and SQL-DUMP executable.</li>
  *   <li>{@link Shell} - Provides an interface for executing shell commands.</li>
  * </ul>
  * 
@@ -49,7 +49,7 @@ import java.util.Scanner;
  * 
  * FileManager fileManager = initializer.initializeFileManager("/path/to/working/directory");
  * Configurator configurator = initializer.initializeConfigurator(fileManager);
- * WpCliModel wpCliModel = initializer.initializeModel(configurator);
+ * WpCliModel wpCliModel = initializer.initializeModel(fileManager, configurator);
  * Shell shell = initializer.initializeShell(fileManager);
  * </pre>
  * 
@@ -100,8 +100,7 @@ public class WpCliInitializer
      */
     public Configurator initializeConfigurator(FileManager fileManager) 
     {
-        String configFilePath = fileManager.getFilePath(FileName.WPCLI_FILE_NAME);
-        return new Configuration(configFilePath);
+        return new Configuration();
     }
 
     /**
@@ -109,25 +108,27 @@ public class WpCliInitializer
      *
      * <p>
      * The {@link WpCliModel} represents the WP-CLI configuration, including paths to the
-     * PHP executable and WP-CLI executable. This method attempts to read the configuration
-     * from the {@link Configurator}. If the configuration file is not found or cannot be
-     * read, the user is prompted to provide the required configuration parameters.
+     * PHP executable, WP-CLI executable, and SQL-DUMP executable. This method attempts to
+     * read the configuration from the {@link Configurator}. If the configuration file is
+     * not found or cannot be read, the user is prompted to provide the required configuration
+     * parameters.
      * </p>
      *
+     * @param fileManager  The {@link FileManager} instance.
      * @param configurator The {@link Configurator} instance.
      * @return An instance of {@link WpCliModel}.
      */
-    public WpCliModel initializeModel(Configurator configurator) 
+    public WpCliModel initializeModel(FileManager fileManager, Configurator configurator) 
     {
         WpCliModel model = new WpCliModel();
 
         try 
         {
-            model.setFromModel(configurator.read());
+            model.setFromModel(configurator.read(fileManager.getFilePath(FileName.WPCLI_FILE_NAME)));
         } 
         catch (Exception e) 
         {
-            this.promptForConfiguration(model, configurator);
+            this.promptForConfiguration(fileManager, model, configurator);
         }
 
         return model;
@@ -138,14 +139,16 @@ public class WpCliInitializer
      *
      * <p>
      * If the configuration file is not found or cannot be read, this method prompts
-     * the user to provide the paths to the PHP executable and WP-CLI executable.
-     * The provided configuration is then saved using the {@link Configurator}.
+     * the user to provide the paths to the PHP executable, WP-CLI executable, and
+     * MySQL executable. The provided configuration is then saved using the
+     * {@link Configurator}.
      * </p>
      *
+     * @param fileManager  The {@link FileManager} instance.
      * @param model        The {@link WpCliModel} instance to populate.
      * @param configurator The {@link Configurator} instance to save the configuration.
      */
-    private void promptForConfiguration(WpCliModel model, Configurator configurator) 
+    private void promptForConfiguration(FileManager fileManager, WpCliModel model, Configurator configurator) 
     {
         System.out.println("Configuration file not found. Please set the required parameters.");
         Scanner scanner = new Scanner(System.in);
@@ -156,17 +159,16 @@ public class WpCliInitializer
         System.out.print("Enter the path to the WP-CLI executable: ");
         String wpCliPath = scanner.nextLine();
 
-        System.out.print("Enter the path to the SQL-DUMP executable: ");
-        String sqlDumpPath = scanner.nextLine();
+        System.out.print("Enter the path to the SQL executable: ");
+        String sqlPath = scanner.nextLine();
 
         model.setPhp(phpPath);
         model.setWp(wpCliPath);
-        model.setMYSQL(sqlDumpPath);
-
+        model.setMYSQL(sqlPath);
 
         try 
         {
-            configurator.save(model);
+            configurator.save(fileManager.getFilePath(FileName.WPCLI_FILE_NAME), model);
             System.out.println("Configuration saved successfully.");
         } 
         catch (Exception saveException) 

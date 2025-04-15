@@ -13,12 +13,12 @@ public interface Configurator
      *
      * @return A Model object containing the configuration data.
      */
-    public Model read() throws Exception;
+    public Model read(String path) throws Exception;
 
     /**
      * Saves the configuration data to the file or other storage.
      *
      * @param configurationModel The Model object containing the configuration data to save.
      */
-    public void save(Model configurationModel) throws Exception;
+    public void save(String path, Model configurationModel) throws Exception;
 }

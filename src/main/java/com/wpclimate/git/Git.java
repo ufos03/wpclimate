@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.constants.FileManager;
-import com.wpclimate.constants.FileName;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.https.HttpsCredentials;
@@ -18,7 +17,7 @@ public class Git
         FileManager flm = new FileManager();
         Shell shl = new Command(flm.getWorkingDirectory().getAbsolutePath());
         Dependency gtd = new Dependency(shl);
-        Configurator cfg = new com.wpclimate.configurator.MultiFileConfiguration();
+        Configurator cfg = new com.wpclimate.configurator.Configuration();
         GitContext ctx = new GitContext(shl, flm, gtd, cfg);
         HttpsCredentials dd = new HttpsCredentials(ctx);
         dd.configure(

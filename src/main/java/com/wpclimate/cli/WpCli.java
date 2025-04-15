@@ -106,7 +106,7 @@ public class WpCli
 
         FileManager fileManager = initializer.initializeFileManager(workingDirectory);
         Shell shell = initializer.initializeShell(fileManager);
-        WpCliModel model = initializer.initializeModel(initializer.initializeConfigurator(fileManager));
+        WpCliModel model = initializer.initializeModel(fileManager, initializer.initializeConfigurator(fileManager));
         Dependency dependency = new Dependency(shell, model);
 
         this.context = new WpCliContext(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);

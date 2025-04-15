@@ -3,7 +3,7 @@ package com.wpclimate.configurator.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-// TODO: Aggiungere metodo per costruire un certo modello da quello base.
+// TODO: Aggiungere metodo per costruire un certo modello da quello base. (OPZIONALE)
 
 /**
  * The {@code Model} class represents a generic configuration model.

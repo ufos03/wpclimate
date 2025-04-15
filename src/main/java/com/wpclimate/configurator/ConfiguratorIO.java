@@ -11,33 +11,50 @@ import com.wpclimate.configurator.model.Token;
  * The {@code ConfiguratorIO} class provides functionality for reading and writing
  * configuration data to and from a file. It uses JSON as the format for serialization
  * and deserialization of the configuration data.
+ * <p>
+ * This class is designed to handle configuration files in a structured way, allowing
+ * the storage and retrieval of key-value pairs with optional encryption flags.
+ * </p>
+ * <p>
+ * The configuration data is represented by the {@link Model} class, which contains
+ * a list of {@link Token} objects. Each token represents a key-value pair with an
+ * optional encryption flag.
+ * </p>
  */
 public class ConfiguratorIO 
 {
-    private final String filePath; // Path to the configuration file
     private final Gson gson; // Gson instance for JSON serialization and deserialization
 
     /**
-     * Constructs a {@code ConfiguratorIO} instance with the specified file path.
-     *
-     * @param filePath The path to the configuration file.
+     * Constructs a {@code ConfiguratorIO} instance.
+     * <p>
+     * This constructor initializes the Gson instance used for JSON serialization
+     * and deserialization.
+     * </p>
      */
-    public ConfiguratorIO(String filePath) 
+    public ConfiguratorIO() 
     {
-        this.filePath = filePath;
         this.gson = new Gson();
     }
 
     /**
-     * Writes the configuration data to the file.
-     * The configuration is serialized into JSON format and saved to the specified file path.
+     * Writes the configuration data to the specified file.
+     * <p>
+     * The configuration data is serialized into JSON format and saved to the specified
+     * file path. If the file does not exist, it will be created.
+     * </p>
      *
-     * @param config The {@code Model} object containing the configuration data to write.
-     * @throws IOException If an error occurs while writing to the file.
+     * @param filePath The path to the file where the configuration data will be saved.
+     * @param config   The {@link Model} object containing the configuration data to write.
+     * @throws IOException              If an error occurs while writing to the file.
+     * @throws IllegalArgumentException If the file path is null, empty, or blank.
      */
-    public void write(Model config) throws IOException 
+    public void write(String filePath, Model config) throws IOException, IllegalArgumentException 
     {
-        try (FileWriter writer = new FileWriter(this.filePath)) 
+        if (filePath == null || filePath.isEmpty() || filePath.isBlank())
+            throw new IllegalArgumentException("The filePath isn't valid");
+
+        try (FileWriter writer = new FileWriter(filePath)) 
         {
             String json = gson.toJson(config.getTokensList());
             writer.write(json);
@@ -45,17 +62,25 @@ public class ConfiguratorIO
     }
 
     /**
-     * Reads the configuration data from the file.
-     * The configuration is deserialized from JSON format into a {@code Model} object.
-     * If the file does not exist, an empty {@code Model} instance is returned.
+     * Reads the configuration data from the specified file.
+     * <p>
+     * The configuration data is deserialized from JSON format into a {@link Model} object.
+     * If the file does not exist, a {@link FileNotFoundException} is thrown.
+     * </p>
      *
-     * @return A {@code Model} object populated with the configuration data from the file.
-     * @throws IOException If an error occurs while reading or parsing the file.
+     * @param filePath The path to the file from which the configuration data will be read.
+     * @return A {@link Model} object populated with the configuration data from the file.
+     * @throws IOException              If an error occurs while reading or parsing the file.
+     * @throws IllegalArgumentException If the file path is null, empty, or blank.
+     * @throws FileNotFoundException    If the specified file does not exist.
      */
-    public Model read() throws Exception 
+    public Model read(String filePath) throws IOException, IllegalArgumentException 
     {
-        File file = new File(this.filePath);
-        if (!file.exists()) 
+        if (filePath == null || filePath.isEmpty() || filePath.isBlank())
+            throw new IllegalArgumentException("The filePath isn't valid");
+
+        File file = new File(filePath);
+        if (!file.exists())
             throw new FileNotFoundException("The specified filepath doesn't exist!");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) 
