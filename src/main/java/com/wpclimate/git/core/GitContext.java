@@ -3,6 +3,7 @@ package com.wpclimate.git.core;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.wpclimate.configurator.Configurator;
 import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.Shell;
 
@@ -11,14 +12,16 @@ public class GitContext
     private final Shell shell;
     private final FileManager fileManager;
     private final Dependency dependency;
+    private final Configurator configurator;
 
     private final ReentrantLock lock = new ReentrantLock();
 
-    public GitContext(Shell shell, FileManager fileManager, Dependency dependency)
+    public GitContext(Shell shell, FileManager fileManager, Dependency dependency, Configurator configurator)
     {
         this.shell = shell;
         this.fileManager = fileManager;
         this.dependency = dependency;
+        this.configurator = configurator;
     }
 
     public Shell getShell() 
@@ -53,6 +56,19 @@ public class GitContext
         try 
         {
             return this.dependency;
+        }
+        finally
+        {
+            this.lock.unlock();
+        }
+    }
+
+    public Configurator getConfigurator()
+    {
+        this.lock.lock();
+        try 
+        {
+            return this.configurator;
         }
         finally
         {
