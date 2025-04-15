@@ -3,6 +3,8 @@ package com.wpclimate.configurator.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+// TODO: Aggiungere metodo per costruire un certo modello da quello base.
+
 /**
  * The {@code Model} class represents a generic configuration model.
  * It uses a list of {@code Token} objects to store key-value pairs for configuration settings.
@@ -73,7 +75,7 @@ public class Model implements Serializable
     }
 
     /**
-     * Retrieves the value associated with the specified key.
+     * Retrieves the value associated with the specified key. If encrypted, returns it decrypted.
      *
      * @param key The key of the token to retrieve.
      * @return The value associated with the key, or {@code null} if the key does not exist.
