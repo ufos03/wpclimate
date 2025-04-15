@@ -11,11 +11,11 @@ public class WpCliModel extends Model
 {
     private static final String PHP_KEY = "PHP"; // Key for the PHP executable path
     private static final String WPCLI_KEY = "WPCLI"; // Key for the WP-CLI executable path
-    private static final String MYSQL_KEY = "MSQLDUMP";
+    private static final String MYSQL_KEY = "MYSQL"; // Key for the MySQL executable
 
     private String php; // Path to the PHP executable
     private String wp; // Path to the WP-CLI executable
-    private String mysql; // Path to the MySQL dump executable
+    private String mysql; // Path to the MySQL executable
 
     /**
      * Default constructor.
