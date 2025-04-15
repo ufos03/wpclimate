@@ -6,7 +6,10 @@ package com.wpclimate.constants;
  */
 public enum FileName 
 {
-    WPCLI_FILE_NAME("wpCliConf.json");
+    WPCLI_FILE_NAME("wpCliConf.json"),
+    GIT_HTTPS_FILE_NAME("gitHttpsConf.json"),
+    GIT_SSH_FILE_NAME("gitSshConf.json");
+
 
     private final String fileName;
 
