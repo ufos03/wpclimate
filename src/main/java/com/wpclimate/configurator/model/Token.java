@@ -166,4 +166,9 @@ public class Token
     {
         return this.isEncrypted;
     }
+
+    @Override
+    public String toString() {
+        return "Token [key=" + key + ", value=" + value + ", isEncrypted=" + isEncrypted + "]";
+    }
 }
