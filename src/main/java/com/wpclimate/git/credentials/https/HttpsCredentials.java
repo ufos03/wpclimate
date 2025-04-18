@@ -2,7 +2,7 @@ package com.wpclimate.git.credentials.https;
 
 import java.util.Map;
 
-import com.wpclimate.constants.FileName;
+import com.wpclimate.SettingsUtils.SettingsFilesNames;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.credentials.CredentialsType;
@@ -37,7 +37,7 @@ public class HttpsCredentials implements Credential
         if (configuration.containsKey("password"))
             this.httpsModel.setPsw(configuration.get("password"));
 
-        this.context.getConfigurator().save(this.context.getFileManager().getFilePath(FileName.GIT_HTTPS_FILE_NAME), this.httpsModel);
+        this.context.getConfigurator().save(this.context.getFileManager().getSetting(SettingsFilesNames.GIT_HTTPS_FILE_NAME), this.httpsModel);
 
         // TODO Dopo aver scritto, configurare git??
     }
@@ -51,6 +51,6 @@ public class HttpsCredentials implements Credential
     @Override
     public HttpsCredentialModel read() throws Exception
     {
-        return HttpsCredentialModel.fromModel(this.context.getConfigurator().read(this.context.getFileManager().getFilePath(FileName.GIT_HTTPS_FILE_NAME)));
+        return HttpsCredentialModel.fromModel(this.context.getConfigurator().read(this.context.getFileManager().getSetting(SettingsFilesNames.GIT_HTTPS_FILE_NAME)));
     }
 }

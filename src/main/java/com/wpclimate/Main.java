@@ -4,13 +4,15 @@ import java.util.Map;
 import com.wpclimate.cli.WpCli;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
-import com.wpclimate.git.Git;
+import com.wpclimate.core.AppContext;
+
+// TODO: Implementa creazione di cartella /settings 
 
 public class Main {
     public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException, Exception
     {
-        /*WpCli wp = new WpCli("/home/ufos/Documents/test-wpclimate/");
-
+        AppContext app = new AppContext("/home/ufos/Documents/test-wpclimate/");
+        WpCli wp = app.getWpCli();
 
         wp.setShowOutput(true);
         wp.execute("rewrite", null);
@@ -32,8 +34,7 @@ public class Main {
 
         wp.execute("import-db", Map.of(
             "fileName", "../test.sql"
-        ));*/
+        ));
 
-        Git g = new Git();
     }
 }

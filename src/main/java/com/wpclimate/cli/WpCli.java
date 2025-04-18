@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.wpclimate.cli.core.WpCliContext;
+import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.core.WpCliModel;
-import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.CommandOutputHandler;
 import com.wpclimate.shell.Shell;
@@ -104,7 +104,7 @@ public class WpCli
     {
         WpCliInitializer initializer = new WpCliInitializer();
 
-        FileManager fileManager = initializer.initializeFileManager(workingDirectory);
+        Settings fileManager = initializer.initializeFileManager(workingDirectory);
         Shell shell = initializer.initializeShell(fileManager);
         WpCliModel model = initializer.initializeModel(fileManager, initializer.initializeConfigurator(fileManager));
         Dependency dependency = new Dependency(shell, model);

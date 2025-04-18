@@ -2,8 +2,8 @@ package com.wpclimate.git.core;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
-import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.Shell;
 
 /**
@@ -15,7 +15,7 @@ import com.wpclimate.shell.Shell;
  * </p>
  * <ul>
  *   <li>{@link Shell} - Used to execute shell commands.</li>
- *   <li>{@link FileManager} - Manages file operations and paths related to Git.</li>
+ *   <li>{@link Settings} - Manages file operations and paths related to Git.</li>
  *   <li>{@link Dependency} - Verifies and manages Git dependencies.</li>
  *   <li>{@link Configurator} - Handles configuration persistence and retrieval.</li>
  * </ul>
@@ -28,7 +28,7 @@ import com.wpclimate.shell.Shell;
  * <h2>Responsibilities:</h2>
  * <ul>
  *   <li>Provides access to the {@link Shell} instance for executing commands.</li>
- *   <li>Manages file paths and operations through the {@link FileManager}.</li>
+ *   <li>Manages file paths and operations through the {@link Settings}.</li>
  *   <li>Verifies Git dependencies using the {@link Dependency} class.</li>
  *   <li>Handles configuration data using the {@link Configurator}.</li>
  * </ul>
@@ -55,7 +55,7 @@ import com.wpclimate.shell.Shell;
  * </p>
  * 
  * @see Shell
- * @see FileManager
+ * @see Settings
  * @see Dependency
  * @see Configurator
  */
@@ -63,7 +63,7 @@ public class GitContext
 {
 
     private final Shell shell;
-    private final FileManager fileManager;
+    private final Settings fileManager;
     private final Dependency dependency;
     private final Configurator configurator;
 
@@ -73,12 +73,12 @@ public class GitContext
      * Constructs a {@code GitContext} instance with the specified components.
      * 
      * @param shell The {@link Shell} instance used for executing shell commands.
-     * @param fileManager The {@link FileManager} instance for managing file operations.
+     * @param fileManager The {@link Settings} instance for managing file operations.
      * @param dependency The {@link Dependency} instance for verifying Git dependencies.
      * @param configurator The {@link Configurator} instance for managing configuration data.
      * @throws IllegalArgumentException If any of the parameters are {@code null}.
      */
-    public GitContext(Shell shell, FileManager fileManager, Dependency dependency, Configurator configurator) 
+    public GitContext(Shell shell, Settings fileManager, Dependency dependency, Configurator configurator) 
     {
         if (shell == null || fileManager == null || dependency == null || configurator == null)
             throw new IllegalArgumentException("None of the parameters can be null.");
@@ -113,16 +113,16 @@ public class GitContext
     }
 
     /**
-     * Returns the {@link FileManager} instance used for managing file operations.
+     * Returns the {@link Settings} instance used for managing file operations.
      * 
      * <p>
-     * This method ensures thread-safe access to the {@link FileManager} instance using a
+     * This method ensures thread-safe access to the {@link Settings} instance using a
      * {@link ReentrantLock}.
      * </p>
      * 
-     * @return The {@link FileManager} instance.
+     * @return The {@link Settings} instance.
      */
-    public FileManager getFileManager() 
+    public Settings getFileManager() 
     {
         this.lock.lock();
         try 

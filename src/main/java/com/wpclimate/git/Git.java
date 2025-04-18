@@ -2,8 +2,8 @@ package com.wpclimate.git;
 
 import java.util.Map;
 
+import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
-import com.wpclimate.constants.FileManager;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.https.HttpsCredentials;
@@ -12,9 +12,9 @@ import com.wpclimate.shell.Shell;
 
 public class Git 
 {
-    public Git() throws Exception
+    public Git(String workingDirectory) throws Exception
     {
-        FileManager flm = new FileManager();
+        Settings flm = new Settings("/home/ufos/Documents/test-wpclimate");
         Shell shl = new Command(flm.getWorkingDirectory().getAbsolutePath());
         Dependency gtd = new Dependency(shl);
         Configurator cfg = new com.wpclimate.configurator.Configuration();

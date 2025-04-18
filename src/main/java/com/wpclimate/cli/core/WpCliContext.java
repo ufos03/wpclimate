@@ -2,8 +2,8 @@ package com.wpclimate.cli.core;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
-import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.Shell;
 
 /**
@@ -21,7 +21,7 @@ import com.wpclimate.shell.Shell;
  *       interaction with the underlying system.</li>
  *   <li>{@link Configurator} - Manages the persistence and retrieval of configuration
  *       data, allowing the application to save and load settings.</li>
- *   <li>{@link FileManager} - Handles file operations, including managing the working
+ *   <li>{@link Settings} - Handles file operations, including managing the working
  *       directory and accessing configuration files.</li>
  * </ul>
  * 
@@ -69,14 +69,14 @@ import com.wpclimate.shell.Shell;
  * @see WpCliModel
  * @see Shell
  * @see Configurator
- * @see FileManager
+ * @see Settings
  */
 public class WpCliContext 
 {
     private final Shell shell; // The shell interface for executing commands
     private final Configurator configurator; // The configurator for managing configuration persistence
     private final WpCliModel wpModel; // The WP-CLI configuration model
-    private final FileManager fileManager; // The file manager for handling file operations
+    private final Settings fileManager; // The file manager for handling file operations
     private final Dependency dependency; // The dependency to check is the below system has all the requirements for wp-cli.
 
     private final ReentrantLock lock = new ReentrantLock(); // Allows thread-safe access to components
@@ -87,9 +87,9 @@ public class WpCliContext
      * @param wpModel      The {@link WpCliModel} instance containing WP-CLI configuration data.
      * @param shell        The {@link Shell} instance for executing commands.
      * @param configurator The {@link Configurator} instance for managing configuration persistence.
-     * @param fileManager  The {@link FileManager} instance for handling file operations.
+     * @param fileManager  The {@link Settings} instance for handling file operations.
      */
-    public WpCliContext(WpCliModel wpModel, Shell shell, Configurator configurator, FileManager fileManager, Dependency dependency) 
+    public WpCliContext(WpCliModel wpModel, Shell shell, Configurator configurator, Settings fileManager, Dependency dependency) 
     {
         this.wpModel = wpModel;
         this.shell = shell;
@@ -171,13 +171,13 @@ public class WpCliContext
      * Retrieves the file manager for handling file operations.
      *
      * <p>
-     * The {@link FileManager} provides methods for managing files and directories,
+     * The {@link Settings} provides methods for managing files and directories,
      * including the working directory and configuration files.
      * </p>
      *
-     * @return The {@link FileManager} instance for handling file operations.
+     * @return The {@link Settings} instance for handling file operations.
      */
-    public FileManager getFileManager() 
+    public Settings getFileManager() 
     {
         this.lock.lock();
         try 

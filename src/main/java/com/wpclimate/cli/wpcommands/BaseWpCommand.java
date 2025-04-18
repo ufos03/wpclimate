@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.wpclimate.cli.core.WpCliContext;
+import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.configurator.Configurator;
-import com.wpclimate.constants.FileManager;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.Shell;
 
@@ -69,7 +69,7 @@ import com.wpclimate.shell.Shell;
  */
 public abstract class BaseWpCommand 
 {
-    /** The {@link WpCliContext} object providing access to core components like the {@link FileManager}, {@link Shell}, and {@link Configurator}. */
+    /** The {@link WpCliContext} object providing access to core components like the {@link Settings}, {@link Shell}, and {@link Configurator}. */
     protected final WpCliContext context;
 
     private static final Map<String, Class<? extends BaseWpCommand>> COMMAND_REGISTRY = new HashMap<>();
