@@ -1,5 +1,7 @@
 package com.wpclimate.configurator;
 
+import java.io.IOException;
+
 import com.wpclimate.configurator.model.Model;
 
 /**
@@ -13,12 +15,12 @@ public interface Configurator
      *
      * @return A Model object containing the configuration data.
      */
-    public Model read(String path) throws Exception;
+    public Model read(String path)throws IOException, IllegalArgumentException;
 
     /**
      * Saves the configuration data to the file or other storage.
      *
      * @param configurationModel The Model object containing the configuration data to save.
      */
-    public void save(String path, Model configurationModel) throws Exception;
+    public void save(String path, Model configurationModel) throws IOException, IllegalArgumentException ;
 }

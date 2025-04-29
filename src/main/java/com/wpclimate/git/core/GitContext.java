@@ -122,7 +122,7 @@ public class GitContext
      * 
      * @return The {@link Settings} instance.
      */
-    public Settings getFileManager() 
+    public Settings getSettings() 
     {
         this.lock.lock();
         try 

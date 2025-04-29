@@ -1,5 +1,6 @@
 package com.wpclimate.git.credentials.ssh;
 
+import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.configurator.model.Model;
 
 /**
@@ -42,8 +43,7 @@ import com.wpclimate.configurator.model.Model;
  * 
  * @see Model
  */
-public class SshCredentialModel extends Model 
-{
+public class SshCredentialModel extends Model {
 
     private static final String PUBLIC_CERT_KEY = "PUBLIC_CERT_PATH";
     private static final String PRIVATE_CERT_KEY = "PRIVATE_CERT_PATH";
@@ -56,17 +56,61 @@ public class SshCredentialModel extends Model
     private String repoUrl;
 
     /**
+     * Default constructor.
+     */
+    public SshCredentialModel() {};
+
+    /**
+     * Constructs an {@code SshCredentialModel} instance from a {@link Model}.
+     * 
+     * @param model The {@link Model} object containing SSH credential data.
+     * @throws NoModelProvided If the provided model is {@code null}.
+     */
+    public SshCredentialModel(Model model) throws NoModelProvided {
+        super();
+
+        if (model == null)
+            throw new NoModelProvided("SSH Model isn't valid");
+
+        if (model.containsKey(PUBLIC_CERT_KEY))
+            this.setPublicCertPath(model.get(PUBLIC_CERT_KEY));
+
+        if (model.containsKey(PRIVATE_CERT_KEY))
+            this.setPrivateCertPath(model.get(PRIVATE_CERT_KEY));
+
+        if (model.containsKey(REPO_NAME_KEY))
+            this.setRepoName(model.get(REPO_NAME_KEY));
+
+        if (model.containsKey(REPO_URL_KEY))
+            this.setRepoUrl(model.get(REPO_URL_KEY));
+    }
+
+    /**
+     * Creates an {@code SshCredentialModel} instance from a {@link Model}.
+     * 
+     * @param model The {@link Model} object containing SSH credential data.
+     * @return A new {@code SshCredentialModel} instance.
+     * @throws NoModelProvided If the provided model is {@code null}.
+     */
+    public static SshCredentialModel fromModel(Model model) throws NoModelProvided {
+        if (model == null)
+            throw new NoModelProvided("SSH Model isn't valid");
+
+        return new SshCredentialModel(model);
+    }
+
+    /**
      * Sets the path to the public certificate.
      * 
      * @param pathPublicCert The path to the public certificate. Must not be null, empty, or blank.
      * @throws IllegalArgumentException If the path is null, empty, or blank.
      */
-    public void setPublicCertPath(String pathPublicCert) 
-    {
-        if (pathPublicCert == null || pathPublicCert.isBlank()) 
+    public void setPublicCertPath(String pathPublicCert) {
+        if (pathPublicCert == null || pathPublicCert.isBlank())
             throw new IllegalArgumentException("The public certificate path cannot be null, empty, or blank.");
 
         this.publicCertPath = pathPublicCert;
+        System.out.println(this.publicCertPath);
         super.set(PUBLIC_CERT_KEY, this.publicCertPath, false);
     }
 
@@ -76,8 +120,7 @@ public class SshCredentialModel extends Model
      * @param pathPrivateCert The path to the private certificate. Must not be null, empty, or blank.
      * @throws IllegalArgumentException If the path is null, empty, or blank.
      */
-    public void setPrivateCertPath(String pathPrivateCert) 
-    {
+    public void setPrivateCertPath(String pathPrivateCert) {
         if (pathPrivateCert == null || pathPrivateCert.isBlank())
             throw new IllegalArgumentException("The private certificate path cannot be null, empty, or blank.");
 
@@ -91,8 +134,7 @@ public class SshCredentialModel extends Model
      * @param repoName The name of the repository. Must not be null, empty, or blank.
      * @throws IllegalArgumentException If the repository name is null, empty, or blank.
      */
-    public void setRepoName(String repoName) 
-    {
+    public void setRepoName(String repoName) {
         if (repoName == null || repoName.isBlank())
             throw new IllegalArgumentException("The repository name cannot be null, empty, or blank.");
 
@@ -106,11 +148,10 @@ public class SshCredentialModel extends Model
      * @param repoUrl The URL of the repository. Must not be null, empty, or blank.
      * @throws IllegalArgumentException If the repository URL is null, empty, or blank.
      */
-    public void setRepoUrl(String repoUrl) 
-    {
+    public void setRepoUrl(String repoUrl) {
         if (repoUrl == null || repoUrl.isBlank())
             throw new IllegalArgumentException("The repository URL cannot be null, empty, or blank.");
-        
+
         this.repoUrl = repoUrl;
         super.set(REPO_URL_KEY, repoUrl, false);
     }
@@ -120,8 +161,7 @@ public class SshCredentialModel extends Model
      * 
      * @return The path to the public certificate.
      */
-    public String getPathPublicCert() 
-    {
+    public String getPathPublicCert() {
         return this.publicCertPath;
     }
 
@@ -130,8 +170,7 @@ public class SshCredentialModel extends Model
      * 
      * @return The path to the private certificate.
      */
-    public String getPathPrivateCert() 
-    {
+    public String getPathPrivateCert() {
         return this.privateCertPath;
     }
 
@@ -140,8 +179,7 @@ public class SshCredentialModel extends Model
      * 
      * @return The repository name.
      */
-    public String getRepoName() 
-    {
+    public String getRepoName() {
         return this.repoName;
     }
 
@@ -150,8 +188,7 @@ public class SshCredentialModel extends Model
      * 
      * @return The repository URL.
      */
-    public String getRepoUrl() 
-    {
+    public String getRepoUrl() {
         return this.repoUrl;
     }
 
@@ -161,8 +198,7 @@ public class SshCredentialModel extends Model
      * @return A string representation of the object.
      */
     @Override
-    public String toString() 
-    {
+    public String toString() {
         return "SshCredentialModel [publicCertPath=" + publicCertPath + ", privateCertPath=" + privateCertPath
                 + ", repoName=" + repoName + ", repoUrl=" + repoUrl + "]";
     }

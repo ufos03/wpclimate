@@ -6,7 +6,6 @@ import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.core.AppContext;
 
-// TODO: Implementa creazione di cartella /settings 
 
 public class Main {
     public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException, Exception
@@ -29,11 +28,11 @@ public class Main {
         ));
 
         wp.execute("export-db", Map.of(
-            "fileName", "../test.sql"
+            "fileName", "test.sql"
         ));
 
         wp.execute("import-db", Map.of(
-            "fileName", "../test.sql"
+            "fileName", "test.sql"
         ));
 
     }

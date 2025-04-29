@@ -1,6 +1,10 @@
 package com.wpclimate.configurator;
 
+import java.io.IOException;
+
 import com.wpclimate.configurator.model.Model;
+
+// TODO: Aggiorna doc
 
 /**
  * The {@code Configuration} class implements the {@link Configurator} interface and provides
@@ -78,7 +82,7 @@ public class Configuration implements Configurator
      * @throws IllegalArgumentException If the file path is null, empty, or invalid.
      */
     @Override
-    public Model read(String path) throws Exception 
+    public Model read(String path) throws IOException, IllegalArgumentException  
     {
         return configuratorIO.read(path);
     }
@@ -98,7 +102,7 @@ public class Configuration implements Configurator
      * @throws IllegalArgumentException If the file path is null, empty, or invalid.
      */
     @Override
-    public void save(String path, Model configurationModel) throws Exception 
+    public void save(String path, Model configurationModel) throws IOException, IllegalArgumentException  
     {
         configuratorIO.write(path, configurationModel);
     }

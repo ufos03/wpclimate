@@ -1,5 +1,6 @@
 package com.wpclimate.git.credentials.https;
 
+import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.configurator.model.Model;
 
 /**
@@ -73,11 +74,11 @@ public class HttpsCredentialModel extends Model
      * 
      * @param model The {@link Model} object to convert.
      */
-    public HttpsCredentialModel(Model model) 
+    public HttpsCredentialModel(Model model) throws NoModelProvided
     {
         super();
         if (model == null)
-            return; //Lancia eccezione
+            throw new NoModelProvided("HTTPS Model isn't valid");
 
         if (model.containsKey(USERNAME_KEY))
             this.setUsername(model.get(USERNAME_KEY));
@@ -98,24 +99,12 @@ public class HttpsCredentialModel extends Model
      * @param model The {@link Model} object to convert.
      * @return A new {@code HttpsCredentialModel} instance populated with data from the model.
      */
-    public static HttpsCredentialModel fromModel(Model model) 
+    public static HttpsCredentialModel fromModel(Model model) throws NoModelProvided
     {
         if (model == null)
-            return null; //Lancia eccezione
+            throw new NoModelProvided("HTTPS Model isn't valid");
 
-        HttpsCredentialModel newHttpsCredentialModel = new HttpsCredentialModel();
-
-        if (model.containsKey(USERNAME_KEY))
-            newHttpsCredentialModel.setUsername(model.get(USERNAME_KEY));
-
-        if (model.containsKey(PSW_KEY))
-            newHttpsCredentialModel.setPsw(model.get(PSW_KEY));
-
-        if (model.containsKey(REPO_NAME_KEY))
-            newHttpsCredentialModel.setRepoName(model.get(REPO_NAME_KEY));
-
-        if (model.containsKey(REPO_URL_KEY))
-            newHttpsCredentialModel.setRepoUrl(model.get(REPO_URL_KEY));
+        HttpsCredentialModel newHttpsCredentialModel = new HttpsCredentialModel(model);
 
         return newHttpsCredentialModel;
     }
