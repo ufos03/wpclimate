@@ -5,15 +5,17 @@ import java.util.Map;
 import java.util.Scanner;
 
 import com.wpclimate.SettingsUtils.Settings;
+import com.wpclimate.configurator.Configuration;
 import com.wpclimate.configurator.Configurator;
-import com.wpclimate.git.core.Dependency;
-import com.wpclimate.git.core.GitContext;
+import com.wpclimate.configurator.exceptions.NoModelProvided;
+import com.wpclimate.shell.Command;
+import com.wpclimate.shell.Shell;
 import com.wpclimate.git.credentials.Credential;
+import com.wpclimate.git.credentials.CredentialsType;
 import com.wpclimate.git.credentials.https.HttpsCredentials;
 import com.wpclimate.git.credentials.ssh.SshCredentials;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
-import com.wpclimate.shell.Command;
-import com.wpclimate.shell.Shell;
+
 
 /**
  * The {@code GitInitializer} class provides functionality to initialize the {@link Git}
@@ -32,50 +34,137 @@ import com.wpclimate.shell.Shell;
  */
 public class GitInitializer 
 {
+    /**
+     * Initializes the {@link Settings} with the specified working directory.
+     *
+     * <p>
+     * The {@link Settings} is responsible for managing file operations, including
+     * accessing the working directory and configuration files. If the specified working
+     * directory is {@code null} or empty, the default working directory is used.
+     * </p>
+     *
+     * @param workingDirectory The working directory for the application.
+     * @return An instance of {@link Settings}.
+     */
+    public Settings loadSettings(String workingDirectory) 
+    {
+        if (workingDirectory == null || workingDirectory.isEmpty())
+            return new Settings();
+
+        return new Settings(workingDirectory);
+    }
 
     /**
-     * Initializes the {@link Git} class with user-selected credentials (HTTPS or SSH).
-     * 
-     * @param workingDirectory The working directory for the Git instance.
+     * Initializes the {@link Configurator} using the {@link Settings}.
+     *
+     * <p>
+     * The {@link Configurator} is responsible for saving and loading configuration data.
+     * This method uses the {@link Settings} to determine the path to the configuration
+     * file and creates a {@link Configuration} instance for managing the configuration.
+     * </p>
+     *
+     * @param settings The {@link Settings} instance.
+     * @return An instance of {@link Configurator}.
      */
-    public void initializeGit(String workingDirectory) 
+    public Configurator initializeConfigurator(Settings settings) 
     {
-        Scanner scanner = new Scanner(System.in);
+        return new Configuration();
+    }
 
+    /**
+     * Initializes the {@link Shell} for executing commands.
+     *
+     * <p>
+     * The {@link Shell} provides an interface for executing shell commands. This method
+     * creates a {@link Command} instance using the working directory provided by the
+     * {@link Settings}.
+     * </p>
+     *
+     * @param settings The {@link Settings} instance.
+     * @return An instance of {@link Shell}.
+     */
+    public Shell initializeShell(Settings settings) 
+    {
+        return new Command(settings.getWorkingDirectory().getAbsolutePath());
+    }
+
+    /**
+     * Initializes the credentials for Git operations by prompting the user to choose
+     * between HTTPS and SSH credentials.
+     * 
+     * <p>
+     * This method interacts with the user via the console to determine the type of
+     * credentials to configure. Based on the user's choice, it creates an instance of
+     * either {@link HttpsCredentials} or {@link SshCredentials}, prompts the user for
+     * the necessary input, and configures the credentials. If the user does not provide
+     * a valid choice, HTTPS credentials are selected by default.
+     * </p>
+     * 
+     * <p>
+     * The method also handles exceptions that may occur during the configuration process,
+     * such as missing configuration or I/O errors, and prints appropriate error messages
+     * to the console.
+     * </p>
+     * 
+     * @param settings The {@link Settings} instance used to manage file paths and operations.
+     * @param configurator The {@link Configurator} instance used to save and load configurations.
+     * @return A {@link Credential} instance representing the configured credentials, or {@code null}
+     *         if no credentials were configured.
+     * 
+     * @throws ConfigurationMissing If the configuration is invalid.
+     * @throws IOException If an error occurs while saving the configuration.
+     * @throws NoModelProvided If the configuration file is missing or invalid.
+     */
+    public Credential initializeCredentials(Settings settings, Configurator configurator)
+    {
+        Credential httpsCredentials = new HttpsCredentials(configurator, settings);
+        Credential sshCredentials = new SshCredentials(configurator, settings);
+
+        Credential credentialsToUse = null; // Messo solo perche' rompe le balle
+
+
+        if (sshCredentials.exists()) 
+        {
+            System.out.println("SSH credentials found and loaded.");
+            return sshCredentials;
+        } 
+        else if (httpsCredentials.exists()) {
+            System.out.println("HTTPS credentials found and loaded.");
+            return httpsCredentials;
+        }
+
+            System.out.println("Credentials not founded! Proceed to create credentials");
+            Credential credentialToCreate = null;
+            Scanner scanner = new Scanner(System.in);
+    
         try 
         {
             System.out.println("Choose the type of credentials to use:");
-            System.out.println("1. HTTPS");
+            System.out.println("1. HTTPS (default)");
             System.out.println("2. SSH");
             System.out.print("Enter your choice (1 or 2): ");
             int choice = scanner.nextInt();
             scanner.nextLine(); // Consume the newline character
 
-            // TODO: Inserire una funzione che controlli che non ci siamo già credenziali
-
-            Credential credential;
-            GitContext context = this.createGitContext(workingDirectory);
-
-            
 
             if (choice == 1) 
             {
-                credential = new HttpsCredentials(context);
-                this.configureHttpsCredentials((HttpsCredentials) credential, scanner);
+                credentialToCreate = new HttpsCredentials(configurator, settings);
+                this.configureHttpsCredentials((HttpsCredentials) credentialToCreate, scanner);
             } 
             else if (choice == 2) 
             {
-                credential = new SshCredentials(context);
-                this.configureSshCredentials((SshCredentials) credential, scanner);
+                credentialToCreate = new SshCredentials(configurator, settings);
+                this.configureSshCredentials((SshCredentials) credentialToCreate, scanner);
             } 
-            else 
+            else if (choice != 1 && choice != 2)
             {
-                System.out.println("Invalid choice. Exiting.");
-                return;
+                credentialToCreate = new HttpsCredentials(configurator, settings);
+                this.configureHttpsCredentials((HttpsCredentials) credentialToCreate, scanner);
             }
 
             System.out.println("Configured credentials:");
-            System.out.println(credential.read().toString());
+            System.out.println(credentialToCreate != null ? credentialToCreate.read().toString() : "No credentials configured.");
 
         } 
         catch (ConfigurationMissing e) 
@@ -88,38 +177,18 @@ public class GitInitializer
         } 
         catch (Exception e) 
         {
-            System.err.println("An unexpected error occurred: " + e.getMessage());
+            System.err.println("An unexpect ed error occurred: " + e.getMessage());
         } 
         finally 
         {
             scanner.close();
-        }
+        }    
+
+        return credentialsToUse;
+       
     }
 
-    /**
-     * Creates a {@link GitContext} instance for the specified working directory.
-     * 
-     * @param workingDirectory The working directory for the Git instance.
-     * @return A {@link GitContext} instance.
-     * @throws Exception If an error occurs during context creation.
-     */
-    private GitContext createGitContext(String workingDirectory) throws Exception 
-    {
-        try 
-        {
-            Settings settings = new Settings(workingDirectory);
-            Shell shell = new Command(settings.getWorkingDirectory().getAbsolutePath());
-            Dependency dependency = new Dependency(shell);
-            Configurator configurator = new com.wpclimate.configurator.Configuration();
-            return new GitContext(shell, settings, dependency, configurator);
-        } 
-        catch (Exception e) 
-        {
-            throw new Exception("Failed to create Git context: " + e.getMessage(), e);
-        }
-    }
-
-    /**
+    /** 
      * Configures HTTPS credentials by prompting the user for input.
      * 
      * @param httpsCredentials The {@link HttpsCredentials} instance to configure.
@@ -127,8 +196,11 @@ public class GitInitializer
      * @throws ConfigurationMissing If the configuration is invalid.
      * @throws IOException If an error occurs while saving the configuration.
      */
-    private void configureHttpsCredentials(HttpsCredentials httpsCredentials, Scanner scanner) throws ConfigurationMissing, IOException 
-    {
+    private void configureHttpsCredentials(HttpsCredentials httpsCredentials, Scanner scanner) throws ConfigurationMissing, IOException, NoModelProvided
+    {   
+        if (httpsCredentials.exists())
+            return;
+        
         try 
         {
             System.out.print("Enter the repository name: ");
@@ -164,7 +236,11 @@ public class GitInitializer
      * @throws ConfigurationMissing If the configuration is invalid.
      * @throws IOException If an error occurs while saving the configuration.
      */
-    private void configureSshCredentials(SshCredentials sshCredentials, Scanner scanner) throws ConfigurationMissing, IOException {
+    private void configureSshCredentials(SshCredentials sshCredentials, Scanner scanner) throws ConfigurationMissing, IOException 
+    {
+        if (sshCredentials.exists())
+            return;
+
         try 
         {
             System.out.print("Enter the repository name: ");
@@ -190,5 +266,14 @@ public class GitInitializer
         {
             throw new ConfigurationMissing("Invalid SSH configuration: " + e.getMessage());
         }
+    }
+
+    public CredentialsType tryToLoadCredentials(SshCredentials sshCredentials, HttpsCredentials httpsCredentials)
+    {
+        if (sshCredentials.exists())
+            return CredentialsType.SSH;
+        else if (httpsCredentials.exists())
+            return CredentialsType.HTTPS;
+        return null;
     }
 }
