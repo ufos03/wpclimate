@@ -5,6 +5,7 @@ import com.wpclimate.cli.WpCli;
 import com.wpclimate.cli.exceptions.PHPNotInstalledException;
 import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.core.AppContext;
+import com.wpclimate.git.Git;
 
 
 public class Main {
@@ -12,10 +13,11 @@ public class Main {
     {
         AppContext app = new AppContext("/home/ufos/Documents/test-wpclimate/");
         WpCli wp = app.getWpCli();
+        Git git = app.getGit();
 
-        wp.setShowOutput(true);
-        wp.execute("Il numero 1 ", null);
-        wp.execute("flush-Il numero 1 ", null);
+        /*wp.setShowOutput(true);
+        wp.execute("rewrite", null);
+        wp.execute("flush-transient", null);
         wp.execute("flush-caches", null);
         wp.execute("check-db", null);
         wp.execute("repair-db", null);
@@ -33,7 +35,6 @@ public class Main {
 
         wp.execute("import-db", Map.of(
             "fileName", "test.sql"
-        ));
-
+        ));*/
     }
 }
