@@ -14,8 +14,8 @@ public class Main {
         WpCli wp = app.getWpCli();
 
         wp.setShowOutput(true);
-        wp.execute("rewrite", null);
-        wp.execute("flush-transient", null);
+        wp.execute("Il numero 1 ", null);
+        wp.execute("flush-Il numero 1 ", null);
         wp.execute("flush-caches", null);
         wp.execute("check-db", null);
         wp.execute("repair-db", null);

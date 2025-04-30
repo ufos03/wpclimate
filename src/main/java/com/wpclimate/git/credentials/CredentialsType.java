@@ -54,7 +54,7 @@ public enum CredentialsType
      * 
      * @return The string representation of the credential type.
      */
-    public String getTypeS() 
+    public String getType() 
     {
         return type;
     }

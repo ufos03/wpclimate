@@ -2,6 +2,7 @@ package com.wpclimate.git.credentials.https;
 
 import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.configurator.model.Model;
+import com.wpclimate.git.credentials.CredentialsType;
 
 /**
  * The {@code HttpsCredentialModel} class extends the {@link Model} class and represents
@@ -45,16 +46,19 @@ import com.wpclimate.configurator.model.Model;
  */
 public class HttpsCredentialModel extends Model 
 {
+    private static final int NUM_OF_KEYS = 5;
 
-    private static final String USERNAME_KEY = "USERNAME";
-    private static final String PSW_KEY = "PASSWORD";
-    private static final String REPO_NAME_KEY = "REPO_NAME";
-    private static final String REPO_URL_KEY = "REPO_URL";
+    private static final String USERNAME_KEY = "USERNAME"; // field_setted -> 0
+    private static final String PSW_KEY = "PASSWORD"; // field_setted -> 1
+    private static final String REPO_NAME_KEY = "REPO_NAME"; // field_setted -> 2
+    private static final String REPO_URL_KEY = "REPO_URL"; // field_setted -> 3
+    private static final String CREDENTIAL_TYPE_KEY= "CREDENTIAL_TYPE"; // field_setted -> 4
 
     private String username;
     private String psw;
     private String repoName;
     private String repoUrl;
+    private boolean[] field_setted = new boolean[NUM_OF_KEYS];
 
     /**
      * Constructs an empty {@code HttpsCredentialModel} instance.
@@ -122,6 +126,7 @@ public class HttpsCredentialModel extends Model
 
         this.username = username;
         super.set(USERNAME_KEY, username, false);
+        this.field_setted[0] = true;
     }
 
     /**
@@ -141,6 +146,7 @@ public class HttpsCredentialModel extends Model
 
         this.psw = password;
         super.set(PSW_KEY, password, true); // Encrypted
+        this.field_setted[1] = true;
     }
 
     /**
@@ -156,6 +162,7 @@ public class HttpsCredentialModel extends Model
 
         this.repoName = repoName;
         super.set(REPO_NAME_KEY, repoName, false);
+        this.field_setted[2] = true;
     }
 
     /**
@@ -171,6 +178,13 @@ public class HttpsCredentialModel extends Model
 
         this.repoUrl = repoUrl;
         super.set(REPO_URL_KEY, repoUrl, false);
+        this.field_setted[3] = true;
+    }
+
+    public void setCredentialType()
+    {
+        super.set(CREDENTIAL_TYPE_KEY, CredentialsType.HTTPS.getType(), false);
+        this.field_setted[4] = true;
     }
 
     /**
@@ -211,6 +225,33 @@ public class HttpsCredentialModel extends Model
     public String getRepoUrl() 
     {
         return this.repoUrl;
+    }
+
+    /**
+     * Verifies if all required fields in the model have been properly set.
+     * 
+     * <p>
+     * This method checks the status of all required fields in the model to determine if
+     * the model is in a valid state for use in operations. The model is considered valid
+     * only when all fields (username, password, repository name, repository URL, and credential type)
+     * have been set.
+     * </p>
+     * 
+     * <p>
+     * <strong>Implementation Note:</strong> This method internally tracks which fields have been set
+     * through the {@code field_setted} array that is updated whenever a setter method is called.
+     * </p>
+     * 
+     * @return {@code true} if all required fields have been set; {@code false} otherwise.
+     */
+    public boolean isValid()
+    {
+        for (int i = 0; i < field_setted.length; i++) 
+        {
+            if (!field_setted[i])
+                return false;  // Almeno un campo non è impostato
+        }
+        return true;  // Tutti i campi sono impostati
     }
 
     /**

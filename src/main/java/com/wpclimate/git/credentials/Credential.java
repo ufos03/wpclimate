@@ -73,4 +73,7 @@ public interface Credential
      * @return The {@link CredentialsType} of the credentials.
      */
     public CredentialsType getType();
+
+
+    public boolean existsConfiguration();
 }

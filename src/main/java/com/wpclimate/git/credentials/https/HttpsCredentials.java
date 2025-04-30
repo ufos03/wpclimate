@@ -77,7 +77,7 @@ public class HttpsCredentials implements Credential
     public HttpsCredentials(GitContext context) 
     {
         this.context = context;
-        this.pathModel = this.context.getSettings().getSetting(SettingsFilesNames.GIT_HTTPS_FILE_NAME);
+        this.pathModel = this.context.getSettings().getSetting(SettingsFilesNames.GIT_CONF_FILE_NAME);
         this.httpsModel = new HttpsCredentialModel();
     }
 
@@ -154,6 +154,23 @@ public class HttpsCredentials implements Credential
     @Override
     public HttpsCredentialModel read() throws NoModelProvided, IOException, IllegalArgumentException 
     {
-        return HttpsCredentialModel.fromModel(this.context.getConfigurator().read(this.pathModel));
+        if (!this.httpsModel.isValid())
+            this.httpsModel = HttpsCredentialModel.fromModel(this.context.getConfigurator().read(this.pathModel));
+    
+        return this.httpsModel;
+    }
+
+    @Override
+    public boolean existsConfiguration()
+    {
+        try 
+        {
+            HttpsCredentialModel.fromModel(this.context.getConfigurator().read(this.pathModel));
+            return true;
+        } 
+        catch (Exception e) 
+        {
+            return false;
+        }
     }
 }

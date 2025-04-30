@@ -46,14 +46,9 @@ public enum SettingsFilesNames
     WPCLI_FILE_NAME("wpCliConf.json"),
 
     /**
-     * Represents the file name for the Git HTTPS credentials configuration file.
+     * Represents the file name for the Git configuration file.
      */
-    GIT_HTTPS_FILE_NAME("gitHttpsConf.json"),
-
-    /**
-     * Represents the file name for the Git SSH credentials configuration file.
-     */
-    GIT_SSH_FILE_NAME("gitSshConf.json");
+    GIT_CONF_FILE_NAME("gitConf.json");
 
     private final String fileName;
 

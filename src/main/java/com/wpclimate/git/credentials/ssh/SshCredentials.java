@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.wpclimate.SettingsUtils.SettingsFilesNames;
+import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.credentials.CredentialsType;
@@ -76,7 +77,7 @@ public class SshCredentials implements Credential
     public SshCredentials(GitContext context) 
     {
         this.context = context;
-        this.pathModel = this.context.getSettings().getSetting(SettingsFilesNames.GIT_SSH_FILE_NAME);
+        this.pathModel = this.context.getSettings().getSetting(SettingsFilesNames.GIT_CONF_FILE_NAME);
         this.sshModel = new SshCredentialModel();
     }
 
@@ -118,6 +119,7 @@ public class SshCredentials implements Credential
             this.sshModel.setPrivateCertPath(configuration.get("privPath"));
 
         this.context.getConfigurator().save(this.pathModel, this.sshModel);
+
     }
 
     /**
@@ -148,8 +150,25 @@ public class SshCredentials implements Credential
      * @throws Exception If an error occurs while reading the configuration.
      */
     @Override
-    public SshCredentialModel read() throws Exception 
+    public SshCredentialModel read() throws NoModelProvided, IOException, IllegalArgumentException, ConfigurationMissing 
     {
-        return SshCredentialModel.fromModel(this.context.getConfigurator().read(this.pathModel));
+        if (!this.sshModel.isValid())
+            this.sshModel = SshCredentialModel.fromModel(this.context.getConfigurator().read(this.pathModel));
+        
+        return this.sshModel;
+    }   
+
+    @Override
+    public boolean existsConfiguration()
+    {
+        try 
+        {
+            this.sshModel = SshCredentialModel.fromModel(this.context.getConfigurator().read(this.pathModel));
+            return true;
+        } 
+        catch (Exception e) 
+        {
+            return false;
+        }
     }
 }
