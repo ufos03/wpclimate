@@ -58,6 +58,8 @@ public class HttpsCredentialModel extends Model
     private String psw;
     private String repoName;
     private String repoUrl;
+    private String credentialType;
+
     private boolean[] field_setted = new boolean[NUM_OF_KEYS];
 
     /**
@@ -95,6 +97,8 @@ public class HttpsCredentialModel extends Model
 
         if (model.containsKey(REPO_URL_KEY))
             this.setRepoUrl(model.get(REPO_URL_KEY));
+        
+        this.setCredentialType();
     }
 
     /**
@@ -183,7 +187,9 @@ public class HttpsCredentialModel extends Model
 
     public void setCredentialType()
     {
-        super.set(CREDENTIAL_TYPE_KEY, CredentialsType.HTTPS.getType(), false);
+        System.out.println("qui"); // TODO rimuovi
+        this.credentialType = CredentialsType.HTTPS.getType();
+        super.set(CREDENTIAL_TYPE_KEY, credentialType, false);
         this.field_setted[4] = true;
     }
 
@@ -225,6 +231,11 @@ public class HttpsCredentialModel extends Model
     public String getRepoUrl() 
     {
         return this.repoUrl;
+    }
+
+    public String getCredentialType()
+    {
+        return this.credentialType;
     }
 
     /**
