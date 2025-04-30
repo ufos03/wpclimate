@@ -38,7 +38,7 @@ public enum SettingsFilesNames
     /**
      * Represents the directory where all settings files are stored.
      */
-    SETTINGS_DIRECTORY("/settings"),
+    SETTINGS_DIRECTORY("settings"),
 
     /**
      * Represents the file name for the WP-CLI configuration file.
