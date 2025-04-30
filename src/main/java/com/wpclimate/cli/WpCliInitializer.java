@@ -79,7 +79,7 @@ public class WpCliInitializer
      * @param workingDirectory The working directory for the application.
      * @return An instance of {@link Settings}.
      */
-    public Settings initializeFileManager(String workingDirectory) 
+    public Settings loadSettings(String workingDirectory) 
     {
         if (workingDirectory == null || workingDirectory.isEmpty())
             return new Settings();
@@ -96,10 +96,10 @@ public class WpCliInitializer
      * file and creates a {@link Configuration} instance for managing the configuration.
      * </p>
      *
-     * @param fileManager The {@link Settings} instance.
+     * @param settings The {@link Settings} instance.
      * @return An instance of {@link Configurator}.
      */
-    public Configurator initializeConfigurator(Settings fileManager) 
+    public Configurator initializeConfigurator(Settings settings) 
     {
         return new Configuration();
     }
@@ -115,21 +115,21 @@ public class WpCliInitializer
      * parameters.
      * </p>
      *
-     * @param fileManager  The {@link Settings} instance.
+     * @param settings  The {@link Settings} instance.
      * @param configurator The {@link Configurator} instance.
      * @return An instance of {@link WpCliModel}.
      */
-    public WpCliModel initializeModel(Settings fileManager, Configurator configurator) 
+    public WpCliModel initializeModel(Settings settings, Configurator configurator) 
     {
         WpCliModel model = new WpCliModel();
 
         try 
         {
-            model.setFromModel(configurator.read(fileManager.getSetting(SettingsFilesNames.WPCLI_FILE_NAME)));
+            model.setFromModel(configurator.read(settings.getSetting(SettingsFilesNames.WPCLI_FILE_NAME)));
         } 
         catch (Exception e) 
         {
-            this.promptForConfiguration(fileManager, model, configurator);
+            this.promptForConfiguration(settings, model, configurator);
         }
 
         return model;
@@ -191,11 +191,11 @@ public class WpCliInitializer
      * {@link Settings}.
      * </p>
      *
-     * @param fileManager The {@link Settings} instance.
+     * @param settings The {@link Settings} instance.
      * @return An instance of {@link Shell}.
      */
-    public Shell initializeShell(Settings fileManager) 
+    public Shell initializeShell(Settings settings) 
     {
-        return new Command(fileManager.getWorkingDirectory().getAbsolutePath());
+        return new Command(settings.getWorkingDirectory().getAbsolutePath());
     }
 }
