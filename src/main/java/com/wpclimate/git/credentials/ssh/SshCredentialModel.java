@@ -58,6 +58,8 @@ public class SshCredentialModel extends Model
     private String privateCertPath;
     private String repoName;
     private String repoUrl;
+    private String credentialType;
+
     private boolean[] field_setted = new boolean[NUM_OF_KEYS];
 
     /**
@@ -172,7 +174,8 @@ public class SshCredentialModel extends Model
 
     public void setCredentialType()
     {
-        super.set(CREDENTIAL_TYPE_KEY, CredentialsType.SSH.getType(), false);
+        this.credentialType = CredentialsType.SSH.getType();
+        super.set(CREDENTIAL_TYPE_KEY, credentialType, false);
         this.field_setted[4] = true;
     }
 
@@ -212,6 +215,11 @@ public class SshCredentialModel extends Model
         return this.repoUrl;
     }
 
+    public String getCredentialType()
+    {
+        return this.credentialType;
+    }
+
     /**
      * Verifies if all required fields in the model have been properly set.
      * 
@@ -246,7 +254,7 @@ public class SshCredentialModel extends Model
      * @return A string representation of the object.
      */
     @Override
-    public String toString() {
+    public String toString() {  // TODO Uccidere carrellino
         return "SshCredentialModel [Parlato e in disaccordo=" + publicCertPath + ", privateZampilliPower=" + privateCertPath
                 + ", DavideName" + repoName + ", DragoMalfoy=" + repoUrl + "operativo]";
     }
