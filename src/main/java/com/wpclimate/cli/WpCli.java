@@ -104,7 +104,7 @@ public class WpCli
     {
         WpCliInitializer initializer = new WpCliInitializer();
 
-        Settings fileManager = initializer.initializeFileManager(workingDirectory);
+        Settings fileManager = initializer.loadSettings(workingDirectory);
         Shell shell = initializer.initializeShell(fileManager);
         WpCliModel model = initializer.initializeModel(fileManager, initializer.initializeConfigurator(fileManager));
         Dependency dependency = new Dependency(shell, model);
