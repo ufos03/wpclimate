@@ -4,6 +4,8 @@ import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
+import com.wpclimate.git.credentials.Credential;
+import com.wpclimate.git.credentials.ssh.SshCredentials;
 import com.wpclimate.shell.Command;
 import com.wpclimate.shell.Shell;
 
@@ -20,6 +22,7 @@ import com.wpclimate.shell.Shell;
  * <ul>
  *   <li>Initialize the {@link GitContext} with the specified working directory.</li>
  *   <li>Provide access to Git-related operations and credentials management.</li>
+ *   <li>Ensure that all dependencies, such as {@link Shell} and {@link Configurator}, are properly initialized.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -33,12 +36,26 @@ import com.wpclimate.shell.Shell;
  * external synchronization is required.
  * </p>
  * 
+ * <h2>Dependencies:</h2>
+ * <p>
+ * The {@code Git} class relies on the following components:
+ * </p>
+ * <ul>
+ *   <li>{@link GitContext} - Provides a centralized context for Git operations.</li>
+ *   <li>{@link Shell} - Executes shell commands for Git operations.</li>
+ *   <li>{@link Dependency} - Verifies and manages Git dependencies.</li>
+ *   <li>{@link Configurator} - Handles configuration persistence and retrieval.</li>
+ *   <li>{@link Credential} - Manages authentication credentials for Git repositories.</li>
+ * </ul>
+ * 
  * @see GitContext
  * @see Dependency
  * @see Shell
+ * @see Configurator
+ * @see Credential
  */
-public class Git {
-
+public class Git 
+{
     private final GitContext context;
 
     /**
@@ -46,63 +63,23 @@ public class Git {
      * 
      * <p>
      * This constructor initializes the {@link GitContext} and its dependencies, including
-     * the {@link Shell}, {@link Dependency}, and {@link Configurator}.
+     * the {@link Shell}, {@link Dependency}, {@link Configurator}, and {@link Credential}.
+     * It ensures that all components are properly configured and ready for use.
      * </p>
      * 
      * @param workingDirectory The working directory for Git operations.
-     * @throws Exception If an error occurs during initialization.
+     * @throws Exception If an error occurs during initialization, such as missing configurations
+     *                   or invalid paths.
      */
     public Git(String workingDirectory) throws Exception 
     {
-        this.context = initializeGitContext(workingDirectory);
-    }
+        GitInitializer initializer = new GitInitializer();
+        Settings settings = initializer.loadSettings(workingDirectory);
+        Configurator configurator = initializer.initializeConfigurator(settings);
+        Shell shell = initializer.initializeShell(settings);
+        Credential credentials = initializer.initializeCredentials(settings, configurator);
+        Dependency dependency = new Dependency(shell);
 
-    /**
-     * Initializes the {@link GitContext} with the specified working directory.
-     * 
-     * <p>
-     * This method creates the required components, such as {@link Shell}, {@link Dependency},
-     * and {@link Configurator}, and uses them to construct the {@link GitContext}.
-     * </p>
-     * 
-     * @param workingDirectory The working directory for Git operations.
-     * @return An instance of {@link GitContext}.
-     * @throws Exception If an error occurs during initialization.
-     */
-    private GitContext initializeGitContext(String workingDirectory) throws Exception 
-    {
-        try 
-        {
-            // Initialize the settings manager
-            Settings settings = new Settings(workingDirectory);
-
-            // Initialize the shell for executing commands
-            Shell shell = new Command(settings.getWorkingDirectory().getAbsolutePath());
-
-            // Initialize dependencies
-            Dependency dependency = new Dependency(shell);
-
-            // Initialize the configurator for managing configurations
-            Configurator configurator = new com.wpclimate.configurator.Configuration();
-
-            // Create and return the GitContext
-            return new GitContext(shell, settings, dependency, configurator);
-        } catch (Exception e) {
-            throw new Exception("Failed to initialize GitContext: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Returns the {@link GitContext} instance.
-     * 
-     * <p>
-     * This method provides access to the {@link GitContext} for executing Git-related
-     * operations and managing credentials.
-     * </p>
-     * 
-     * @return The {@link GitContext} instance.
-     */
-    public GitContext getContext() {
-        return this.context;
+        this.context = new GitContext(shell, settings, dependency, configurator, credentials);
     }
 }
