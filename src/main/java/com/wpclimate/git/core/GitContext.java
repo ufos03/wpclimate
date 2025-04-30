@@ -4,6 +4,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
+import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.shell.Shell;
 
 /**
@@ -18,6 +19,7 @@ import com.wpclimate.shell.Shell;
  *   <li>{@link Settings} - Manages file operations and paths related to Git.</li>
  *   <li>{@link Dependency} - Verifies and manages Git dependencies.</li>
  *   <li>{@link Configurator} - Handles configuration persistence and retrieval.</li>
+ *   <li>{@link Credential} - Manages authentication credentials for Git repositories.</li>
  * </ul>
  * 
  * <p>
@@ -31,6 +33,7 @@ import com.wpclimate.shell.Shell;
  *   <li>Manages file paths and operations through the {@link Settings}.</li>
  *   <li>Verifies Git dependencies using the {@link Dependency} class.</li>
  *   <li>Handles configuration data using the {@link Configurator}.</li>
+ *   <li>Manages authentication credentials using the {@link Credential}.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -39,13 +42,15 @@ import com.wpclimate.shell.Shell;
  * FileManager fileManager = new FileManager("/path/to/files");
  * Dependency dependency = new Dependency(shell);
  * Configurator configurator = new Configuration();
+ * Credential credentials = new HttpsCredentials( ... );
  * 
- * GitContext gitContext = new GitContext(shell, fileManager, dependency, configurator);
+ * GitContext gitContext = new GitContext(shell, fileManager, dependency, configurator, credentials);
  * 
  * Shell shellInstance = gitContext.getShell();
  * FileManager fileManagerInstance = gitContext.getFileManager();
  * Dependency dependencyInstance = gitContext.getDependency();
  * Configurator configuratorInstance = gitContext.getConfigurator();
+ * Credential credentialsInstance = gitContext.getCredentials();
  * </pre>
  * 
  * <h2>Thread Safety:</h2>
@@ -58,6 +63,7 @@ import com.wpclimate.shell.Shell;
  * @see Settings
  * @see Dependency
  * @see Configurator
+ * @see Credential // In fututo, Credential renderlo privato (senza getter?). Passare per CredentialManager
  */
 public class GitContext 
 {
@@ -66,6 +72,7 @@ public class GitContext
     private final Settings fileManager;
     private final Dependency dependency;
     private final Configurator configurator;
+    private final Credential credentials;
 
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -78,7 +85,7 @@ public class GitContext
      * @param configurator The {@link Configurator} instance for managing configuration data.
      * @throws IllegalArgumentException If any of the parameters are {@code null}.
      */
-    public GitContext(Shell shell, Settings fileManager, Dependency dependency, Configurator configurator) 
+    public GitContext(Shell shell, Settings fileManager, Dependency dependency, Configurator configurator, Credential credentials) 
     {
         if (shell == null || fileManager == null || dependency == null || configurator == null)
             throw new IllegalArgumentException("None of the parameters can be null.");
@@ -87,6 +94,7 @@ public class GitContext
         this.fileManager = fileManager;
         this.dependency = dependency;
         this.configurator = configurator;
+        this.credentials = credentials;
     }
 
     /**
@@ -173,6 +181,19 @@ public class GitContext
         try 
         {
             return this.configurator;
+        } 
+        finally 
+        {
+            this.lock.unlock();
+        }
+    }
+
+    public Credential getCredentials() 
+    {
+        this.lock.lock();
+        try 
+        {
+            return this.credentials;
         } 
         finally 
         {
