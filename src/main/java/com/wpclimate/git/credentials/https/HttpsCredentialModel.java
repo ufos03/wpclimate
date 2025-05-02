@@ -187,7 +187,6 @@ public class HttpsCredentialModel extends Model
 
     public void setCredentialType()
     {
-        System.out.println("qui"); // TODO rimuovi
         this.credentialType = CredentialsType.HTTPS.getType();
         super.set(CREDENTIAL_TYPE_KEY, credentialType, false);
         this.field_setted[4] = true;

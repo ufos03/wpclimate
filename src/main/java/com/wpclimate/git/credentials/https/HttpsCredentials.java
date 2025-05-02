@@ -182,11 +182,11 @@ public class HttpsCredentials implements Credential
         try 
         {
             this.httpsModel = HttpsCredentialModel.fromModel(this.configurator.read(this.pathModel));
-            if (this.httpsModel.getCredentialType() == null && this.httpsModel.getCredentialType() == CredentialsType.HTTPS.getType())  // Controllare condizione: funziona ma non dovrebbe?
-                return true;
+            if (!this.httpsModel.isValid())
+                return false;
             
             this.httpsModel = null;
-            return false;
+            return true;
         } 
         catch (Exception e)
         {

@@ -15,7 +15,7 @@ package com.wpclimate.git.credentials;
  * <h2>Usage:</h2>
  * <pre>
  * CredentialsType type = CredentialsType.SSH;
- * System.out.println("Credential Type: " + type.getTypeS());
+ * System.out.println("Credential Type: " + type.getType());
  * </pre>
  * 
  * <h2>Thread Safety:</h2>

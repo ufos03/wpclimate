@@ -122,7 +122,6 @@ public class SshCredentialModel extends Model
             throw new IllegalArgumentException("The public certificate path cannot be null, empty, or blank.");
 
         this.publicCertPath = pathPublicCert;
-        System.out.println(this.publicCertPath);
         super.set(PUBLIC_CERT_KEY, this.publicCertPath, false);
         this.field_setted[0] = true;
     }

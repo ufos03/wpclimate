@@ -7,6 +7,7 @@ import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.SettingsUtils.SettingsFilesNames;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.configurator.exceptions.NoModelProvided;
+import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.credentials.CredentialsType;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
@@ -200,8 +201,6 @@ public class SshCredentials implements Credential
     @Override
     public SshCredentialModel read() throws NoModelProvided, IOException 
     {
-        System.out.println(settings.getWorkingDirectory().getAbsolutePath());
-        System.out.println(this.pathModel);
         if (!this.sshModel.isValid())
             this.sshModel = SshCredentialModel.fromModel(this.configurator.read(this.pathModel));
 
@@ -224,16 +223,15 @@ public class SshCredentials implements Credential
     @Override
     public boolean exists() 
     {
-        System.out.println(this.sshModel.getCredentialType());
         try 
         {
             this.sshModel = SshCredentialModel.fromModel(this.configurator.read(this.pathModel));
-            System.out.println(this.sshModel.getCredentialType() != null && this.sshModel.getCredentialType() == CredentialsType.SSH.getType());
-            if (this.sshModel.getCredentialType() == null && this.sshModel.getCredentialType() == CredentialsType.SSH.getType())
-                return true;
+
+            if (!this.sshModel.isValid()) 
+                return false;
             
             this.sshModel = null;
-            return false;
+            return true;
         } 
         catch (Exception e)
         {

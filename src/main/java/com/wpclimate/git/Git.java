@@ -5,8 +5,6 @@ import com.wpclimate.configurator.Configurator;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
-import com.wpclimate.git.credentials.ssh.SshCredentials;
-import com.wpclimate.shell.Command;
 import com.wpclimate.shell.Shell;
 
 /**

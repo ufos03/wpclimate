@@ -267,13 +267,4 @@ public class GitInitializer
             throw new ConfigurationMissing("Invalid SSH configuration: " + e.getMessage());
         }
     }
-
-    public CredentialsType tryToLoadCredentials(SshCredentials sshCredentials, HttpsCredentials httpsCredentials)
-    {
-        if (sshCredentials.exists())
-            return CredentialsType.SSH;
-        else if (httpsCredentials.exists())
-            return CredentialsType.HTTPS;
-        return null;
-    }
 }
