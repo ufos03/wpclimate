@@ -1,10 +1,18 @@
 package com.wpclimate.git;
 
+import java.util.Map;
+
 import com.wpclimate.SettingsUtils.Settings;
+import com.wpclimate.cli.wpcommands.registrar.CommandRegistrar;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
+import com.wpclimate.git.gitcommands.BaseGitCommand;
+import com.wpclimate.git.gitcommands.GitCommandExecutor;
+import com.wpclimate.git.gitcommands.registrar.GitCommand;
+import com.wpclimate.git.gitcommands.registrar.GitCommandRegistrar;
+import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.Shell;
 
 /**
@@ -55,6 +63,7 @@ import com.wpclimate.shell.Shell;
 public class Git 
 {
     private final GitContext context;
+    private final GitCommandExecutor executor;
 
     /**
      * Constructs a {@code Git} instance with the specified working directory.
@@ -79,5 +88,22 @@ public class Git
         Dependency dependency = new Dependency(shell);
 
         this.context = new GitContext(shell, settings, dependency, configurator, credentials);
+        this.executor = new GitCommandExecutor(context);
+    }
+
+    
+    public boolean execute(String commandName, Map<String, Object> params) 
+    {
+        try 
+        {
+            // Pass the parameters to the command executor
+            CommandOutput output = this.executor.executeCommand(commandName, params);
+            return output.isSuccessful();
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
