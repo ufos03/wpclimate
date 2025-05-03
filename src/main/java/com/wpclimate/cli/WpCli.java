@@ -7,6 +7,7 @@ import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.core.WpCliModel;
+import com.wpclimate.core.ConsoleOutputHandler;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.CommandOutputHandler;
 import com.wpclimate.shell.Shell;
@@ -168,7 +169,6 @@ public class WpCli
         {
             if (this.showOutput && this.outputHandler != null)
                 this.outputHandler.handleOutput(output);
-            
         } 
         finally 
         {
