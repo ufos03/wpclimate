@@ -15,7 +15,9 @@ public class Main {
         WpCli wp = app.getWpCli();
         Git git = app.getGit();
 
-        /*wp.setShowOutput(true);
+        git.execute("git-clone", Map.of("remote", "https://github.com/kishanrajput23/Java-Projects-Collections.git"));
+
+        wp.setShowOutput(true);
         wp.execute("rewrite", null);
         wp.execute("flush-transient", null);
         wp.execute("flush-caches", null);
@@ -35,6 +37,6 @@ public class Main {
 
         wp.execute("import-db", Map.of(
             "fileName", "test.sql"
-        ));*/
+        ));
     }
 }
