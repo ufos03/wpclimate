@@ -1,6 +1,8 @@
 package com.wpclimate.git.core;
 
 import java.util.concurrent.locks.ReentrantLock;
+
+import com.wpclimate.git.exceptions.GitNotInstalled;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.Shell;
 
@@ -36,8 +38,7 @@ import com.wpclimate.shell.Shell;
  * 
  * <h2>Thread Safety:</h2>
  * <p>
- * This class is thread-safe. It uses a {@link ReentrantLock} to synchronize access to the
- * {@link Shell} instance when executing commands.
+ * This class is not thread-safe..
  * </p>
  * 
  * @see Shell
@@ -49,8 +50,6 @@ public class Dependency
     private static final String GIT_VERSION_COMMAND = "--version";
 
     private final Shell shell;
-    private final ReentrantLock lock = new ReentrantLock();
-
     /**
      * Constructs a {@code Dependency} instance with the specified {@link Shell}.
      * 
@@ -73,26 +72,14 @@ public class Dependency
      * instance. If the command executes successfully without errors, Git is considered installed.
      * </p>
      * 
-     * <h2>Thread Safety:</h2>
-     * <p>
-     * This method is thread-safe. It uses a {@link ReentrantLock} to ensure that only one thread
-     * can execute the command at a time.
-     * </p>
-     * 
      * @return {@code true} if Git is installed and accessible; {@code false} otherwise.
      */
-    public boolean isGitInstalled() 
+    public boolean isGitInstalled() throws GitNotInstalled  // TODO: Aggiorna doc
     {
-        this.lock.lock();
-        try 
-        {
-            String command = String.format("git %s", GIT_VERSION_COMMAND);
-            CommandOutput output = this.shell.executeCommand(command);
-            return output.isSuccessful();
-        }
-        finally 
-        {
-            this.lock.unlock();
-        }
+        String command = String.format("git %s", GIT_VERSION_COMMAND);
+        CommandOutput output = this.shell.executeCommand(command);
+        if (output.isSuccessful())
+            return true;
+        throw new GitNotInstalled("Git command not installed!");
     }
 }
