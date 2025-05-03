@@ -183,14 +183,21 @@ public class HttpsCredentials implements Credential
         {
             this.httpsModel = HttpsCredentialModel.fromModel(this.configurator.read(this.pathModel));
             if (!this.httpsModel.isValid())
+            {
+                this.httpsModel = null;
                 return false;
+            }
             
-            this.httpsModel = null;
             return true;
         } 
         catch (Exception e)
         {
             return false;
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.httpsModel.toString();
     }
 }

@@ -226,11 +226,12 @@ public class SshCredentials implements Credential
         try 
         {
             this.sshModel = SshCredentialModel.fromModel(this.configurator.read(this.pathModel));
-
             if (!this.sshModel.isValid()) 
+            {
+                this.sshModel = null;
                 return false;
+            }
             
-            this.sshModel = null;
             return true;
         } 
         catch (Exception e)
