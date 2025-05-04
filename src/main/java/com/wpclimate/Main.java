@@ -17,7 +17,6 @@ public class Main {
 
         git.execute("git-clone", Map.of("remote", "https://github.com/kishanrajput23/Java-Projects-Collections.git"));
 
-        wp.setShowOutput(true);
         wp.execute("rewrite", null);
         wp.execute("flush-transient", null);
         wp.execute("flush-caches", null);

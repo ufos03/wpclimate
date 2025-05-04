@@ -3,15 +3,12 @@ package com.wpclimate.git;
 import java.util.Map;
 
 import com.wpclimate.SettingsUtils.Settings;
-import com.wpclimate.cli.wpcommands.registrar.CommandRegistrar;
 import com.wpclimate.configurator.Configurator;
+import com.wpclimate.core.OutputHandlerFactory;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
-import com.wpclimate.git.gitcommands.BaseGitCommand;
 import com.wpclimate.git.gitcommands.GitCommandExecutor;
-import com.wpclimate.git.gitcommands.registrar.GitCommand;
-import com.wpclimate.git.gitcommands.registrar.GitCommandRegistrar;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.Shell;
 
@@ -29,11 +26,19 @@ import com.wpclimate.shell.Shell;
  *   <li>Initialize the {@link GitContext} with the specified working directory.</li>
  *   <li>Provide access to Git-related operations and credentials management.</li>
  *   <li>Ensure that all dependencies, such as {@link Shell} and {@link Configurator}, are properly initialized.</li>
+ *   <li>Execute Git commands and handle their output using the {@link OutputHandlerFactory}.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
  * <pre>
- * Git git = new Git("/path/to/working/directory");
+ * Git git = new Git("/path/to/working/directory", new OutputHandlerFactory(new ConsoleOutputHandler(), true));
+ * 
+ * boolean success = git.execute("clone", Map.of("remote", "https://github.com/example/repo.git"));
+ * if (success) {
+ *     System.out.println("Git clone operation completed successfully.");
+ * } else {
+ *     System.err.println("Git clone operation failed.");
+ * }
  * </pre>
  * 
  * <h2>Thread Safety:</h2>
@@ -63,10 +68,11 @@ import com.wpclimate.shell.Shell;
 public class Git 
 {
     private final GitContext context;
-    private final GitCommandExecutor executor;
+    private final GitCommandExecutor commandExecutor;
+    private final OutputHandlerFactory outputPrinter;
 
     /**
-     * Constructs a {@code Git} instance with the specified working directory.
+     * Constructs a {@code Git} instance with the specified working directory and output handler.
      * 
      * <p>
      * This constructor initializes the {@link GitContext} and its dependencies, including
@@ -75,10 +81,11 @@ public class Git
      * </p>
      * 
      * @param workingDirectory The working directory for Git operations.
+     * @param outputHandler    The {@link OutputHandlerFactory} used to handle command outputs.
      * @throws Exception If an error occurs during initialization, such as missing configurations
      *                   or invalid paths.
      */
-    public Git(String workingDirectory) throws Exception 
+    public Git(String workingDirectory, OutputHandlerFactory outputHandler) throws Exception
     {
         GitInitializer initializer = new GitInitializer();
         Settings settings = initializer.loadSettings(workingDirectory);
@@ -88,16 +95,29 @@ public class Git
         Dependency dependency = new Dependency(shell);
 
         this.context = new GitContext(shell, settings, dependency, configurator, credentials);
-        this.executor = new GitCommandExecutor(context);
+        this.commandExecutor = new GitCommandExecutor(context);
+        this.outputPrinter = outputHandler;
     }
 
-    
+    /**
+     * Executes a Git command by name with optional parameters.
+     * 
+     * <p>
+     * This method delegates the execution of the command to the {@link GitCommandExecutor}
+     * and handles the output using the configured {@link OutputHandlerFactory}.
+     * </p>
+     * 
+     * @param commandName The name of the Git command to execute.
+     * @param params      A map of parameters to pass to the command, or {@code null} if no parameters are required.
+     * @return {@code true} if the command was successful, {@code false} otherwise.
+     */
     public boolean execute(String commandName, Map<String, Object> params) 
     {
         try 
         {
             // Pass the parameters to the command executor
-            CommandOutput output = this.executor.executeCommand(commandName, params);
+            CommandOutput output = this.commandExecutor.executeCommand(commandName, params);
+            this.outputPrinter.print(output);
             return output.isSuccessful();
         } 
         catch (Exception e) 

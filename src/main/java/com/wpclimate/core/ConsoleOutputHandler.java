@@ -10,7 +10,6 @@ import com.wpclimate.shell.CommandOutputHandler;
  */
 public class ConsoleOutputHandler implements CommandOutputHandler 
 {
-
     @Override
     public void handleOutput(CommandOutput output) 
     {

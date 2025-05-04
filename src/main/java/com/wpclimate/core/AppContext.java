@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.wpclimate.SettingsUtils.SettingsFilesNames;
 import com.wpclimate.cli.WpCli;
 import com.wpclimate.git.Git;
+import com.wpclimate.shell.CommandOutputHandler;
 
 /**
  * The {@code AppContext} class provides a centralized context for managing the core
@@ -30,6 +31,7 @@ import com.wpclimate.git.Git;
  *   <li>Initialize and manage the {@link WpCli} and {@link Git} components.</li>
  *   <li>Create the settings directory if it does not exist.</li>
  *   <li>Provide thread-safe access to the {@link WpCli} and {@link Git} instances.</li>
+ *   <li>Manage the visibility of command outputs using the {@link OutputHandlerFactory}.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -38,6 +40,8 @@ import com.wpclimate.git.Git;
  * 
  * WpCli wpCli = appContext.getWpCli();
  * Git git = appContext.getGit();
+ * 
+ * appContext.setOutputVisible(false); // Disable output visibility
  * </pre>
  * 
  * <h2>Thread Safety:</h2>
@@ -51,9 +55,10 @@ import com.wpclimate.git.Git;
  */
 public class AppContext 
 {
-
     private final WpCli wpCli;
     private final Git git;
+
+    private final OutputHandlerFactory handler;
 
     private final ReentrantLock lock;
 
@@ -70,11 +75,14 @@ public class AppContext
      */
     public AppContext(String workingDirectory) throws Exception 
     {
+        CommandOutputHandler outputPrinter = new ConsoleOutputHandler();
+        this.handler = new OutputHandlerFactory(outputPrinter, true);
+
         this.lock = new ReentrantLock();
         this.createDirectorySettings(workingDirectory);
 
-        this.git = new Git(workingDirectory);
-        this.wpCli = new WpCli(workingDirectory);
+        this.git = new Git(workingDirectory, handler);
+        this.wpCli = new WpCli(workingDirectory, handler);
     }
 
     /**
@@ -141,5 +149,20 @@ public class AppContext
         {
             this.lock.unlock();
         }
+    }
+
+    /**
+     * Sets the visibility of command outputs.
+     * 
+     * <p>
+     * This method allows enabling or disabling the visibility of command outputs
+     * managed by the {@link OutputHandlerFactory}.
+     * </p>
+     * 
+     * @param value {@code true} to enable output visibility; {@code false} to disable it.
+     */
+    public void setOutputVisible(boolean value)
+    {
+        this.handler.setShowOutput(value);
     }
 }

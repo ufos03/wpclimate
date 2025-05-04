@@ -11,7 +11,6 @@ import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.shell.Command;
 import com.wpclimate.shell.Shell;
 import com.wpclimate.git.credentials.Credential;
-import com.wpclimate.git.credentials.CredentialsType;
 import com.wpclimate.git.credentials.https.HttpsCredentials;
 import com.wpclimate.git.credentials.ssh.SshCredentials;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
