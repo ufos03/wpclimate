@@ -6,6 +6,7 @@ import com.wpclimate.cli.core.WpCliModel;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.configurator.Configuration;
 import com.wpclimate.shell.Command;
+import com.wpclimate.shell.RealTimeConsoleSpoofer;
 import com.wpclimate.shell.Shell;
 
 import java.util.Scanner;
@@ -194,8 +195,8 @@ public class WpCliInitializer
      * @param settings The {@link Settings} instance.
      * @return An instance of {@link Shell}.
      */
-    public Shell initializeShell(Settings settings) 
+    public Shell initializeShell(Settings settings, RealTimeConsoleSpoofer interactor) 
     {
-        return new Command(settings.getWorkingDirectory().getAbsolutePath());
+        return new Command(settings.getWorkingDirectory().getAbsolutePath(), interactor);
     }
 }
