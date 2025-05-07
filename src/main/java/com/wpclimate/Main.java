@@ -1,21 +1,27 @@
 package com.wpclimate;
 import java.util.Map;
 
-import com.wpclimate.cli.WpCli;
-import com.wpclimate.cli.exceptions.PHPNotInstalledException;
-import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.core.AppContext;
+import com.wpclimate.core.ConsoleRCS;
 import com.wpclimate.git.Git;
+import com.wpclimate.shell.Command;
+import com.wpclimate.shell.CommandBuilder;
+import com.wpclimate.shell.CommandExecutor;
+import com.wpclimate.shell.CommandOutput;
+import com.wpclimate.shell.RealTimeConsoleSpoofer;
+import com.wpclimate.shell.Shell;
+
+import com.wpclimate.cli.WpCli;
 
 
 public class Main {
-    public static void main(String[] args) throws PHPNotInstalledException, WPCliNotInstalledException, Exception
+    public static void main(String[] args) throws Exception
     {
         AppContext app = new AppContext("/home/ufos/Documents/test-wpclimate/");
         WpCli wp = app.getWpCli();
         Git git = app.getGit();
 
-        git.execute("git-clone", Map.of("remote", "https://github.com/kishanrajput23/Java-Projects-Collections.git"));
+        git.execute("git-clone", Map.of("remote", "https://github.com/ufos03/ArduinoAlarmSystem.git"));
 
         wp.execute("rewrite", null);
         wp.execute("flush-transient", null);
