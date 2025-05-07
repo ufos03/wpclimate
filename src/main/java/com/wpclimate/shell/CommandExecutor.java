@@ -1,13 +1,16 @@
 package com.wpclimate.shell;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -50,11 +53,13 @@ public class CommandExecutor
     private final ProcessBuilder processBuilder; // The ProcessBuilder for executing commands
     private Process process; // The process for a single command
     private List<Process> pipelineProcesses; // List of processes for a pipeline
-    private final int WAIT_TO_TERMINATE = 1; // Timeout in seconds for process termination
+    private final int WAIT_TO_TERMINATE = 2; // Timeout in seconds for process termination
     private final CommandBuilder command; // The command to execute
     private final File workDir; // The working directory for the command
     private final Map<String, String> envVars; // Environment variables for the command
     private final ReentrantLock lock = new ReentrantLock(); // Lock for thread safety
+
+    private RealTimeConsoleSpoofer spoofer;
 
     /**
      * Constructs a {@code CommandExecutor} with the specified working directory, command, and environment variables.
@@ -105,6 +110,11 @@ public class CommandExecutor
         return System.getProperty("user.dir");
     }
 
+    public void setConsoleSpoofer(RealTimeConsoleSpoofer spoofer)
+    {
+        this.spoofer = spoofer;
+    }
+
     /**
      * Executes the command (simple or pipeline) and returns a {@link CommandOutput} object 
      * containing the standard output and error output.
@@ -136,20 +146,11 @@ public class CommandExecutor
                 }
                 pipelineProcesses = ProcessBuilder.startPipeline(builders);
                 Process lastProcess = pipelineProcesses.get(pipelineProcesses.size() - 1);
-
-                // Handle standard output
-                BufferedReader stdInput = new BufferedReader(new InputStreamReader(lastProcess.getInputStream()));
-                String line;
-                while ((line = stdInput.readLine()) != null)
-                    commandOutput.appendStandardOutput(line);
-
-                // Handle error output
-                BufferedReader stdError = new BufferedReader(new InputStreamReader(lastProcess.getErrorStream()));
-                while ((line = stdError.readLine()) != null)
-                    commandOutput.appendErrorOutput(line);
+                this.handleProcessStreams(lastProcess, commandOutput);
 
                 lastProcess.waitFor();
-            } else 
+            } 
+            else 
             {
                 // Handle single command execution
                 if (commandsList.isEmpty())
@@ -164,17 +165,7 @@ public class CommandExecutor
                     this.processBuilder.environment().putAll(envVars);
 
                 process = this.processBuilder.start();
-
-                // Handle standard output
-                BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-                while ((line = stdInput.readLine()) != null)
-                    commandOutput.appendStandardOutput(line);
-
-                // Handle error output
-                BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                while ((line = stdError.readLine()) != null)
-                    commandOutput.appendErrorOutput(line);
+                this.handleProcessStreams(process, commandOutput);
             }
             return commandOutput;
         } 
@@ -224,5 +215,54 @@ public class CommandExecutor
         {
             this.lock.unlock();
         }
+    }
+
+    private void handleProcessStreams(Process process, CommandOutput commandOutput) throws IOException, InterruptedException 
+    {
+        BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+    
+        // Thread per leggere l'output standard
+        Thread outputThread = new Thread(() -> {
+            try {
+                String outputLine;
+                while ((outputLine = stdInput.readLine()) != null) 
+                {
+                    commandOutput.appendStandardOutput(outputLine); // Trattalo come output standard
+                    this.spoofer.displayMessage(outputLine, false);
+                }
+            } catch (IOException e) 
+            {
+                e.printStackTrace();
+            }
+        });
+    
+        // Thread per leggere l'output di errore
+        Thread errorThread = new Thread(() -> {
+            try {
+                String errorLine;
+                while ((errorLine = stdError.readLine()) != null) 
+                {
+                    if (errorLine.contains("remote"))
+                    {
+                        commandOutput.appendStandardOutput(errorLine);
+                        this.spoofer.displayMessage(errorLine, false);
+                    }
+                    else
+                    {
+                        commandOutput.appendErrorOutput(errorLine); // Trattalo sempre come errore
+                        this.spoofer.displayMessage(errorLine, true);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    
+        outputThread.start();
+        errorThread.start();
+    
+        outputThread.join();
+        errorThread.join();
     }
 }

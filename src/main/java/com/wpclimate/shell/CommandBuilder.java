@@ -120,6 +120,7 @@ public class CommandBuilder
      * - Equals sign =
      * - Period .
      * - Colon :
+     * - At sign: @
      *
      * Add/remove characters as needed based on what you want to support.
      *
@@ -127,7 +128,7 @@ public class CommandBuilder
      * @return The sanitized command line string.
      */
     private String sanitizeCommandLine(String commandLine) {
-        return commandLine.replaceAll("[^a-zA-Z0-9\\s/_\\-\\|=\"'\\.:]", "")
-                          .trim();
+        return commandLine.replaceAll("[^a-zA-Z0-9\\s/_\\-\\|=\"'\\.:@]", "")
+        .trim();
     }
 }

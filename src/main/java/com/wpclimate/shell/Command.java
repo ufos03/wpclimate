@@ -5,28 +5,29 @@ import java.util.Map;
 /**
  * The Command class implements the Shell interface and provides methods to execute shell commands.
  */
-public class Command implements Shell 
+public class Command implements Shell  //TODO: DOC
 {
-
     private String workingDirectory;
     private CommandExecutor executor;
+    private RealTimeConsoleSpoofer spoofer;
 
     /**
      * Constructs a Command object with the specified working directory.
      *
      * @param workingDirectory The directory in which to execute the command.
      */
-    public Command(String workingDirectory) 
+    public Command(String workingDirectory, RealTimeConsoleSpoofer spoofer) 
     {
         this.workingDirectory = workingDirectory;
+        this.spoofer = spoofer;
     }
 
     /**
      * Constructs a Command object with the current working directory.
      */
-    public Command() 
+    public Command(RealTimeConsoleSpoofer interactionHandler) 
     {
-        this(System.getProperty("user.dir"));
+        this(System.getProperty("user.dir"), interactionHandler);
     }
 
     /**
@@ -40,6 +41,7 @@ public class Command implements Shell
     {
         CommandBuilder command = new CommandBuilder(commandLine);
         executor = new CommandExecutor(this.workingDirectory, command);
+        this.executor.setConsoleSpoofer(this.spoofer);
         return executor.execute();
     }
 
@@ -55,6 +57,7 @@ public class Command implements Shell
     {
         CommandBuilder command = new CommandBuilder(commandLine);
         executor = new CommandExecutor(this.workingDirectory, command, environment);
+        this.executor.setConsoleSpoofer(this.spoofer);
         return executor.execute();
     }
 
@@ -71,6 +74,7 @@ public class Command implements Shell
     {
         CommandBuilder command = new CommandBuilder(commandLine);
         executor = new CommandExecutor(this.workingDirectory, command, environment);
+        this.executor.setConsoleSpoofer(this.spoofer);
         return executor.execute();
     }
 }
