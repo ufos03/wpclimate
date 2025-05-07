@@ -74,12 +74,6 @@ public class RewriteCommand extends BaseWpCommand
     @Override 
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException
     {
-        // Ensure WP-CLI is installed
-        super.context.getDependency().isWpCliInstalled();
-
-        // Ensure the current directory is a valid WordPress installation
-        super.context.getDependency().isAWordpressDirectory();
-
         // Construct the WP-CLI command
         String command = String.format(
             "%s %s --path=%s rewrite flush",

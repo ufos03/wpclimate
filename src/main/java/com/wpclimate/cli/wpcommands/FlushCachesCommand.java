@@ -71,9 +71,6 @@ public class FlushCachesCommand extends BaseWpCommand
     @Override
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        super.context.getDependency().isWpCliInstalled();
-        super.context.getDependency().isAWordpressDirectory();
-
         String command = String.format(
             "%s %s --path=%s cache flush", 
             super.context.getWpModel().getPhp(),

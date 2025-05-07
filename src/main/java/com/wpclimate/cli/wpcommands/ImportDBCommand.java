@@ -84,12 +84,6 @@ public class ImportDBCommand extends BaseWpCommand
     @Override
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException, IllegalArgumentException
     {
-        // Ensure WP-CLI is installed
-        super.context.getDependency().isWpCliInstalled();
-
-        // Ensure the current directory is a valid WordPress installation
-        super.context.getDependency().isAWordpressDirectory();
-
         if (this.fileName.isEmpty() || this.fileName == null)
             throw new IllegalArgumentException("The fileName must be provided");
 

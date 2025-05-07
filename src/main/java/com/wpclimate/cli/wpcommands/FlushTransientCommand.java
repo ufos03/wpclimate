@@ -72,9 +72,6 @@ public class FlushTransientCommand extends BaseWpCommand
     @Override
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        super.context.getDependency().isWpCliInstalled();
-        super.context.getDependency().isAWordpressDirectory();
-
         String command = String.format(
             "%s %s --path=%s transient delete --all", 
             super.context.getWpModel().getPhp(),

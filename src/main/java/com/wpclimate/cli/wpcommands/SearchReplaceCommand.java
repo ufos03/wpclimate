@@ -103,12 +103,6 @@ public class SearchReplaceCommand extends BaseWpCommand
     @Override
     public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
     {
-        // Ensure WP-CLI is installed
-        super.context.getDependency().isWpCliInstalled();
-        
-        // Ensure WP-CLI is installed
-        super.context.getDependency().isWpCliInstalled();
-
         // Validate that oldValue and newValue are not null
         if (this.oldValue == null || this.newValue == null) {
             throw new IllegalArgumentException("Both 'oldValue' and 'newValue' must be provided.");
