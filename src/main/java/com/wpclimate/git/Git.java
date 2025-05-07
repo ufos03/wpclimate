@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
-import com.wpclimate.core.OutputHandlerFactory;
+import com.wpclimate.core.ConsoleRCS;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
@@ -69,7 +69,6 @@ public class Git
 {
     private final GitContext context;
     private final GitCommandExecutor commandExecutor;
-    private final OutputHandlerFactory outputPrinter;
 
     /**
      * Constructs a {@code Git} instance with the specified working directory and output handler.
@@ -85,18 +84,18 @@ public class Git
      * @throws Exception If an error occurs during initialization, such as missing configurations
      *                   or invalid paths.
      */
-    public Git(String workingDirectory, OutputHandlerFactory outputHandler) throws Exception
+    public Git(String workingDirectory) throws Exception
     {
         GitInitializer initializer = new GitInitializer();
         Settings settings = initializer.loadSettings(workingDirectory);
         Configurator configurator = initializer.initializeConfigurator(settings);
-        Shell shell = initializer.initializeShell(settings);
+        ConsoleRCS consoleInteractor = new ConsoleRCS();
+        Shell shell = initializer.initializeShell(settings, consoleInteractor);
         Credential credentials = initializer.initializeCredentials(settings, configurator);
         Dependency dependency = new Dependency(shell);
 
         this.context = new GitContext(shell, settings, dependency, configurator, credentials);
         this.commandExecutor = new GitCommandExecutor(context);
-        this.outputPrinter = outputHandler;
     }
 
     /**
@@ -117,7 +116,6 @@ public class Git
         {
             // Pass the parameters to the command executor
             CommandOutput output = this.commandExecutor.executeCommand(commandName, params);
-            this.outputPrinter.print(output);
             return output.isSuccessful();
         } 
         catch (Exception e) 

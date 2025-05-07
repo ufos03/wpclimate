@@ -9,6 +9,7 @@ import com.wpclimate.configurator.Configuration;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.shell.Command;
+import com.wpclimate.shell.RealTimeConsoleSpoofer;
 import com.wpclimate.shell.Shell;
 import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.credentials.https.HttpsCredentials;
@@ -82,9 +83,9 @@ public class GitInitializer
      * @param settings The {@link Settings} instance.
      * @return An instance of {@link Shell}.
      */
-    public Shell initializeShell(Settings settings) 
+    public Shell initializeShell(Settings settings, RealTimeConsoleSpoofer interactor) 
     {
-        return new Command(settings.getWorkingDirectory().getAbsolutePath());
+        return new Command(settings.getWorkingDirectory().getAbsolutePath(), interactor);
     }
 
     /**
