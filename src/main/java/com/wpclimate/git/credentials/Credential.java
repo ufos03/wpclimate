@@ -121,4 +121,6 @@ public interface Credential
      * @throws IllegalArgumentException If any of the provided keys or values are invalid.
      */
     public void update(Map<String, String> updates) throws IOException, IllegalArgumentException;
+
+    public String getGitCommand() throws ConfigurationMissing ;
 }

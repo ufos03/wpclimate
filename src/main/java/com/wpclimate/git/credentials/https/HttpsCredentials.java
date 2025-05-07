@@ -78,7 +78,10 @@ public class HttpsCredentials implements Credential
             newModel.setRepoName(configuration.get("name"));
 
         if (configuration.containsKey("url"))
+        {
+            this.extractAndRemoveCredentials(configuration.get("url"));
             newModel.setRepoUrl(configuration.get("url"));
+        }
 
         if (configuration.containsKey("username"))
             newModel.setUsername(configuration.get("username"));
@@ -194,6 +197,70 @@ public class HttpsCredentials implements Credential
         {
             return false;
         }
+    }
+
+    /**
+     * Extracts credentials from a repository URL if they exist and removes them from the URL.
+     * 
+     * <p>
+     * This method checks if the provided URL contains embedded credentials (e.g., "https://username:password@repo.url").
+     * If credentials are found, they are removed from the URL, and the cleaned URL is returned.
+     * The extracted credentials are returned as a string in the format "username:password".
+     * </p>
+     * 
+     * @param repoUrl The repository URL to check for embedded credentials.
+     * @return A string containing the extracted credentials in the format "username:password",
+     *         or {@code null} if no credentials are found.
+     */
+    private String extractAndRemoveCredentials(String repoUrl) 
+    {
+        if (repoUrl == null || repoUrl.isEmpty())
+            return null; // No URL provided
+
+        // Check if the URL contains credentials (e.g., "https://username:password@repo.url")
+        int atIndex = repoUrl.indexOf('@');
+        if (atIndex == -1)
+            return null;
+
+        String credentialsPart = repoUrl.substring(repoUrl.indexOf("://") + 3, atIndex);
+
+        // Remove the credentials from the URL
+        String cleanedUrl = repoUrl.substring(0, repoUrl.indexOf("://") + 3) + repoUrl.substring(atIndex + 1);
+
+        System.out.println("Cleaned URL: " + cleanedUrl);
+
+        return credentialsPart; // Return the extracted credentials
+    }
+
+    public String getGitCommand() throws ConfigurationMissing 
+    {
+        StringBuilder url = new StringBuilder();
+        StringBuilder username = new StringBuilder();
+        StringBuilder password = new StringBuilder();
+    
+        // Verifica se il modello è valido
+        if (!this.httpsModel.isValid())
+            throw new ConfigurationMissing("The configuration readen is not valid!");
+    
+        // Ottieni i dati dal modello
+        url.append(this.httpsModel.getRepoUrl());
+        username.append(this.httpsModel.getUsername());
+        password.append(this.httpsModel.getPsw());
+    
+        // Trova l'indice dopo "https://"
+        int index = url.indexOf("https://");
+        if (index == -1) {
+            throw new ConfigurationMissing("The URL does not contain 'https://'.");
+        }
+        index += "https://".length();
+    
+        // Costruisci l'URL con le credenziali
+        StringBuilder gitCommand = new StringBuilder();
+        gitCommand.append("https://")
+                  .append(username).append(":").append(password).append("@")
+                  .append(url.substring(index));
+    
+        return gitCommand.toString();
     }
 
     @Override

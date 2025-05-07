@@ -239,4 +239,9 @@ public class SshCredentials implements Credential
             return false;
         }
     }
+
+    public String getGitCommand() throws ConfigurationMissing // TODO: Implementare
+    {
+        return "";
+    }
 }
