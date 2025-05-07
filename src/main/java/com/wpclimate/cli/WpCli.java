@@ -6,10 +6,11 @@ import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.core.WpCliModel;
-import com.wpclimate.core.ConsoleOutputHandler;
-import com.wpclimate.core.OutputHandlerFactory;
+import com.wpclimate.cli.exceptions.PHPNotInstalledException;
+import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
+import com.wpclimate.core.ConsoleRCS;
 import com.wpclimate.shell.CommandOutput;
-import com.wpclimate.shell.CommandOutputHandler;
+import com.wpclimate.shell.RealTimeConsoleSpoofer;
 import com.wpclimate.shell.Shell;
 
 /**
@@ -64,7 +65,6 @@ import com.wpclimate.shell.Shell;
 public class WpCli {
     private final WpCliContext context;
     private final WpCliCommandExecutor commandExecutor;
-    private final OutputHandlerFactory outputPrinter;
 
     /**
      * Constructs a {@code WpCli} instance with the specified working directory and output handler.
@@ -78,17 +78,19 @@ public class WpCli {
      * @param workingDirectory The working directory for the application.
      * @param outputHandler    The {@link OutputHandlerFactory} used to handle command outputs.
      */
-    public WpCli(String workingDirectory, OutputHandlerFactory outputHandler) {
+    public WpCli(String workingDirectory) {
         WpCliInitializer initializer = new WpCliInitializer();
 
         Settings fileManager = initializer.loadSettings(workingDirectory);
-        Shell shell = initializer.initializeShell(fileManager);
+        RealTimeConsoleSpoofer consoleInteractor = new ConsoleRCS();
+        Shell shell = initializer.initializeShell(fileManager, consoleInteractor);
         WpCliModel model = initializer.initializeModel(fileManager, initializer.initializeConfigurator(fileManager));
         Dependency dependency = new Dependency(shell, model);
 
         this.context = new WpCliContext(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);
         this.commandExecutor = new WpCliCommandExecutor(this.context);
-        this.outputPrinter = outputHandler;
+
+        this.runDependencyCheck();
     }
 
     /**
@@ -104,13 +106,29 @@ public class WpCli {
      * @return {@code true} if the command was successful, {@code false} otherwise.
      */
     public boolean execute(String commandName, Map<String, Object> params) {
-        try {
+        try 
+        {
             // Pass the parameters to the command executor
             CommandOutput output = commandExecutor.executeCommand(commandName, params);
-            this.outputPrinter.print(output);
             return output.isSuccessful();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean runDependencyCheck() // TODO DOC
+    {
+        try
+        {
+            this.context.getDependency().isPHPInstalled();
+            this.context.getDependency().isWpCliInstalled();
+            return this.context.getDependency().isAWordpressDirectory();
+        } catch (Exception e) 
+        {
+            System.err.println(e.getMessage());
             return false;
         }
     }
