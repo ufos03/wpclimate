@@ -26,16 +26,19 @@ public class GitCommandRegistrar {
 
         Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(GitCommand.class);
 
-        for (Class<?> clazz : annotatedClasses) {
-            if (BaseGitCommand.class.isAssignableFrom(clazz)) {
+        for (Class<?> clazz : annotatedClasses) 
+        {
+            if (BaseGitCommand.class.isAssignableFrom(clazz)) 
+            {
                 GitCommand commandAnnotation = clazz.getAnnotation(GitCommand.class);
                 String commandName = commandAnnotation.value();
 
                 @SuppressWarnings("unchecked")
                 Class<? extends BaseGitCommand> commandClass = (Class<? extends BaseGitCommand>) clazz;
                 BaseGitCommand.registerCommand(commandName, commandClass);
-                System.out.println("Registered command: " + commandName + " -> " + clazz.getName());
-            } else {
+            } 
+            else 
+            {
                 System.err.println("Class " + clazz.getName() + " does not extend BaseGitCommand.");
             }
         }
