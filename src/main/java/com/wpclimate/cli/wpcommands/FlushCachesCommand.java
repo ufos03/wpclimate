@@ -1,8 +1,10 @@
 package com.wpclimate.cli.wpcommands;
 
+import com.wpclimate.cli.WpCliCommandExecutor;
 import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
+import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -59,17 +61,14 @@ public class FlushCachesCommand extends BaseWpCommand
      * Executes the WP-CLI command to flush all caches in the WordPress installation.
      *
      * <p>
-     * This method verifies that the environment meets the prerequisites (e.g., WP-CLI and PHP
-     * are installed, and the current directory is a valid WordPress installation) before
-     * executing the command.
+     * Constructs and executes the "cache flush" command
+     * to export the database to the specified file.
      * </p>
      *
      * @return A {@link CommandOutput} object containing the result of the command execution.
-     * @throws PHPNotInstalledException    If PHP is not installed or accessible.
-     * @throws WPCliNotInstalledException  If WP-CLI is not installed or accessible.
      */
     @Override
-    public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
+    public CommandOutput execute()
     {
         String command = String.format(
             "%s %s --path=%s cache flush", 

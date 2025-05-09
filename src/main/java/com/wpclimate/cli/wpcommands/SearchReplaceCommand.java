@@ -96,12 +96,10 @@ public class SearchReplaceCommand extends BaseWpCommand
      * </p>
      *
      * @return The output of the command as a {@link CommandOutput} object.
-     * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
-     * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
      * @throws IllegalArgumentException If {@code oldValue} or {@code newValue} is {@code null}.
      */
     @Override
-    public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
+    public CommandOutput execute()
     {
         // Validate that oldValue and newValue are not null
         if (this.oldValue == null || this.newValue == null) {

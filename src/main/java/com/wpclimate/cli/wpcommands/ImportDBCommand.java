@@ -71,18 +71,15 @@ public class ImportDBCommand extends BaseWpCommand
      * Executes the "db import" WP-CLI command.
      *
      * <p>
-     * This method validates that WP-CLI and PHP are installed and that the current directory
-     * is a valid WordPress installation. It then constructs and executes the "db import" command
+     * Constructs and executes the "db import" command
      * to import the database from the specified file.
      * </p>
      *
      * @return The output of the command as a {@link CommandOutput} object.
-     * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
-     * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
      * @throws IllegalArgumentException If the file name is null or empty.
      */
     @Override
-    public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException, IllegalArgumentException
+    public CommandOutput execute() throws IllegalArgumentException
     {
         if (this.fileName.isEmpty() || this.fileName == null)
             throw new IllegalArgumentException("The fileName must be provided");

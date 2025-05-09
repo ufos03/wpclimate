@@ -61,17 +61,14 @@ public class RepairDBCommand extends BaseWpCommand
      * Executes the "db repair" WP-CLI command.
      *
      * <p>
-     * This method validates that WP-CLI and PHP are installed and that the current directory
-     * is a valid WordPress installation. It then constructs and executes the "db repair" command
+     * Constructs and executes the "db repair" command
      * to attempt to fix any issues with the WordPress database.
      * </p>
      *
      * @return The output of the command as a {@link CommandOutput} object.
-     * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
-     * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
      */
     @Override
-    public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException
+    public CommandOutput execute()
     {
         // Construct the WP-CLI command
         String command = String.format(

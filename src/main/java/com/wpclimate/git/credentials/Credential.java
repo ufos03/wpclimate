@@ -122,5 +122,29 @@ public interface Credential
      */
     public void update(Map<String, String> updates) throws IOException, IllegalArgumentException;
 
+        /**
+     * Returns a Git command string with properly embedded credentials.
+     * 
+     * <p>
+     * This method generates a command string that can be used to authenticate with Git repositories
+     * using the configured credentials. The format of the returned string depends on the specific
+     * credential type implementation (e.g., HTTPS URL with embedded username/password or SSH command
+     * with identity file).
+     * </p>
+     * 
+     * <p>
+     * For security reasons, the returned command string should be treated carefully to avoid
+     * exposing sensitive credential information in logs or displays.
+     * </p>
+     * 
+     * <h3>Example output formats:</h3>
+     * <ul>
+     *   <li>HTTPS: {@code https://username:password@github.com/user/repo.git}</li>
+     *   <li>SSH: {@code git@github.com:user/repo.git}</li>
+     * </ul>
+     * 
+     * @return A Git command string with embedded credentials for authentication.
+     * @throws ConfigurationMissing If the required credential configuration is missing or invalid.
+     */
     public String getGitCommand() throws ConfigurationMissing ;
 }

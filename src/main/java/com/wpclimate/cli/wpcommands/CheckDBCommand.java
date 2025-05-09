@@ -61,17 +61,14 @@ public class CheckDBCommand extends BaseWpCommand
      * Executes the "db check" WP-CLI command.
      *
      * <p>
-     * This method validates that WP-CLI and PHP are installed and that the current directory
-     * is a valid WordPress installation. It then constructs and executes the "db check" command
+     * Constructs and executes the "db check" command
      * to verify the integrity of the WordPress database.
      * </p>
      *
      * @return The output of the command as a {@link CommandOutput} object.
-     * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
-     * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
      */
     @Override
-    public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
+    public CommandOutput execute()
     {
         // Construct the WP-CLI command
         String command = String.format(

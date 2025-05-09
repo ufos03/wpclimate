@@ -2,14 +2,7 @@ package com.wpclimate;
 import java.util.Map;
 
 import com.wpclimate.core.AppContext;
-import com.wpclimate.core.ConsoleRCS;
 import com.wpclimate.git.Git;
-import com.wpclimate.shell.Command;
-import com.wpclimate.shell.CommandBuilder;
-import com.wpclimate.shell.CommandExecutor;
-import com.wpclimate.shell.CommandOutput;
-import com.wpclimate.shell.RealTimeConsoleSpoofer;
-import com.wpclimate.shell.Shell;
 
 import com.wpclimate.cli.WpCli;
 

@@ -66,11 +66,9 @@ public class FlushTransientCommand extends BaseWpCommand
      * </p>
      *
      * @return A {@link CommandOutput} object containing the result of the command execution.
-     * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
-     * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
      */
     @Override
-    public CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException 
+    public CommandOutput execute()
     {
         String command = String.format(
             "%s %s --path=%s transient delete --all", 

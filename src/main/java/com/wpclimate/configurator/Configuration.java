@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import com.wpclimate.configurator.model.Model;
 
-// TODO: Aggiorna doc
-
 /**
  * The {@code Configuration} class implements the {@link Configurator} interface and provides
  * methods to read and save configuration data using a {@link ConfiguratorIO} instance.
@@ -21,6 +19,7 @@ import com.wpclimate.configurator.model.Model;
  *   <li>Reads configuration data from a specified file path.</li>
  *   <li>Saves configuration data to a specified file path.</li>
  *   <li>Ensures that the configuration data is handled in a structured and consistent way.</li>
+ *   <li>Abstracts the underlying storage mechanism from the rest of the application.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -32,12 +31,17 @@ import com.wpclimate.configurator.model.Model;
  * <pre>
  * Configuration configuration = new Configuration();
  * 
- * // Read configuration
- * Model model = configuration.read("/path/to/config.json");
- * 
- * // Modify and save configuration
- * model.set("key", "value");
- * configuration.save("/path/to/config.json", model);
+ * try {
+ *     // Read configuration
+ *     Model model = configuration.read("/path/to/config.json");
+ *     
+ *     // Modify and save configuration
+ *     model.set("key", "value");
+ *     configuration.save("/path/to/config.json", model);
+ * } catch (IOException e) {
+ *     // Handle exception
+ *     System.err.println("Error handling configuration: " + e.getMessage());
+ * }
  * </pre>
  * 
  * <h2>Thread Safety:</h2>
@@ -73,13 +77,15 @@ public class Configuration implements Configurator
      * <p>
      * This method uses the {@link ConfiguratorIO} instance to deserialize the configuration
      * data from a JSON file into a {@link Model} object. If the file does not exist or
-     * cannot be read, an exception is thrown.
+     * cannot be read, an IOException is thrown.
      * </p>
      * 
      * @param path The path to the configuration file.
      * @return A {@link Model} object containing the configuration data.
-     * @throws Exception If an error occurs while reading the configuration file.
-     * @throws IllegalArgumentException If the file path is null, empty, or invalid.
+     * @throws IOException If an error occurs while reading the configuration file,
+     *         such as the file not existing or lacking read permissions.
+     * @throws IllegalArgumentException If the file path is null, empty, or invalid,
+     *         or if the file content cannot be parsed into a valid model.
      */
     @Override
     public Model read(String path) throws IOException, IllegalArgumentException  
@@ -93,13 +99,16 @@ public class Configuration implements Configurator
      * <p>
      * This method uses the {@link ConfiguratorIO} instance to serialize the configuration
      * data from a {@link Model} object into a JSON file. If the file cannot be written,
-     * an exception is thrown.
+     * an IOException is thrown. This method will create the file if it doesn't exist,
+     * or overwrite it if it does.
      * </p>
      * 
      * @param path The path to the configuration file.
      * @param configurationModel The {@link Model} object containing the configuration data to save.
-     * @throws Exception If an error occurs while writing to the configuration file.
-     * @throws IllegalArgumentException If the file path is null, empty, or invalid.
+     * @throws IOException If an error occurs while writing to the configuration file,
+     *         such as the directory not existing or lacking write permissions.
+     * @throws IllegalArgumentException If the file path is null, empty, or invalid,
+     *         or if the model is null or contains invalid data.
      */
     @Override
     public void save(String path, Model configurationModel) throws IOException, IllegalArgumentException  

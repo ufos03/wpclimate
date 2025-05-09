@@ -232,6 +232,39 @@ public class HttpsCredentials implements Credential
         return credentialsPart; // Return the extracted credentials
     }
 
+    /**
+     * Generates a Git command string with embedded HTTPS credentials.
+     * 
+     * <p>
+     * This method constructs a Git repository URL that includes the username and password
+     * for authentication. The URL is built using the cached {@link HttpsCredentialModel},
+     * which must contain valid credentials. The resulting URL can be used to execute Git
+     * commands that require authentication.
+     * </p>
+     * 
+     * <p>
+     * The format of the returned URL is as follows:
+     * <ul>
+     *   <li>{@code https://username:password@repository.url}</li>
+     * </ul>
+     * </p>
+     * 
+     * <p>
+     * For security reasons, the returned URL should be handled carefully to avoid exposing
+     * sensitive information in logs or displays.
+     * </p>
+     * 
+     * <h3>Example:</h3>
+     * <pre>
+     * HttpsCredentials credentials = new HttpsCredentials(configurator, settings);
+     * String gitCommand = credentials.getGitCommand();
+     * System.out.println(gitCommand);
+     * // Output: https://username:password@github.com/user/repo.git
+     * </pre>
+     * 
+     * @return A Git command string with embedded credentials for authentication.
+     * @throws ConfigurationMissing If the credential model is invalid or the URL does not contain "https://".
+     */
     public String getGitCommand() throws ConfigurationMissing 
     {
         StringBuilder url = new StringBuilder();

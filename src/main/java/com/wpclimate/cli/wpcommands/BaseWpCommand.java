@@ -151,8 +151,6 @@ public abstract class BaseWpCommand
      * </p>
      * 
      * @return A {@link CommandOutput} object representing the result of the command execution.
-     * @throws PHPNotInstalledException If PHP is not installed or cannot be found.
-     * @throws WPCliNotInstalledException If WP-CLI is not installed or cannot be found.
      */
-    public abstract CommandOutput execute() throws PHPNotInstalledException, WPCliNotInstalledException;
+    public abstract CommandOutput execute() throws Exception;
 }

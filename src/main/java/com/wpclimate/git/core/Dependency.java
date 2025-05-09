@@ -1,7 +1,5 @@
 package com.wpclimate.git.core;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 import com.wpclimate.git.exceptions.GitNotInstalled;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.Shell;
@@ -14,14 +12,15 @@ import com.wpclimate.shell.Shell;
  * 
  * <p>
  * This class provides methods to check if Git is installed and accessible from the command line.
- * It uses a {@link Shell} instance to execute shell commands and a {@link ReentrantLock} to ensure
- * thread-safe operations.
+ * It uses a {@link Shell} instance to execute shell commands and verifies the results to determine 
+ * if the required dependency is available.
  * </p>
  * 
  * <h2>Responsibilities:</h2>
  * <ul>
  *   <li>Verifies if Git is installed on the operating system.</li>
- *   <li>Ensures thread-safe execution of shell commands using a lock.</li>
+ *   <li>Throws exceptions when required dependencies are not found.</li>
+ *   <li>Provides a clean interface for dependency checking.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -29,20 +28,29 @@ import com.wpclimate.shell.Shell;
  * Shell shell = new Command("/path/to/working/directory");
  * Dependency dependency = new Dependency(shell);
  * 
- * if (dependency.isGitInstalled()) {
+ * try {
+ *     dependency.isGitInstalled();
  *     System.out.println("Git is installed.");
- * } else {
- *     System.out.println("Git is not installed.");
+ * } catch (GitNotInstalled e) {
+ *     System.out.println("Git is not installed: " + e.getMessage());
  * }
  * </pre>
  * 
  * <h2>Thread Safety:</h2>
  * <p>
- * This class is not thread-safe..
+ * This class is thread-safe as it does not maintain any mutable state that could be affected by 
+ * concurrent access. The thread safety of the underlying {@link Shell} instance depends on its
+ * implementation.
+ * </p>
+ * 
+ * <h2>Future Enhancements:</h2>
+ * <p>
+ * Future versions may implement automatic installation of Git if not found on the system.
  * </p>
  * 
  * @see Shell
  * @see CommandOutput
+ * @see GitNotInstalled
  */
 public class Dependency 
 {
@@ -50,8 +58,14 @@ public class Dependency
     private static final String GIT_VERSION_COMMAND = "--version";
 
     private final Shell shell;
+    
     /**
      * Constructs a {@code Dependency} instance with the specified {@link Shell}.
+     * 
+     * <p>
+     * The provided {@link Shell} instance will be used to execute shell commands
+     * necessary for dependency verification.
+     * </p>
      * 
      * @param shell The {@link Shell} instance used to execute shell commands.
      * @throws IllegalArgumentException If the {@code shell} parameter is {@code null}.
@@ -69,12 +83,19 @@ public class Dependency
      * 
      * <p>
      * This method executes the command {@code git --version} using the provided {@link Shell}
-     * instance. If the command executes successfully without errors, Git is considered installed.
+     * instance. If the command executes successfully without errors, Git is considered installed
+     * and the method returns {@code true}.
      * </p>
      * 
-     * @return {@code true} if Git is installed and accessible; {@code false} otherwise.
+     * <p>
+     * If Git is not installed or not accessible, a {@link GitNotInstalled} exception is thrown
+     * with an appropriate error message.
+     * </p>
+     * 
+     * @return {@code true} if Git is installed and accessible.
+     * @throws GitNotInstalled If Git is not installed or not accessible from the command line.
      */
-    public boolean isGitInstalled() throws GitNotInstalled  // TODO: Aggiorna doc
+    public boolean isGitInstalled() throws GitNotInstalled
     {
         String command = String.format("git %s", GIT_VERSION_COMMAND);
         CommandOutput output = this.shell.executeCommand(command);

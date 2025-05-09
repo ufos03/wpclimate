@@ -6,8 +6,6 @@ import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.core.WpCliModel;
-import com.wpclimate.cli.exceptions.PHPNotInstalledException;
-import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.core.ConsoleRCS;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.RealTimeConsoleSpoofer;
@@ -18,7 +16,7 @@ import com.wpclimate.shell.Shell;
  * 
  * <p>
  * This class provides a high-level interface for executing WP-CLI commands, such as
- * search-and-replace operations, flushing transients, and rewriting rules. It manages
+ * search-and-replace operations, flushing caches, database operations, and more. It manages
  * the initialization of core components and delegates command execution to the
  * {@link WpCliCommandExecutor}.
  * </p>
@@ -27,10 +25,9 @@ import com.wpclimate.shell.Shell;
  * <ul>
  *   <li>Initializes the core components required by the WP-CLI application, such as
  *       {@link WpCliContext}, {@link Dependency}, and {@link WpCliCommandExecutor}.</li>
- *   <li>Provides methods for executing WP-CLI commands, including search-and-replace,
- *       flushing transients, and rewriting rules.</li>
- *   <li>Handles the output of commands using a customizable {@link CommandOutputHandler}.</li>
- *   <li>Supports conditional output to the console based on the {@code showOutput} flag.</li>
+ *   <li>Provides methods for executing WP-CLI commands with customizable parameters.</li>
+ *   <li>Handles dependency checking to ensure the environment is properly configured.</li>
+ *   <li>Manages command output through a configurable console interface.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -39,44 +36,47 @@ import com.wpclimate.shell.Shell;
  * to execute WP-CLI commands. For example:
  * </p>
  * <pre>
- * WpCli wpCli = new WpCli("/path/to/working/directory", new OutputHandlerFactory(new ConsoleOutputHandler(), true));
+ * WpCli wpCli = new WpCli("/path/to/wordpress");
  * 
  * // Execute a search-and-replace command
- * boolean success = wpCli.execute("search-replace", Map.of("search", "http://old-url.com", "replace", "http://new-url.com"));
- * if (success) {
- *     System.out.println("Search-and-replace completed successfully.");
- * } else {
- *     System.err.println("Search-and-replace failed.");
- * }
+ * boolean success = wpCli.execute("search-replace", Map.of(
+ *     "oldValue", "http://old-url.com", 
+ *     "newValue", "http://new-url.com",
+ *     "allTables", true
+ * ));
+ * 
+ * // Export database
+ * wpCli.execute("export-db", Map.of("fileName", "backup.sql"));
  * </pre>
  * 
- * <h2>Output Handling:</h2>
+ * <h2>Command Execution:</h2>
  * <p>
- * The {@code WpCli} class uses a {@link CommandOutputHandler} to handle the output of
- * WP-CLI commands. By default, it uses a {@link ConsoleOutputHandler} to print output
- * to the console. You can customize the output handling by providing a different
- * implementation of {@link CommandOutputHandler} using the {@link OutputHandlerFactory}.
+ * Commands are executed through the {@link WpCliCommandExecutor} which translates high-level 
+ * command names and parameters into appropriate WP-CLI shell commands. The execution results
+ * are captured in a {@link CommandOutput} object that includes standard output, error output,
+ * and success status.
  * </p>
  * 
  * @see WpCliCommandExecutor
- * @see CommandOutputHandler
- * @see ConsoleOutputHandler
+ * @see WpCliContext
+ * @see Dependency
+ * @see CommandOutput
  */
-public class WpCli {
+public class WpCli 
+{
     private final WpCliContext context;
     private final WpCliCommandExecutor commandExecutor;
 
     /**
-     * Constructs a {@code WpCli} instance with the specified working directory and output handler.
+     * Constructs a {@code WpCli} instance with the specified working directory.
      *
      * <p>
      * This constructor initializes the core components required by the WP-CLI application,
      * including the {@link WpCliContext}, {@link Dependency}, and {@link WpCliCommandExecutor}.
-     * The output handler is used to manage the display of command outputs.
+     * It also performs dependency checks to ensure the environment is properly configured.
      * </p>
      *
-     * @param workingDirectory The working directory for the application.
-     * @param outputHandler    The {@link OutputHandlerFactory} used to handle command outputs.
+     * @param workingDirectory The working directory where the WordPress installation is located.
      */
     public WpCli(String workingDirectory) {
         WpCliInitializer initializer = new WpCliInitializer();
@@ -97,8 +97,22 @@ public class WpCli {
      * Executes a WP-CLI command by name with optional parameters.
      *
      * <p>
-     * This method delegates the execution of the command to the {@link WpCliCommandExecutor}
-     * and handles the output using the configured {@link OutputHandlerFactory}.
+     * This method delegates the execution of the command to the {@link WpCliCommandExecutor}.
+     * The command is identified by its name, and its behavior can be customized using the
+     * provided parameters. The method returns a boolean indicating whether the command
+     * execution was successful.
+     * </p>
+     *
+     * <p>
+     * Available commands include:
+     * <ul>
+     *   <li><code>search-replace</code>: Replace strings in the database</li>
+     *   <li><code>flush-caches</code>: Clear WordPress caches</li>
+     *   <li><code>export-db</code>: Export WordPress database</li>
+     *   <li><code>import-db</code>: Import WordPress database</li>
+     *   <li><code>check-db</code>: Check WordPress database</li>
+     *   <li><code>repair-db</code>: Repair WordPress database</li>
+     * </ul>
      * </p>
      *
      * @param commandName The name of the command to execute.
@@ -119,8 +133,25 @@ public class WpCli {
         }
     }
 
-    private boolean runDependencyCheck() // TODO DOC
-    {
+    /**
+     * Runs dependency checks to ensure the environment is properly configured for WP-CLI operations.
+     *
+     * <p>
+     * This method verifies that:
+     * <ul>
+     *   <li>PHP is installed and available in the system path</li>
+     *   <li>WP-CLI is installed and available</li>
+     *   <li>The working directory contains a valid WordPress installation</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * If any of these checks fail, an error message is printed to stderr.
+     * </p>
+     *
+     * @return {@code true} if all dependency checks pass, {@code false} otherwise.
+     */
+    private boolean runDependencyCheck() {
         try
         {
             this.context.getDependency().isPHPInstalled();
