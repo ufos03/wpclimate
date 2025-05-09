@@ -9,29 +9,32 @@ import com.wpclimate.shell.CommandOutput;
 @GitCommand("git-clone")
 public class GitClone extends BaseGitCommand
 {
-    private final String repoUrl;
+    private final String gitCommand;
+    private final Map<String, String> env;
 
     public GitClone(GitContext context, Map<String, String> remoteRepo) throws Exception
     {
         super(context);
         if (remoteRepo == null || remoteRepo.isEmpty())
             throw new IllegalArgumentException("The remote repository link must be provided!");
-        this.repoUrl = context.getCredentials().getGitCommand();
+       
+        this.gitCommand = context.getCredentials().getGitCommand("clone");
+        this.env = context.getCredentials().getGitEnvironment();
     }
 
     @Override
     public CommandOutput execute()
     {        
         String command = String.format(
-            "git clone -q --progress %s",
-            this.repoUrl
+            "%s",
+            this.gitCommand
         );
 
-        return super.context.getShell().executeCommand(command, Map.of("GIT_FLUSH", "1"));
+        return super.context.getShell().executeCommand(command, this.env);
     }
 
     @Override
     public String toString() {
-        return String.format("GitClone Command [repoUrl=%s]", this.repoUrl);
+        return String.format("GitClone Command [repoUrl=%s]", this.gitCommand);
     }
 }
