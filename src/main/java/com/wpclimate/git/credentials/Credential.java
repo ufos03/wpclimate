@@ -7,13 +7,15 @@ import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.configurator.model.Model;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
 
+
 /**
  * The {@code Credential} interface defines the contract for managing Git credentials.
  * 
  * <p>
  * Implementations of this interface are responsible for handling specific types of
  * credentials (e.g., SSH, HTTPS) required to access Git repositories. Each implementation
- * must provide methods to configure, read, and identify the type of credentials.
+ * must provide methods to configure, read, and identify the type of credentials, as well
+ * as generate Git commands and environment variables for authentication.
  * </p>
  * 
  * <h2>Responsibilities:</h2>
@@ -23,6 +25,8 @@ import com.wpclimate.git.exceptions.ConfigurationMissing;
  *   <li>Identify the type of credentials (e.g., SSH or HTTPS).</li>
  *   <li>Check if credentials are already configured in the system.</li>
  *   <li>Update specific fields of the credentials and persist the changes.</li>
+ *   <li>Generate Git commands with embedded credentials for authentication.</li>
+ *   <li>Provide environment variables required for Git operations.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
@@ -39,7 +43,17 @@ import com.wpclimate.git.exceptions.ConfigurationMissing;
  * 
  * // Update credentials
  * credential.update(Map.of("password", "newPassword"));
+ * 
+ * // Generate a Git command
+ * String gitCommand = credential.getGitCommand("clone");
+ * System.out.println(gitCommand);
  * </pre>
+ * 
+ * <h2>Thread Safety:</h2>
+ * <p>
+ * This interface does not enforce thread safety. Implementations should document whether
+ * they are thread-safe or require external synchronization.
+ * </p>
  * 
  * @see CredentialsType
  * @see Model
@@ -122,7 +136,7 @@ public interface Credential
      */
     public void update(Map<String, String> updates) throws IOException, IllegalArgumentException;
 
-        /**
+    /**
      * Returns a Git command string with properly embedded credentials.
      * 
      * <p>
@@ -143,8 +157,23 @@ public interface Credential
      *   <li>SSH: {@code git@github.com:user/repo.git}</li>
      * </ul>
      * 
+     * @param operation The Git operation to perform (e.g., "clone", "pull").
      * @return A Git command string with embedded credentials for authentication.
      * @throws ConfigurationMissing If the required credential configuration is missing or invalid.
      */
-    public String getGitCommand() throws ConfigurationMissing ;
+    public String getGitCommand(String operation) throws ConfigurationMissing;
+
+    /**
+     * Returns the environment variables required for Git operations.
+     * 
+     * <p>
+     * This method provides a map of environment variables that should be set when executing
+     * Git commands. For example, SSH credentials may require the {@code GIT_SSH_COMMAND}
+     * variable to be set.
+     * </p>
+     * 
+     * @return A map of environment variables for Git operations.
+     * @throws ConfigurationMissing If the credential model is invalid.
+     */
+    public Map<String, String> getGitEnvironment() throws ConfigurationMissing;
 }
