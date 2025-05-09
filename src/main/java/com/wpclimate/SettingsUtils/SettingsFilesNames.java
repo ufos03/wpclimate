@@ -38,7 +38,12 @@ public enum SettingsFilesNames
     /**
      * Represents the directory where all settings files are stored.
      */
-    SETTINGS_DIRECTORY("settings"),
+    SETTINGS_DIRECTORY(".settings"),
+
+    /**
+     * Rapresents the directory where all SQL dumps are stored.
+     */
+    SQL_DUMP_DIRECTORY(".dump_directory"),
 
     /**
      * Represents the file name for the WP-CLI configuration file.
@@ -55,11 +60,11 @@ public enum SettingsFilesNames
     /**
      * Constructs a {@code SettingsFilesNames} enum constant with the specified file name.
      *
-     * @param fileName The file name or directory name associated with the constant.
+     * @param name The file name or directory name associated with the constant.
      */
-    SettingsFilesNames(String fileName) 
+    SettingsFilesNames(String name) 
     {
-        this.fileName = fileName;
+        this.fileName = name;
     }
 
     /**
