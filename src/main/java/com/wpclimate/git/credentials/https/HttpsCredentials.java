@@ -29,6 +29,36 @@ import com.wpclimate.git.exceptions.ConfigurationMissing;
  *   <li>Check if credentials configuration already exists.</li>
  *   <li>Identify the type of credentials as HTTPS.</li>
  * </ul>
+ * 
+ * <h2>Usage:</h2>
+ * <pre>
+ * Configurator configurator = new Configurator();
+ * Settings settings = new Settings();
+ * HttpsCredentials credentials = new HttpsCredentials(configurator, settings);
+ * 
+ * // Configure credentials
+ * Map<String, String> config = Map.of(
+ *     "url", "https://github.com/user/repo.git",
+ *     "username", "myuser",
+ *     "password", "mypassword"
+ * );
+ * credentials.configure(config);
+ * 
+ * // Generate a Git command
+ * String gitCommand = credentials.getGitCommand("clone");
+ * System.out.println(gitCommand);
+ * </pre>
+ * 
+ * <h2>Thread Safety:</h2>
+ * <p>
+ * This class is not thread-safe. If multiple threads need to access the same credentials,
+ * external synchronization is required.
+ * </p>
+ * 
+ * @see Credential
+ * @see HttpsCredentialModel
+ * @see Configurator
+ * @see ConfigurationMissing
  */
 public class HttpsCredentials implements Credential 
 {
@@ -257,15 +287,17 @@ public class HttpsCredentials implements Credential
      * <h3>Example:</h3>
      * <pre>
      * HttpsCredentials credentials = new HttpsCredentials(configurator, settings);
-     * String gitCommand = credentials.getGitCommand();
+     * String gitCommand = credentials.getGitCommand("clone");
      * System.out.println(gitCommand);
-     * // Output: https://username:password@github.com/user/repo.git
+     * // Output: git clone -q --progress https://username:password@github.com/user/repo.git
      * </pre>
      * 
+     * @param operation The Git operation to perform (e.g., "clone", "pull").
      * @return A Git command string with embedded credentials for authentication.
      * @throws ConfigurationMissing If the credential model is invalid or the URL does not contain "https://".
      */
-    public String getGitCommand() throws ConfigurationMissing 
+    @Override
+    public String getGitCommand(String operation) throws ConfigurationMissing 
     {
         StringBuilder url = new StringBuilder();
         StringBuilder username = new StringBuilder();
@@ -289,11 +321,32 @@ public class HttpsCredentials implements Credential
     
         // Costruisci l'URL con le credenziali
         StringBuilder gitCommand = new StringBuilder();
+        gitCommand.append("git " + operation + " -q --progress ");
         gitCommand.append("https://")
                   .append(username).append(":").append(password).append("@")
                   .append(url.substring(index));
-    
+        
         return gitCommand.toString();
+    }
+
+    /**
+     * Returns the environment variables required for Git operations.
+     * 
+     * <p>
+     * This method provides a map of environment variables that should be set when executing
+     * Git commands. For HTTPS credentials, this includes variables like {@code GIT_FLUSH}.
+     * </p>
+     * 
+     * @return A map of environment variables for Git operations.
+     * @throws ConfigurationMissing If the credential model is invalid.
+     */
+    @Override
+    public Map<String, String> getGitEnvironment() throws ConfigurationMissing 
+    {
+        if (this.httpsModel == null || !this.httpsModel.isValid())
+            throw new ConfigurationMissing("SSH credentials are missing or invalid.");
+
+        return Map.of("GIT_FLUSH", "'1'");
     }
 
     @Override

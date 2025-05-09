@@ -240,8 +240,59 @@ public class SshCredentials implements Credential
         }
     }
 
-    public String getGitCommand() throws ConfigurationMissing // TODO: Implementare
+    /**
+     * Generates a Git command string for the specified operation using the SSH credentials.
+     * 
+     * <p>
+     * This method constructs a Git command string (e.g., clone, pull) using the repository
+     * URL stored in the cached {@link SshCredentialModel}.
+     * </p>
+     * 
+     * @param operation The Git operation to perform (e.g., "clone", "pull").
+     * @return A Git command string for the specified operation.
+     * @throws ConfigurationMissing If the SSH credential model is invalid or the repository URL is missing.
+     */
+    @Override
+    public String getGitCommand(String operation) throws ConfigurationMissing 
     {
-        return "";
+        if (!this.sshModel.isValid())
+            throw new ConfigurationMissing("Repository URL is missing.");
+
+        String repoUrl = this.sshModel.getRepoUrl();
+        if (repoUrl == null || repoUrl.isEmpty())
+            throw new ConfigurationMissing("Repository URL is missing.");
+
+        System.out.println(String.format("git %s -q --progress %s", operation, repoUrl));
+        return String.format("git %s -q --progress %s", operation, repoUrl);
+    }
+        
+    /**
+     * Returns the environment variables required for Git operations using SSH credentials.
+     * 
+     * <p>
+     * This method provides a map of environment variables that should be set when executing
+     * Git commands. For SSH credentials, this includes the {@code GIT_SSH_COMMAND} variable.
+     * </p>
+     * 
+     * @return A map of environment variables for Git operations.
+     * @throws ConfigurationMissing If the SSH credential model is invalid.
+     */
+    @Override
+    public Map<String, String> getGitEnvironment() throws ConfigurationMissing 
+    {
+        if (this.sshModel == null || !this.sshModel.isValid())
+            throw new ConfigurationMissing("SSH credentials are missing or invalid.");
+
+        String privateKeyPath = this.sshModel.getPathPrivateCert();
+        if (privateKeyPath == null || privateKeyPath.isEmpty())
+            throw new ConfigurationMissing("Private key path is missing.");
+
+        // Imposta la variabile di ambiente GIT_SSH_COMMAND
+        String gitSshCommand = String.format(
+            "ssh -i %s -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null",
+            privateKeyPath
+        );
+
+        return Map.of("GIT_SSH_COMMAND", gitSshCommand, "GIT_FLUSH", "1");
     }
 }
