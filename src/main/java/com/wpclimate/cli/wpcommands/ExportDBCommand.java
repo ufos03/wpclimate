@@ -3,8 +3,6 @@ package com.wpclimate.cli.wpcommands;
 import java.util.Map;
 
 import com.wpclimate.cli.core.WpCliContext;
-import com.wpclimate.cli.exceptions.PHPNotInstalledException;
-import com.wpclimate.cli.exceptions.WPCliNotInstalledException;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
 import com.wpclimate.shell.CommandOutput;
 
@@ -89,7 +87,7 @@ public class ExportDBCommand extends BaseWpCommand
             super.context.getWpModel().getPhp(),
             super.context.getWpModel().getWp(),
             super.context.getFileManager().getWorkingDirectory(),
-            this.fileName
+            this.fileName //TODO: Aggiungere che i file SQL finiscono in SQL_DUMP_DIRECOTRY
         );
 
         // Execute the command and return the result

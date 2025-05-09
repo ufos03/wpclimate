@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.wpclimate.cli.WpCliCommandExecutor;
 import com.wpclimate.cli.core.WpCliContext;
-import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
 import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
 import com.wpclimate.shell.CommandOutput;
