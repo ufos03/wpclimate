@@ -103,7 +103,6 @@ public class SshCredentials implements Credential
      *                      <ul>
      *                        <li>{@code "name"} - The repository name.</li>
      *                        <li>{@code "url"} - The repository URL.</li>
-     *                        <li>{@code "pubPath"} - The path to the public SSH key.</li>
      *                        <li>{@code "privPath"} - The path to the private SSH key.</li>
      *                      </ul>
      * @throws ConfigurationMissing If the configuration map is empty.
@@ -122,9 +121,6 @@ public class SshCredentials implements Credential
 
         if (configuration.containsKey("url"))
             newModel.setRepoUrl(configuration.get("url"));
-
-        if (configuration.containsKey("pubPath"))
-            newModel.setPublicCertPath(configuration.get("pubPath"));
 
         if (configuration.containsKey("privPath"))
             newModel.setPrivateCertPath(configuration.get("privPath"));
@@ -164,9 +160,6 @@ public class SshCredentials implements Credential
 
         if (updates.containsKey("url"))
             this.sshModel.setRepoUrl(updates.get("url"));
-
-        if (updates.containsKey("pubPath"))
-            this.sshModel.setPublicCertPath(updates.get("pubPath"));
 
         if (updates.containsKey("privPath"))
             this.sshModel.setPrivateCertPath(updates.get("privPath"));
@@ -245,25 +238,43 @@ public class SshCredentials implements Credential
      * 
      * <p>
      * This method constructs a Git command string (e.g., clone, pull) using the repository
-     * URL stored in the cached {@link SshCredentialModel}.
+     * URL stored in the cached {@link SshCredentialModel}. It incorporates any additional
+     * parameters passed to the method while ensuring the progress option is always included.
      * </p>
      * 
      * @param operation The Git operation to perform (e.g., "clone", "pull").
+     * @param parameters Additional parameters to include in the Git command.
      * @return A Git command string for the specified operation.
      * @throws ConfigurationMissing If the SSH credential model is invalid or the repository URL is missing.
      */
     @Override
-    public String getGitCommand(String operation) throws ConfigurationMissing 
+    public String getGitCommand(String operation, String ...parameters) throws ConfigurationMissing 
     {
         if (!this.sshModel.isValid())
-            throw new ConfigurationMissing("Repository URL is missing.");
+            throw new ConfigurationMissing("SSH model is not valid.");
 
         String repoUrl = this.sshModel.getRepoUrl();
         if (repoUrl == null || repoUrl.isEmpty())
             throw new ConfigurationMissing("Repository URL is missing.");
 
-        System.out.println(String.format("git %s -q --progress %s", operation, repoUrl));
-        return String.format("git %s -q --progress %s", operation, repoUrl);
+        StringBuilder commandBuilder = new StringBuilder("git ");
+        commandBuilder.append(operation);
+        
+        commandBuilder.append(" --progress");
+
+        if (parameters != null && parameters.length > 0) 
+        {
+            for (String param : parameters) 
+            {
+                if (param != null && !param.isEmpty())
+                    commandBuilder.append(" ").append(param);
+            }
+        }
+        
+        commandBuilder.append(" ").append(repoUrl);
+        String command = commandBuilder.toString();
+        
+        return command;
     }
         
     /**
@@ -283,7 +294,7 @@ public class SshCredentials implements Credential
         if (this.sshModel == null || !this.sshModel.isValid())
             throw new ConfigurationMissing("SSH credentials are missing or invalid.");
 
-        String privateKeyPath = this.sshModel.getPathPrivateCert();
+        String privateKeyPath = this.sshModel.getPrivateCertPath();
         if (privateKeyPath == null || privateKeyPath.isEmpty())
             throw new ConfigurationMissing("Private key path is missing.");
 

@@ -284,48 +284,46 @@ public class HttpsCredentials implements Credential
      * sensitive information in logs or displays.
      * </p>
      * 
-     * <h3>Example:</h3>
-     * <pre>
-     * HttpsCredentials credentials = new HttpsCredentials(configurator, settings);
-     * String gitCommand = credentials.getGitCommand("clone");
-     * System.out.println(gitCommand);
-     * // Output: git clone -q --progress https://username:password@github.com/user/repo.git
-     * </pre>
-     * 
      * @param operation The Git operation to perform (e.g., "clone", "pull").
+     * @param parameters Additional parameters to include in the Git command.
      * @return A Git command string with embedded credentials for authentication.
      * @throws ConfigurationMissing If the credential model is invalid or the URL does not contain "https://".
      */
     @Override
-    public String getGitCommand(String operation) throws ConfigurationMissing 
+    public String getGitCommand(String operation, String ...parameters) throws ConfigurationMissing 
     {
-        StringBuilder url = new StringBuilder();
-        StringBuilder username = new StringBuilder();
-        StringBuilder password = new StringBuilder();
-    
-        // Verifica se il modello è valido
         if (!this.httpsModel.isValid())
             throw new ConfigurationMissing("The configuration readen is not valid!");
-    
-        // Ottieni i dati dal modello
-        url.append(this.httpsModel.getRepoUrl());
-        username.append(this.httpsModel.getUsername());
-        password.append(this.httpsModel.getPsw());
-    
-        // Trova l'indice dopo "https://"
+
+        String url = this.httpsModel.getRepoUrl();
+        String username = this.httpsModel.getUsername();
+        String password = this.httpsModel.getPsw();
+
         int index = url.indexOf("https://");
-        if (index == -1) {
+        if (index == -1)
             throw new ConfigurationMissing("The URL does not contain 'https://'.");
-        }
+
         index += "https://".length();
-    
-        // Costruisci l'URL con le credenziali
+
         StringBuilder gitCommand = new StringBuilder();
-        gitCommand.append("git " + operation + " -q --progress ");
-        gitCommand.append("https://")
-                  .append(username).append(":").append(password).append("@")
-                  .append(url.substring(index));
+        gitCommand.append("git ").append(operation);
         
+        gitCommand.append(" -q --progress");
+        
+        if (parameters != null && parameters.length > 0) 
+        {
+            for (String param : parameters) 
+            {
+                if (param != null && !param.isEmpty())
+                    gitCommand.append(" ").append(param);
+            }
+        }
+        
+        gitCommand.append(" https://")
+                .append(username).append(":").append(password).append("@")
+                .append(url.substring(index));
+        
+        System.out.println(gitCommand.toString());
         return gitCommand.toString();
     }
 
