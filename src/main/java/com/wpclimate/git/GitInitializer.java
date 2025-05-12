@@ -120,51 +120,76 @@ public class GitInitializer
         Credential httpsCredentials = new HttpsCredentials(configurator, settings);
         Credential sshCredentials = new SshCredentials(configurator, settings);
 
-        Credential credentialsToUse = null; // Messo solo perche' rompe le balle
-
-
+        // Verifichiamo se esistono già credenziali
         if (sshCredentials.exists()) 
         {
             System.out.println("SSH credentials found and loaded.");
             return sshCredentials;
         } 
-        else if (httpsCredentials.exists()) {
+        else if (httpsCredentials.exists()) 
+        {
             System.out.println("HTTPS credentials found and loaded.");
             return httpsCredentials;
         }
 
-            System.out.println("Credentials not founded! Proceed to create credentials");
-            Credential credentialToCreate = null;
-            Scanner scanner = new Scanner(System.in);
-    
+        System.out.println("Credentials not found! Proceeding to create credentials");
+        Credential credentialToCreate = null;  // Questa sarà la variabile che restituiremo
+        Scanner scanner = new Scanner(System.in);
+        
         try 
         {
+            // Gestione più sicura del buffer di input
+            try 
+            {
+                if (System.in.available() > 0)
+                    System.in.skip(System.in.available()); 
+            } 
+            catch (IOException e) 
+            {
+                System.err.println("Warning: Could not clear input buffer. You may need to press Enter.");
+            }
+
+            // Richiesta del tipo di credenziali all'utente
             System.out.println("Choose the type of credentials to use:");
             System.out.println("1. HTTPS (default)");
             System.out.println("2. SSH");
             System.out.print("Enter your choice (1 or 2): ");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character
-
-
-            if (choice == 1) 
+            
+            // Gestione più robusta dell'input
+            int choice = 1;  // Default a HTTPS
+            try 
             {
-                credentialToCreate = new HttpsCredentials(configurator, settings);
-                this.configureHttpsCredentials((HttpsCredentials) credentialToCreate, scanner);
-            } 
-            else if (choice == 2) 
+                if (scanner.hasNextInt())
+                    choice = scanner.nextInt();
+
+                scanner.nextLine();  // Consume the newline character
+            } catch (Exception e) 
+            {
+                scanner.nextLine();  // In caso di errore, consumare la linea e usare il default
+                System.out.println("Invalid input. Using HTTPS credentials by default.");
+            }
+
+            // Configurazione delle credenziali in base alla scelta
+            if (choice == 2) 
             {
                 credentialToCreate = new SshCredentials(configurator, settings);
                 this.configureSshCredentials((SshCredentials) credentialToCreate, scanner);
             } 
-            else if (choice != 1 && choice != 2)
+            else  // Per choice == 1 o qualsiasi altro valore non valido, usiamo HTTPS
             {
                 credentialToCreate = new HttpsCredentials(configurator, settings);
                 this.configureHttpsCredentials((HttpsCredentials) credentialToCreate, scanner);
             }
 
             System.out.println("Configured credentials:");
-            System.out.println(credentialToCreate != null ? credentialToCreate.read().toString() : "No credentials configured.");
+            try
+            {
+                System.out.println(credentialToCreate != null ? credentialToCreate.read().toString() : "No credentials configured.");
+            } 
+            catch (Exception e) 
+            {
+                System.out.println("Error reading credentials: " + e.getMessage());
+            }
 
         } 
         catch (ConfigurationMissing e) 
@@ -177,15 +202,13 @@ public class GitInitializer
         } 
         catch (Exception e) 
         {
-            System.err.println("An unexpect ed error occurred: " + e.getMessage());
-        } 
-        finally 
-        {
-            scanner.close();
-        }    
-
-        return credentialsToUse;
-       
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+            e.printStackTrace();  // Aggiungiamo stack trace per diagnosi
+        }
+        // Non chiudiamo lo scanner qui per evitare di chiudere System.in
+        
+        // CORREZIONE CRITICA: Restituiamo le credenziali create invece di null
+        return credentialToCreate;  // Questo era il problema principale!
     }
 
     /** 
