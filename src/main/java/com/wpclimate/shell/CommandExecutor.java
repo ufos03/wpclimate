@@ -143,6 +143,7 @@ public class CommandExecutor
                 }
                 pipelineProcesses = ProcessBuilder.startPipeline(builders);
                 Process lastProcess = pipelineProcesses.get(pipelineProcesses.size() - 1);
+                this.lock.unlock();
                 this.handleProcessStreams(lastProcess, commandOutput);
 
                 lastProcess.waitFor();
@@ -162,6 +163,7 @@ public class CommandExecutor
                     this.processBuilder.environment().putAll(envVars);
 
                 process = this.processBuilder.start();
+                this.lock.unlock();
                 this.handleProcessStreams(process, commandOutput);
             }
             return commandOutput;
@@ -173,7 +175,8 @@ public class CommandExecutor
         } 
         finally 
         {
-            this.lock.unlock();
+            if (this.lock.isHeldByCurrentThread())
+                this.lock.unlock();
         }
     }
 
@@ -214,8 +217,7 @@ public class CommandExecutor
         }
     }
 
-    private void handleProcessStreams(Process process, CommandOutput commandOutput) throws IOException, InterruptedException 
-    {
+    private void handleProcessStreams(Process process, CommandOutput commandOutput) {
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
         BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
     
@@ -225,10 +227,12 @@ public class CommandExecutor
                 String outputLine;
                 while ((outputLine = stdInput.readLine()) != null) 
                 {
-                    commandOutput.appendStandardOutput(outputLine); // Trattalo come output standard
-                    this.spoofer.displayMessage(outputLine, false);
+                    commandOutput.appendStandardOutput(outputLine);
+                    if (this.spoofer != null)
+                        this.spoofer.displayMessage(outputLine, false);
                 }
-            } catch (IOException e) 
+            } 
+            catch (IOException e) 
             {
                 e.printStackTrace();
             }
@@ -240,26 +244,42 @@ public class CommandExecutor
                 String errorLine;
                 while ((errorLine = stdError.readLine()) != null) 
                 {
-                    if (errorLine.contains("remote"))
+                    if (errorLine.contains("remote")) 
                     {
                         commandOutput.appendStandardOutput(errorLine);
-                        this.spoofer.displayMessage(errorLine, false);
-                    }
-                    else
+                        if (this.spoofer != null)
+                           this.spoofer.displayMessage(errorLine, false);
+                        
+                    } 
+                    else 
                     {
-                        commandOutput.appendErrorOutput(errorLine); // Trattalo sempre come errore
-                        this.spoofer.displayMessage(errorLine, true);
+                        commandOutput.appendErrorOutput(errorLine);
+                        if (this.spoofer != null)
+                            this.spoofer.displayMessage(errorLine, true);
                     }
                 }
-            } catch (IOException e) {
+            } 
+            catch (IOException e) 
+            {
                 e.printStackTrace();
             }
         });
     
+        outputThread.setDaemon(true); // Thread daemon per terminare con il programma principale
+        errorThread.setDaemon(true);
         outputThread.start();
         errorThread.start();
-    
-        outputThread.join();
-        errorThread.join();
+        
+
+        try 
+        {
+            process.waitFor();
+            outputThread.join(1000);
+            errorThread.join(1000);
+        } 
+        catch (InterruptedException e) 
+        {
+            e.printStackTrace();
+        }
     }
 }
