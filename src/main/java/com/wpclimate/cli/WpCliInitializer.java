@@ -176,10 +176,6 @@ public class WpCliInitializer
         catch (Exception saveException) 
         {
             System.err.println("Failed to save configuration: " + saveException.getMessage());
-        } 
-        finally 
-        {
-            scanner.close();
         }
     }
 
