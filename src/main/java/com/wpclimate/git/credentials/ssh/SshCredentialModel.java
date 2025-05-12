@@ -46,15 +46,13 @@ import com.wpclimate.git.credentials.CredentialsType;
  */
 public class SshCredentialModel extends Model 
 {
-    private static final int NUM_OF_KEYS = 5;
+    private static final int NUM_OF_KEYS = 4;
 
-    private static final String PUBLIC_CERT_KEY = "PUBLIC_CERT_PATH";  // field_setted -> 0
-    private static final String PRIVATE_CERT_KEY = "PRIVATE_CERT_PATH"; // field_setted -> 1
-    private static final String REPO_NAME_KEY = "REPO_NAME"; // field_setted -> 2
-    private static final String REPO_URL_KEY = "REPO_URL"; // field_setted -> 3
+    private static final String PRIVATE_CERT_KEY = "PRIVATE_CERT_PATH"; // field_setted -> 0
+    private static final String REPO_NAME_KEY = "REPO_NAME"; // field_setted -> 1
+    private static final String REPO_URL_KEY = "REPO_URL"; // field_setted -> 2
     private static final String CREDENTIAL_TYPE_KEY= "CREDENTIAL_TYPE"; // field_setted -> 4
 
-    private String publicCertPath;
     private String privateCertPath;
     private String repoName;
     private String repoUrl;
@@ -81,9 +79,6 @@ public class SshCredentialModel extends Model
 
         if (model == null)
             throw new NoModelProvided("SSH Model isn't valid");
-
-        if (model.containsKey(PUBLIC_CERT_KEY))
-            this.setPublicCertPath(model.get(PUBLIC_CERT_KEY));
 
         if (model.containsKey(PRIVATE_CERT_KEY))
             this.setPrivateCertPath(model.get(PRIVATE_CERT_KEY));
@@ -112,21 +107,6 @@ public class SshCredentialModel extends Model
     }
 
     /**
-     * Sets the path to the public certificate.
-     * 
-     * @param pathPublicCert The path to the public certificate. Must not be null, empty, or blank.
-     * @throws IllegalArgumentException If the path is null, empty, or blank.
-     */
-    public void setPublicCertPath(String pathPublicCert) {
-        if (pathPublicCert == null || pathPublicCert.isBlank())
-            throw new IllegalArgumentException("The public certificate path cannot be null, empty, or blank.");
-
-        this.publicCertPath = pathPublicCert;
-        super.set(PUBLIC_CERT_KEY, this.publicCertPath, false);
-        this.field_setted[0] = true;
-    }
-
-    /**
      * Sets the path to the private certificate.
      * 
      * @param pathPrivateCert The path to the private certificate. Must not be null, empty, or blank.
@@ -138,7 +118,7 @@ public class SshCredentialModel extends Model
 
         this.privateCertPath = pathPrivateCert;
         super.set(PRIVATE_CERT_KEY, this.privateCertPath, false);
-        this.field_setted[1] = true;
+        this.field_setted[0] = true;
     }
 
     /**
@@ -153,7 +133,7 @@ public class SshCredentialModel extends Model
 
         this.repoName = repoName;
         super.set(REPO_NAME_KEY, repoName, false);
-        this.field_setted[2] = true;
+        this.field_setted[1] = true;
     }
 
     /**
@@ -168,14 +148,14 @@ public class SshCredentialModel extends Model
 
         this.repoUrl = repoUrl;
         super.set(REPO_URL_KEY, repoUrl, false);
-        this.field_setted[3] = true;
+        this.field_setted[2] = true;
     }
 
     public void setCredentialType()
     {
         this.credentialType = CredentialsType.SSH.getType();
         super.set(CREDENTIAL_TYPE_KEY, credentialType, false);
-        this.field_setted[4] = true;
+        this.field_setted[3] = true;
     }
 
     /**
@@ -183,16 +163,7 @@ public class SshCredentialModel extends Model
      * 
      * @return The path to the public certificate.
      */
-    public String getPathPublicCert() {
-        return this.publicCertPath;
-    }
-
-    /**
-     * Returns the path to the private certificate.
-     * 
-     * @return The path to the private certificate.
-     */
-    public String getPathPrivateCert() {
+    public String getPrivateCertPath() {
         return this.privateCertPath;
     }
 
@@ -254,7 +225,7 @@ public class SshCredentialModel extends Model
      */
     @Override
     public String toString() {  // TODO Uccidere carrellino
-        return "SshCredentialModel [Parlato e in disaccordo=" + publicCertPath + ", privateZampilliPower=" + privateCertPath
+        return "SshCredentialModel" +  "privateZampilliPower=" + privateCertPath
                 + ", DavideName" + repoName + ", DragoMalfoy=" + repoUrl + "operativo]";
     }
 }
