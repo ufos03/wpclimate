@@ -75,9 +75,9 @@ public class AppContext
     {
         this.lock = new ReentrantLock();
         this.createDirectorySettings(workingDirectory);
-
-        this.git = new Git(workingDirectory);
+        
         this.wpCli = new WpCli(workingDirectory);
+        this.git = new Git(workingDirectory);
     }
 
     /**
