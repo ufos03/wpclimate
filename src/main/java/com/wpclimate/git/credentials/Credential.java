@@ -147,21 +147,41 @@ public interface Credential
      * </p>
      * 
      * <p>
+     * The method always includes the base Git command with the specified operation, and appends any
+     * additional parameters provided. Implementations should ensure that credential information is
+     * properly embedded in the command or set through environment variables.
+     * </p>
+     * 
+     * <p>
      * For security reasons, the returned command string should be treated carefully to avoid
      * exposing sensitive credential information in logs or displays.
      * </p>
      * 
+     * <h3>Example usage:</h3>
+     * <pre>
+     * // Simple clone command
+     * String cloneCmd = credential.getGitCommand("clone");
+     * 
+     * // Clone with additional parameters
+     * String cloneWithParams = credential.getGitCommand("clone", "--depth=1", "--single-branch");
+     * 
+     * // Push to specific remote and branch
+     * String pushCmd = credential.getGitCommand("push", "origin", "main", "--force");
+     * </pre>
+     * 
      * <h3>Example output formats:</h3>
      * <ul>
-     *   <li>HTTPS: {@code https://username:password@github.com/user/repo.git}</li>
-     *   <li>SSH: {@code git@github.com:user/repo.git}</li>
+     *   <li>HTTPS: {@code git clone --progress https://username:password@github.com/user/repo.git}</li>
+     *   <li>SSH: {@code git clone --progress git@github.com:user/repo.git}</li>
      * </ul>
      * 
-     * @param operation The Git operation to perform (e.g., "clone", "pull").
+     * @param operation The Git operation to perform (e.g., "clone", "pull", "push").
+     * @param parameters Optional additional parameters to include in the Git command
+     *                  (e.g., "--depth=1", "origin", "main", "--force").
      * @return A Git command string with embedded credentials for authentication.
      * @throws ConfigurationMissing If the required credential configuration is missing or invalid.
      */
-    public String getGitCommand(String operation) throws ConfigurationMissing;
+    public String getGitCommand(String operation, String ...parameters) throws ConfigurationMissing;
 
     /**
      * Returns the environment variables required for Git operations.
