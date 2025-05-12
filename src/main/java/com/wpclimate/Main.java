@@ -15,6 +15,7 @@ public class Main {
         Git git = app.getGit();
 
         git.execute("git-clone", Map.of("remote", "https://github.com/ufos03/ArduinoAlarmSystem.git"));
+        //git.execute("git-status", null);
 
         wp.execute("rewrite", null);
         wp.execute("flush-transient", null);
