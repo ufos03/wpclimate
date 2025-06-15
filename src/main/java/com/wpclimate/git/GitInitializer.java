@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Scanner;
 
-import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configuration;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.configurator.exceptions.NoModelProvided;
@@ -15,6 +14,7 @@ import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.credentials.https.HttpsCredentials;
 import com.wpclimate.git.credentials.ssh.SshCredentials;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
+import com.wpclimate.resourcer.ResourceManager;
 
 
 /**
@@ -46,12 +46,14 @@ public class GitInitializer
      * @param workingDirectory The working directory for the application.
      * @return An instance of {@link Settings}.
      */
-    public Settings loadSettings(String workingDirectory) 
+    public ResourceManager loadResources(String workingDirectory) 
     {
+        ResourceManager manager = ResourceManager.getInstance();
         if (workingDirectory == null || workingDirectory.isEmpty())
-            return new Settings();
+            return manager;
 
-        return new Settings(workingDirectory);
+        manager.setWorkingDirectory(workingDirectory);
+        return manager;
     }
 
     /**
@@ -66,7 +68,7 @@ public class GitInitializer
      * @param settings The {@link Settings} instance.
      * @return An instance of {@link Configurator}.
      */
-    public Configurator initializeConfigurator(Settings settings) 
+    public Configurator initializeConfigurator(ResourceManager manager) 
     {
         return new Configuration();
     }
@@ -83,9 +85,9 @@ public class GitInitializer
      * @param settings The {@link Settings} instance.
      * @return An instance of {@link Shell}.
      */
-    public Shell initializeShell(Settings settings, RealTimeConsoleSpoofer interactor) 
+    public Shell initializeShell(ResourceManager manager, RealTimeConsoleSpoofer interactor) 
     {
-        return new Command(settings.getWorkingDirectory().getAbsolutePath(), interactor);
+        return new Command(manager.getWorkingDirectory().toString(), interactor);
     }
 
     /**
@@ -115,10 +117,10 @@ public class GitInitializer
      * @throws IOException If an error occurs while saving the configuration.
      * @throws NoModelProvided If the configuration file is missing or invalid.
      */
-    public Credential initializeCredentials(Settings settings, Configurator configurator)
+    public Credential initializeCredentials(ResourceManager manager, Configurator configurator)
     {
-        Credential httpsCredentials = new HttpsCredentials(configurator, settings);
-        Credential sshCredentials = new SshCredentials(configurator, settings);
+        Credential httpsCredentials = new HttpsCredentials(configurator, manager);
+        Credential sshCredentials = new SshCredentials(configurator, manager);
 
         // Verifichiamo se esistono già credenziali
         if (sshCredentials.exists()) 
@@ -172,12 +174,12 @@ public class GitInitializer
             // Configurazione delle credenziali in base alla scelta
             if (choice == 2) 
             {
-                credentialToCreate = new SshCredentials(configurator, settings);
+                credentialToCreate = new SshCredentials(configurator, manager);
                 this.configureSshCredentials((SshCredentials) credentialToCreate, scanner);
             } 
             else  // Per choice == 1 o qualsiasi altro valore non valido, usiamo HTTPS
             {
-                credentialToCreate = new HttpsCredentials(configurator, settings);
+                credentialToCreate = new HttpsCredentials(configurator, manager);
                 this.configureHttpsCredentials((HttpsCredentials) credentialToCreate, scanner);
             }
 

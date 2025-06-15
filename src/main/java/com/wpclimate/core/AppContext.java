@@ -3,7 +3,6 @@ package com.wpclimate.core;
 import java.io.File;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.wpclimate.SettingsUtils.SettingsFilesNames;
 import com.wpclimate.cli.WpCli;
 import com.wpclimate.git.Git;
 
@@ -74,32 +73,9 @@ public class AppContext
     public AppContext(String workingDirectory) throws Exception 
     {
         this.lock = new ReentrantLock();
-        this.createDirectorySettings(workingDirectory);
         
         this.wpCli = new WpCli(workingDirectory);
         this.git = new Git(workingDirectory);
-    }
-
-    /**
-     * Creates the settings directory within the specified working directory.
-     * 
-     * <p>
-     * This method checks if the settings directory exists. If it does not exist, it attempts
-     * to create it.
-     * </p>
-     * 
-     * @param workingDirectory The working directory where the settings directory should be created.
-     * @return {@code true} if the settings directory exists or was successfully created;
-     *         {@code false} otherwise.
-     */
-    private boolean createDirectorySettings(String workingDirectory) 
-    {
-        SettingsFilesNames settingNameDirectory = SettingsFilesNames.SETTINGS_DIRECTORY;
-        File settingsDirectory = new File(workingDirectory.concat("/").concat(settingNameDirectory.getFileName()));
-        
-        if (settingsDirectory.exists())
-            return true;
-        return settingsDirectory.mkdir();
     }
 
     /**

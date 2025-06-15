@@ -74,7 +74,7 @@ public class RewriteCommand extends BaseWpCommand
             "%s %s --path=%s rewrite flush",
             super.context.getWpModel().getPhp(),
             super.context.getWpModel().getWp(),
-            super.context.getFileManager().getWorkingDirectory()
+            super.context.getResourceManager().getWorkingDirectory().toString()
         );
 
         // Execute the command and return the result

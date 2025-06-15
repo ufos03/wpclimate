@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wpclimate.core.command.CommandParam;
+import com.wpclimate.core.command.ParamType;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
 import com.wpclimate.git.gitcommands.registrar.GitCommand;
@@ -18,10 +20,16 @@ import com.wpclimate.shell.CommandOutput;
 @GitCommand("git-push")
 public class GitPush extends BaseGitCommand 
 {
-    
+    @CommandParam(name="remote", type=ParamType.STRING, required=false, defaultValue="origin", description="Repository remoto a cui inviare le modifiche")
     private String remote;
+    
+    @CommandParam(name="branch", type=ParamType.STRING, required=false, defaultValue="main", description="Branch da pushare (default: main o il branch corrente)")
     private String branch;
+    
+    @CommandParam(name="setUpstream", type=ParamType.BOOLEAN, required=false, defaultValue="false", description="Se true, imposta il branch di tracking remoto")
     private boolean setUpstream;
+    
+    @CommandParam(name="force", type=ParamType.BOOLEAN, required=false, defaultValue="false", description="Se true, forza il push anche in caso di conflitti")
     private boolean force;
 
     /**

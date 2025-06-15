@@ -3,24 +3,24 @@ package com.wpclimate.cli;
 import java.util.Map;
 
 import com.wpclimate.cli.core.WpCliContext;
-import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.core.WpCliModel;
 import com.wpclimate.core.ConsoleRCS;
+import com.wpclimate.resourcer.ResourceManager;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.RealTimeConsoleSpoofer;
 import com.wpclimate.shell.Shell;
 
 /**
- * The {@code WpCli} class serves as the entry point for the WP-CLI application.
- * 
+ * The {@code WpCli} class serves as the entry point for interacting with WP-CLI commands.
+ *
  * <p>
  * This class provides a high-level interface for executing WP-CLI commands, such as
- * search-and-replace operations, flushing caches, database operations, and more. It manages
+ * search-and-replace operations, database exports, cache flushing, and more. It manages
  * the initialization of core components and delegates command execution to the
  * {@link WpCliCommandExecutor}.
  * </p>
- * 
+ *
  * <h2>Responsibilities:</h2>
  * <ul>
  *   <li>Initializes the core components required by the WP-CLI application, such as
@@ -29,7 +29,7 @@ import com.wpclimate.shell.Shell;
  *   <li>Handles dependency checking to ensure the environment is properly configured.</li>
  *   <li>Manages command output through a configurable console interface.</li>
  * </ul>
- * 
+ *
  * <h2>Usage:</h2>
  * <p>
  * The {@code WpCli} class is typically instantiated with a working directory and used
@@ -48,15 +48,21 @@ import com.wpclimate.shell.Shell;
  * // Export database
  * wpCli.execute("export-db", Map.of("fileName", "backup.sql"));
  * </pre>
- * 
+ *
  * <h2>Command Execution:</h2>
  * <p>
- * Commands are executed through the {@link WpCliCommandExecutor} which translates high-level 
+ * Commands are executed through the {@link WpCliCommandExecutor}, which translates high-level 
  * command names and parameters into appropriate WP-CLI shell commands. The execution results
  * are captured in a {@link CommandOutput} object that includes standard output, error output,
  * and success status.
  * </p>
- * 
+ *
+ * <h2>Thread Safety:</h2>
+ * <p>
+ * The {@code WpCli} class is not inherently thread-safe. If multiple threads need to execute
+ * commands concurrently, synchronization must be handled externally.
+ * </p>
+ *
  * @see WpCliCommandExecutor
  * @see WpCliContext
  * @see Dependency
@@ -81,7 +87,7 @@ public class WpCli
     public WpCli(String workingDirectory) {
         WpCliInitializer initializer = new WpCliInitializer();
 
-        Settings fileManager = initializer.loadSettings(workingDirectory);
+        ResourceManager fileManager = initializer.loadResources(workingDirectory);
         RealTimeConsoleSpoofer consoleInteractor = new ConsoleRCS();
         Shell shell = initializer.initializeShell(fileManager, consoleInteractor);
         WpCliModel model = initializer.initializeModel(fileManager, initializer.initializeConfigurator(fileManager));

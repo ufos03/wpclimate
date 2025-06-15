@@ -2,9 +2,9 @@ package com.wpclimate.git.core;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.git.credentials.Credential;
+import com.wpclimate.resourcer.ResourceManager;
 import com.wpclimate.shell.Shell;
 
 /**
@@ -69,7 +69,7 @@ public class GitContext
 {
 
     private final Shell shell;
-    private final Settings fileManager;
+    private final ResourceManager manager;
     private final Dependency dependency;
     private final Configurator configurator;
     private final Credential credentials;
@@ -85,13 +85,13 @@ public class GitContext
      * @param configurator The {@link Configurator} instance for managing configuration data.
      * @throws IllegalArgumentException If any of the parameters are {@code null}.
      */
-    public GitContext(Shell shell, Settings fileManager, Dependency dependency, Configurator configurator, Credential credentials) 
+    public GitContext(Shell shell, ResourceManager manager, Dependency dependency, Configurator configurator, Credential credentials) 
     {
-        if (shell == null || fileManager == null || dependency == null || configurator == null)
+        if (shell == null || manager == null || dependency == null || configurator == null)
             throw new IllegalArgumentException("None of the parameters can be null.");
 
         this.shell = shell;
-        this.fileManager = fileManager;
+        this.manager = manager;
         this.dependency = dependency;
         this.configurator = configurator;
         this.credentials = credentials;
@@ -130,12 +130,12 @@ public class GitContext
      * 
      * @return The {@link Settings} instance.
      */
-    public Settings getSettings() 
+    public ResourceManager getResourceManager() 
     {
         this.lock.lock();
         try 
         {
-            return this.fileManager;
+            return this.manager;
         } finally 
         {
             this.lock.unlock();

@@ -2,8 +2,11 @@ package com.wpclimate.cli.wpcommands;
 
 import java.util.Map;
 
+import com.wpclimate.cli.WpCliCommandExecutor;
 import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
+import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
+import com.wpclimate.core.command.CommandParam;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -56,7 +59,7 @@ public class ImportDBCommand extends BaseWpCommand
      * @param fileName A map containing the name of the file from which the database will be imported.
      * @throws IllegalArgumentException If the file name is null or empty.
      */
-    public ImportDBCommand(WpCliContext context, Map<String, String> fileName) 
+    public ImportDBCommand(WpCliContext context, @CommandParam(name="fileName", required=true, description="Nome del file SQL di import")Map<String, String> fileName) 
     {
         super(context);
         if (fileName == null || fileName.isEmpty()) {
@@ -87,7 +90,7 @@ public class ImportDBCommand extends BaseWpCommand
             "%s %s --path=%s db import %s", 
             super.context.getWpModel().getPhp(),
             super.context.getWpModel().getWp(),
-            super.context.getFileManager().getWorkingDirectory(),
+            super.context.getResourceManager().getWorkingDirectory().toString(),
             this.fileName
         );
 

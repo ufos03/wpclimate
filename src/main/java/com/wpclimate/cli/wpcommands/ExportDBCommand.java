@@ -2,8 +2,12 @@ package com.wpclimate.cli.wpcommands;
 
 import java.util.Map;
 
+import com.wpclimate.cli.WpCliCommandExecutor;
 import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
+import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
+import com.wpclimate.core.command.CommandParam;
+import com.wpclimate.resourcer.ResourceType;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -44,8 +48,10 @@ import com.wpclimate.shell.CommandOutput;
  * @see WpCliCommandExecutor
  */
 @WpCommand("export-db")
+
 public class ExportDBCommand extends BaseWpCommand
 {
+    @CommandParam(name="fileName", required=true, description="Nome del file SQL di export")
     private final String fileName;
 
     /**
@@ -55,7 +61,7 @@ public class ExportDBCommand extends BaseWpCommand
      * @param fileName The name of the file to which the database will be exported.
      * @throws IllegalArgumentException If the file name is null or empty.
      */
-    public ExportDBCommand(WpCliContext context, Map<String, String> fileName) 
+    public ExportDBCommand(WpCliContext context, @CommandParam(name="fileName", required=true, description="Nome del file SQL di export")Map<String, String> fileName) 
     {
         super(context);
         if (fileName == null || fileName.isEmpty()) {
@@ -86,8 +92,8 @@ public class ExportDBCommand extends BaseWpCommand
             "%s %s --path=%s db export %s", 
             super.context.getWpModel().getPhp(),
             super.context.getWpModel().getWp(),
-            super.context.getFileManager().getWorkingDirectory(),
-            this.fileName //TODO: Aggiungere che i file SQL finiscono in SQL_DUMP_DIRECOTRY
+            super.context.getResourceManager().getWorkingDirectory().toString(),
+            super.context.getResourceManager().getPath(ResourceType.SQL_DUMP_DIRECTORY)
         );
 
         // Execute the command and return the result

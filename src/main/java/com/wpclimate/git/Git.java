@@ -2,13 +2,13 @@ package com.wpclimate.git;
 
 import java.util.Map;
 
-import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.core.ConsoleRCS;
 import com.wpclimate.git.core.Dependency;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.gitcommands.GitCommandExecutor;
+import com.wpclimate.resourcer.ResourceManager;
 import com.wpclimate.shell.CommandOutput;
 import com.wpclimate.shell.Shell;
 
@@ -87,7 +87,7 @@ public class Git
     public Git(String workingDirectory) throws Exception
     {
         GitInitializer initializer = new GitInitializer();
-        Settings settings = initializer.loadSettings(workingDirectory);
+        ResourceManager settings = initializer.loadResources(workingDirectory);
         Configurator configurator = initializer.initializeConfigurator(settings);
         ConsoleRCS consoleInteractor = new ConsoleRCS();
         Shell shell = initializer.initializeShell(settings, consoleInteractor);

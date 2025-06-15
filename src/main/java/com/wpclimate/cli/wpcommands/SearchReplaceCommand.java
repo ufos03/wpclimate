@@ -6,6 +6,8 @@ import com.wpclimate.cli.WpCliCommandExecutor;
 import com.wpclimate.cli.core.WpCliContext;
 import com.wpclimate.cli.wpcommands.registrar.WpCommand;
 import com.wpclimate.cli.wpcommands.registrar.WpCommandFactory;
+import com.wpclimate.core.command.CommandParam;
+import com.wpclimate.core.command.ParamType;
 import com.wpclimate.shell.CommandOutput;
 
 /**
@@ -60,10 +62,18 @@ import com.wpclimate.shell.CommandOutput;
 @WpCommand("search-replace")
 public class SearchReplaceCommand extends BaseWpCommand 
 {
+    @CommandParam(name="oldValue", type=ParamType.STRING, required=true, description="Il valore da cercare nel database")
     private String oldValue;
+    
+    @CommandParam(name="newValue", type=ParamType.STRING, required=true, description="Il nuovo valore con cui sostituire quello cercato")
     private String newValue;
+    
+    @CommandParam(name="allTables", type=ParamType.BOOLEAN, required=false, defaultValue="false", description="Se true, esegue la ricerca su tutte le tabelle")
     private boolean allTables;
+    
+    @CommandParam(name="dryRun", type=ParamType.BOOLEAN, required=false, defaultValue="false", description="Se true, esegue una simulazione senza modificare il database")
     private boolean dryRun;
+
 
     /**
      * Constructs a {@code SearchReplaceCommand} with the specified context, dependency, and parameters.
@@ -75,7 +85,7 @@ public class SearchReplaceCommand extends BaseWpCommand
      * @param context    The application context, providing access to core components.
      * @param params     A map of parameters for the command. Must include {@code oldValue} and {@code newValue}.
      */
-    public SearchReplaceCommand(WpCliContext context, Map<String, Object> params) 
+    public SearchReplaceCommand(WpCliContext context,Map<String, Object> params) 
     {
         super(context);
 
@@ -110,7 +120,7 @@ public class SearchReplaceCommand extends BaseWpCommand
             "%s %s search-replace --path=%s '%s' '%s' %s %s",
             this.context.getWpModel().getPhp(),
             this.context.getWpModel().getWp(),
-            this.context.getFileManager().getWorkingDirectory(),
+            this.context.getResourceManager().getWorkingDirectory().toString(),
             this.oldValue,
             this.newValue,
             this.allTables ? "--all-tables" : "",

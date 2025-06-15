@@ -73,7 +73,7 @@ public class FlushCachesCommand extends BaseWpCommand
             "%s %s --path=%s cache flush", 
             super.context.getWpModel().getPhp(),
             super.context.getWpModel().getWp(),
-            super.context.getFileManager().getWorkingDirectory()
+            super.context.getResourceManager().getWorkingDirectory().toString()
         );
 
         return super.context.getShell().executeCommand(command);

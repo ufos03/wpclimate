@@ -72,7 +72,7 @@ public class FlushTransientCommand extends BaseWpCommand
             "%s %s --path=%s transient delete --all", 
             super.context.getWpModel().getPhp(),
             super.context.getWpModel().getWp(),
-            super.context.getFileManager().getWorkingDirectory()
+            super.context.getResourceManager().getWorkingDirectory().toString()
         );
 
         return super.context.getShell().executeCommand(command);

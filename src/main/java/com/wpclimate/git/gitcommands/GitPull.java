@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wpclimate.core.command.CommandParam;
+import com.wpclimate.core.command.ParamType;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
 import com.wpclimate.git.gitcommands.registrar.GitCommand;
@@ -18,9 +20,16 @@ import com.wpclimate.shell.CommandOutput;
 public class GitPull extends BaseGitCommand 
 {
     
+    @CommandParam(name="remote", type=ParamType.STRING, required=false, defaultValue="origin", description="Nome del repository remoto")
     private String remote;
+    
+    @CommandParam(name="branch", type=ParamType.STRING, required=false, description="Branch da cui effettuare il pull (default: branch corrente)")
     private String branch;
+    
+    @CommandParam(name="rebase", type=ParamType.BOOLEAN, required=false, defaultValue="false", description="Se true, utilizza rebase invece di merge")
     private boolean rebase;
+    
+    @CommandParam(name="quiet", type=ParamType.BOOLEAN, required=false, defaultValue="false", description="Se true, riduce l'output del comando")
     private boolean quiet;
 
     /**

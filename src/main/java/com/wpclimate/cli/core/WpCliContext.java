@@ -2,12 +2,12 @@ package com.wpclimate.cli.core;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.wpclimate.SettingsUtils.Settings;
 import com.wpclimate.configurator.Configurator;
+import com.wpclimate.resourcer.ResourceManager;
 import com.wpclimate.shell.Shell;
 
 /**
- * The {@code Context} class serves as the central container for managing and providing
+ * The {@code WpCliContext} class serves as the central container for managing and providing
  * access to the core components required by the WP-CLI application.
  * 
  * <p>
@@ -21,12 +21,13 @@ import com.wpclimate.shell.Shell;
  *       interaction with the underlying system.</li>
  *   <li>{@link Configurator} - Manages the persistence and retrieval of configuration
  *       data, allowing the application to save and load settings.</li>
- *   <li>{@link Settings} - Handles file operations, including managing the working
- *       directory and accessing configuration files.</li>
+ *   <li>{@link ResourceManager} - Handles resource management, including file operations 
+ *       and working directory access.</li>
+ *   <li>{@link Dependency} - Verifies system requirements for WP-CLI functionality.</li>
  * </ul>
  * 
  * <p>
- * By centralizing these components, the {@code Context} class simplifies their
+ * By centralizing these components, the {@code WpCliContext} class simplifies their
  * management and ensures consistent access throughout the application. It also
  * provides thread-safe access to these components using a {@link ReentrantLock}.
  * </p>
@@ -34,14 +35,14 @@ import com.wpclimate.shell.Shell;
  * <h2>Responsibilities:</h2>
  * <ul>
  *   <li>Encapsulates the core components required by the application.</li>
- *   <li>Provides thread-safe access to the components using synchronized methods.</li>
- *   <li>Acts as a shared resource that can be passed to other classes and commands
+ *   <li>Provides thread-safe access to the components using a lock-based mechanism.</li>
+ *   <li>Acts as a shared resource that can be passed to commands and other objects
  *       to ensure consistent access to the application's core functionality.</li>
  * </ul>
  * 
  * <h2>Usage:</h2>
  * <p>
- * The {@code Context} class is typically instantiated during the initialization phase
+ * The {@code WpCliContext} class is typically instantiated during the initialization phase
  * of the application and passed to other components or commands that require access
  * to the core functionality. For example:
  * </p>
@@ -49,18 +50,19 @@ import com.wpclimate.shell.Shell;
  * WpCliModel wpModel = ...; // Initialize WP-CLI configuration model
  * Shell shell = ...; // Initialize shell interface
  * Configurator configurator = ...; // Initialize configurator
- * FileManager fileManager = ...; // Initialize file manager
+ * ResourceManager resourceManager = ...; // Initialize resource manager
+ * Dependency dependency = ...; // Initialize dependency checker
  * 
- * Context context = new Context(wpModel, shell, configurator, fileManager);
+ * WpCliContext context = new WpCliContext(wpModel, shell, configurator, resourceManager, dependency);
  * 
  * // Access components through the context
  * Shell shell = context.getShell();
- * FileManager fileManager = context.getFileManager();
+ * ResourceManager resourceManager = context.getResourceManager();
  * </pre>
  * 
  * <h2>Thread Safety:</h2>
  * <p>
- * The {@code Context} class ensures thread-safe access to its components by using
+ * The {@code WpCliContext} class ensures thread-safe access to its components by using
  * a {@link ReentrantLock} to synchronize access to its getter methods. This makes
  * it safe to use in multi-threaded environments where multiple threads may need
  * to access the same components concurrently.
@@ -69,32 +71,34 @@ import com.wpclimate.shell.Shell;
  * @see WpCliModel
  * @see Shell
  * @see Configurator
- * @see Settings
+ * @see ResourceManager
+ * @see Dependency
  */
 public class WpCliContext 
 {
     private final Shell shell; // The shell interface for executing commands
     private final Configurator configurator; // The configurator for managing configuration persistence
     private final WpCliModel wpModel; // The WP-CLI configuration model
-    private final Settings fileManager; // The file manager for handling file operations
-    private final Dependency dependency; // The dependency to check is the below system has all the requirements for wp-cli.
+    private final ResourceManager manager; // The resource manager for handling resources and files
+    private final Dependency dependency; // The dependency checker for WP-CLI requirements
 
     private final ReentrantLock lock = new ReentrantLock(); // Allows thread-safe access to components
 
     /**
-     * Constructs a {@code Context} instance with the specified components.
+     * Constructs a {@code WpCliContext} instance with the specified components.
      *
      * @param wpModel      The {@link WpCliModel} instance containing WP-CLI configuration data.
      * @param shell        The {@link Shell} instance for executing commands.
      * @param configurator The {@link Configurator} instance for managing configuration persistence.
-     * @param fileManager  The {@link Settings} instance for handling file operations.
+     * @param manager      The {@link ResourceManager} instance for handling resources and file operations.
+     * @param dependency   The {@link Dependency} instance for checking system requirements.
      */
-    public WpCliContext(WpCliModel wpModel, Shell shell, Configurator configurator, Settings fileManager, Dependency dependency) 
+    public WpCliContext(WpCliModel wpModel, Shell shell, Configurator configurator, ResourceManager manager, Dependency dependency) 
     {
         this.wpModel = wpModel;
         this.shell = shell;
         this.configurator = configurator;
-        this.fileManager = fileManager;
+        this.manager = manager;
         this.dependency = dependency;
     }
 
@@ -168,21 +172,22 @@ public class WpCliContext
     }
 
     /**
-     * Retrieves the file manager for handling file operations.
+     * Retrieves the resource manager for handling resource and file operations.
      *
      * <p>
-     * The {@link Settings} provides methods for managing files and directories,
-     * including the working directory and configuration files.
+     * The {@link ResourceManager} provides centralized management of application resources,
+     * including files, directories, and their relationships. It handles file operations
+     * and maintains the working directory context.
      * </p>
      *
-     * @return The {@link Settings} instance for handling file operations.
+     * @return The {@link ResourceManager} instance for resource management.
      */
-    public Settings getFileManager() 
+    public ResourceManager getResourceManager() 
     {
         this.lock.lock();
         try 
         {
-            return this.fileManager;
+            return this.manager;
         }
         finally
         {
@@ -190,6 +195,17 @@ public class WpCliContext
         }
     }
 
+    /**
+     * Retrieves the dependency checker for system requirements.
+     *
+     * <p>
+     * The {@link Dependency} verifies that the system meets all requirements
+     * necessary for WP-CLI functionality, such as having PHP and WP-CLI installed
+     * and properly configured.
+     * </p>
+     *
+     * @return The {@link Dependency} instance for checking system requirements.
+     */
     public Dependency getDependency()
     {
         this.lock.lock();

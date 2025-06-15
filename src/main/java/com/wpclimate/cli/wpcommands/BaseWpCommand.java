@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.wpclimate.cli.core.WpCliContext;
-import com.wpclimate.SettingsUtils.Settings;
+import com.wpclimate.resourcer.ResourceManager;
 import com.wpclimate.cli.core.Dependency;
 import com.wpclimate.cli.exceptions.*;
 import com.wpclimate.configurator.Configurator;
@@ -16,18 +16,19 @@ import com.wpclimate.shell.Shell;
  * 
  * <p>
  * This class provides a foundation for implementing specific WP-CLI commands by encapsulating
- * the shared functionality and dependencies required for executing commands.
+ * shared functionality and dependencies required for executing commands. It simplifies the
+ * development of WP-CLI commands by providing access to core components and utility methods.
  * </p>
  * 
  * <p>
  * Subclasses of {@code BaseWpCommand} must implement the {@link #execute()} method, which defines
- * the specific logic for executing a WP-CLI command.
+ * the specific logic for executing a WP-CLI command. Commands can also be dynamically registered
+ * and retrieved using the {@link #registerCommand(String, Class)} and {@link #getCommandClass(String)} methods.
  * </p>
  * 
  * <h2>Responsibilities:</h2>
  * <ul>
  *   <li>Provides access to the {@link WpCliContext} object, which contains the core components of the application.</li>
- *   <li>Provides access to the {@link Dependency} object, which is used to check for required dependencies like PHP and WP-CLI.</li>
  *   <li>Defines an abstract {@link #execute()} method that subclasses must implement to define the behavior of a specific command.</li>
  *   <li>Provides utility methods, such as {@link #configureEnvironmentVariables(String)}, to assist with command execution.</li>
  *   <li>Maintains a registry of available commands for dynamic command creation.</li>
@@ -40,11 +41,11 @@ import com.wpclimate.shell.Shell;
  * object representing the result of the command execution.
  * </p>
  * 
- * <h2>Example:</h2>
+ * <h3>Example: Subclass Implementation</h3>
  * <pre>
  * public class ListPluginsCommand extends BaseWpCommand {
- *     public ListPluginsCommand(Context context, Dependency dependency) {
- *         super(context, dependency);
+ *     public ListPluginsCommand(WpCliContext context) {
+ *         super(context);
  *     }
  * 
  *     {@literal @}Override
@@ -55,11 +56,36 @@ import com.wpclimate.shell.Shell;
  * }
  * </pre>
  * 
+ * <h3>Example: Dynamic Command Registration</h3>
+ * <pre>
+ * // Register a command
+ * BaseWpCommand.registerCommand("list-plugins", ListPluginsCommand.class);
+ * 
+ * // Retrieve and execute the command
+ * Class<? extends BaseWpCommand> commandClass = BaseWpCommand.getCommandClass("list-plugins");
+ * if (commandClass != null) {
+ *     BaseWpCommand command = commandClass.getConstructor(WpCliContext.class).newInstance(context);
+ *     CommandOutput output = command.execute();
+ *     System.out.println(output.getOutput());
+ * }
+ * </pre>
+ * 
  * <h2>Thread Safety:</h2>
  * <p>
  * This class is not thread-safe. If multiple threads need to execute commands concurrently,
- * synchronization must be handled externally.
+ * synchronization must be handled externally. Additionally, the {@code COMMAND_REGISTRY} is
+ * a static map and is not synchronized, so concurrent modifications must be avoided.
  * </p>
+ * 
+ * <h2>Dependencies:</h2>
+ * <p>
+ * This class relies on the following components provided by the {@link WpCliContext}:
+ * </p>
+ * <ul>
+ *   <li>{@link Shell} - Executes shell commands.</li>
+ *   <li>{@link ResourceManager} - Manages resources such as files and directories.</li>
+ *   <li>{@link Configurator} - Handles configuration persistence.</li>
+ * </ul>
  * 
  * @see WpCliContext
  * @see Dependency
@@ -67,9 +93,9 @@ import com.wpclimate.shell.Shell;
  * @see PHPNotInstalledException
  * @see WPCliNotInstalledException
  */
-public abstract class BaseWpCommand 
+public abstract class BaseWpCommand
 {
-    /** The {@link WpCliContext} object providing access to core components like the {@link Settings}, {@link Shell}, and {@link Configurator}. */
+    /** The {@link WpCliContext} object providing access to core components like the {@link ResourceManager}, {@link Shell}, and {@link Configurator}. */
     protected final WpCliContext context;
 
     private static final Map<String, Class<? extends BaseWpCommand>> COMMAND_REGISTRY = new HashMap<>();
@@ -78,7 +104,6 @@ public abstract class BaseWpCommand
      * Constructs a {@code BaseWpCommand} with the specified {@link WpCliContext}}.
      *
      * @param context    The {@link WpCliContext} object providing access to core components.
-     * @param dependency The {@link Dependency} object used to check for required dependencies.
      */
     public BaseWpCommand(WpCliContext context) 
     {
@@ -127,6 +152,10 @@ public abstract class BaseWpCommand
         COMMAND_REGISTRY.put(name, clazz);
     }
 
+    public static Map<String, Class<? extends BaseWpCommand>> getRegisteredCommands() {
+        return COMMAND_REGISTRY;
+    }
+
     /**
      * Retrieves the command class from the registry.
      *
@@ -152,5 +181,5 @@ public abstract class BaseWpCommand
      * 
      * @return A {@link CommandOutput} object representing the result of the command execution.
      */
-    public abstract CommandOutput execute() throws Exception;
+    public abstract CommandOutput execute();
 }

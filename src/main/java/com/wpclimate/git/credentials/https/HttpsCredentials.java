@@ -3,13 +3,13 @@ package com.wpclimate.git.credentials.https;
 import java.io.IOException;
 import java.util.Map;
 
-import com.wpclimate.SettingsUtils.Settings;
-import com.wpclimate.SettingsUtils.SettingsFilesNames;
 import com.wpclimate.configurator.Configurator;
 import com.wpclimate.configurator.exceptions.NoModelProvided;
 import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.credentials.CredentialsType;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
+import com.wpclimate.resourcer.ResourceManager;
+import com.wpclimate.resourcer.ResourceType;
 
 /**
  * The {@code HttpsCredentials} class implements the {@link Credential} interface and
@@ -64,7 +64,7 @@ public class HttpsCredentials implements Credential
 {
 
     private final Configurator configurator;
-    private final Settings settings;
+    private final ResourceManager manager;
     private HttpsCredentialModel httpsModel;
     private final String pathModel;
 
@@ -75,11 +75,11 @@ public class HttpsCredentials implements Credential
      * @param configurator The {@link Configurator} instance used for saving and loading configurations.
      * @param settings The {@link Settings} instance used for retrieving file paths.
      */
-    public HttpsCredentials(Configurator configurator, Settings settings) 
+    public HttpsCredentials(Configurator configurator, ResourceManager manager) 
     {
         this.configurator = configurator;
-        this.settings = settings;
-        this.pathModel = this.settings.getSetting(SettingsFilesNames.GIT_CONF_FILE_NAME);
+        this.manager = manager;
+        this.pathModel = this.manager.getFile(ResourceType.GIT_CONFIG).toString();
         this.httpsModel = new HttpsCredentialModel();
     }
 

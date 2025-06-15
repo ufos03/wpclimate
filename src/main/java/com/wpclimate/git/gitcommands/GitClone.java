@@ -2,6 +2,8 @@ package com.wpclimate.git.gitcommands;
 
 import java.util.Map;
 
+import com.wpclimate.core.command.CommandParam;
+import com.wpclimate.core.command.ParamType;
 import com.wpclimate.git.core.GitContext;
 import com.wpclimate.git.exceptions.ConfigurationMissing;
 import com.wpclimate.git.gitcommands.registrar.GitCommand;
@@ -10,8 +12,7 @@ import com.wpclimate.shell.CommandOutput;
 @GitCommand("git-clone")
 public class GitClone extends BaseGitCommand
 {
-    //TODO: Pensare agli ambienti.
-    public GitClone(GitContext context, Map<String, String> remoteRepo) throws IllegalArgumentException
+    public GitClone(GitContext context, @CommandParam(name="remote", type=ParamType.STRING, required=true, description="Url SSH/HTTP della repo remota")Map<String, String> remoteRepo) throws IllegalArgumentException
     {
         super(context);
         if (remoteRepo == null || remoteRepo.isEmpty())
