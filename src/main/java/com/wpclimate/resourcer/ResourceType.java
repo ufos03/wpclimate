@@ -81,7 +81,7 @@ public enum ResourceType {
      * This directory contains workflow-related files.
      * </p>
      */
-    WORKFLOW_DIRECTORY("workflows", SETTINGS_DIRECTORY, true),
+    WORKFLOW_DIRECTORY("workflows", SETTINGS_DIRECTORY, true);
 
     /**
      * Represents the default workflow file.
@@ -90,7 +90,7 @@ public enum ResourceType {
      * This file contains the default workflow configuration.
      * </p>
      */
-    DEFAULT_WORKFLOW("default.json", WORKFLOW_DIRECTORY, false);
+    //DEFAULT_WORKFLOW("default.json", WORKFLOW_DIRECTORY, false);
 
     private final String name;
     private final ResourceType parent;

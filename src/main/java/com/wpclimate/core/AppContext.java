@@ -4,7 +4,10 @@ import java.io.File;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.wpclimate.cli.WpCli;
+import com.wpclimate.core.command.CommandRegistry;
 import com.wpclimate.git.Git;
+import com.wpclimate.mateflow.MateFlowExecutor;
+import com.wpclimate.mateflow.MateFlowManager;
 
 /**
  * The {@code AppContext} class provides a centralized context for managing the core
@@ -55,7 +58,8 @@ public class AppContext
 {
     private final WpCli wpCli;
     private final Git git;
-
+    private final MateFlowManager mateFlowManager;
+    private final MateFlowExecutor mateFlowExecutor;
 
     private final ReentrantLock lock;
 
@@ -76,6 +80,10 @@ public class AppContext
         
         this.wpCli = new WpCli(workingDirectory);
         this.git = new Git(workingDirectory);
+        CommandRegistry.initialize();
+        
+        this.mateFlowManager = new MateFlowManager(workingDirectory);
+        this.mateFlowExecutor = new MateFlowExecutor(this.wpCli, this.git);
     }
 
     /**
@@ -115,6 +123,32 @@ public class AppContext
         try 
         {
             return this.git;
+        } 
+        finally 
+        {
+            this.lock.unlock();
+        }
+    }
+
+    public MateFlowManager getMateFlowManager()
+    {
+        this.lock.lock();
+        try 
+        {
+            return this.mateFlowManager;
+        } 
+        finally 
+        {
+            this.lock.unlock();
+        }
+    }
+
+    public MateFlowExecutor getMateFlowExecutor()
+    {
+        this.lock.lock();
+        try 
+        {
+            return this.mateFlowExecutor;
         } 
         finally 
         {
