@@ -3,6 +3,8 @@ import java.util.Map;
 
 import com.wpclimate.core.AppContext;
 import com.wpclimate.git.Git;
+import com.wpclimate.mateflow.MateFlowStep;
+import com.wpclimate.mateflow.MateFlow;
 
 import com.wpclimate.cli.WpCli;
 
@@ -11,11 +13,11 @@ public class Main {
     public static void main(String[] args) throws Exception
     {
         AppContext app = new AppContext("/home/ufos/Documents/test-wpclimate/");
+        
         WpCli wp = app.getWpCli();
         Git git = app.getGit();
 
-        git.execute("git-clone", Map.of("remote", "https://github.com/ufos03/ArduinoAlarmSystem.git"));
-        //git.execute("git-status", null);
+        /*git.execute("git-clone", Map.of("remote", "https://github.com/ufos03/ArduinoAlarmSystem.git"));
 
         wp.execute("rewrite", null);
         wp.execute("flush-transient", null);
@@ -36,6 +38,23 @@ public class Main {
 
         wp.execute("import-db", Map.of(
             "fileName", "test.sql"
-        ));
+        )); */
+
+        MateFlowStep c1 = new MateFlowStep("git-clone", Map.of("remote", "https://github.com/ufos03/ArduinoAlarmSystem.git"), "GIT");
+        MateFlowStep c2 = new MateFlowStep("search-replace", Map.of(
+                "oldValue", "http://test.local",
+                "newValue", "http://test2.local",
+                "allTables", true,
+                "dryRun", false
+            ), "WP");
+
+        MateFlow f = new MateFlow("Test Flow", "testtetstesttest");
+        f.addCommand(c1);
+        f.addCommand(c2);
+        //System.out.println(f.getCommands());
+
+        app.getMateFlowManager().saveMateFlow(f);
+        app.getMateFlowExecutor().execute(app.getMateFlowManager().getMateFlow("Test Flow"));
     }
+
 }
