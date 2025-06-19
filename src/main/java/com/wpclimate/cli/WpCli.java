@@ -84,13 +84,30 @@ public class WpCli
      *
      * @param workingDirectory The working directory where the WordPress installation is located.
      */
-    public WpCli(String workingDirectory) {
+    public WpCli(String workingDirectory, RealTimeConsoleSpoofer spoofer) 
+    {
+        WpCliInitializer initializer = new WpCliInitializer();
+
+        ResourceManager fileManager = initializer.loadResources(workingDirectory);
+        if (spoofer == null)
+            spoofer = new ConsoleRCS();
+        Shell shell = initializer.initializeShell(fileManager, spoofer);
+        WpCliModel model = initializer.initializeModelC(fileManager, initializer.initializeConfigurator(fileManager));
+        Dependency dependency = new Dependency(shell, model);
+
+        this.context = new WpCliContext(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);
+        this.commandExecutor = new WpCliCommandExecutor(this.context);
+
+        this.runDependencyCheck();
+    }
+
+    public WpCli(String workingDirectory, WpCliModel model) 
+    {
         WpCliInitializer initializer = new WpCliInitializer();
 
         ResourceManager fileManager = initializer.loadResources(workingDirectory);
         RealTimeConsoleSpoofer consoleInteractor = new ConsoleRCS();
         Shell shell = initializer.initializeShell(fileManager, consoleInteractor);
-        WpCliModel model = initializer.initializeModel(fileManager, initializer.initializeConfigurator(fileManager));
         Dependency dependency = new Dependency(shell, model);
 
         this.context = new WpCliContext(model, shell, initializer.initializeConfigurator(fileManager), fileManager, dependency);
@@ -125,17 +142,19 @@ public class WpCli
      * @param params      A map of parameters to pass to the command, or {@code null} if no parameters are required.
      * @return {@code true} if the command was successful, {@code false} otherwise.
      */
-    public boolean execute(String commandName, Map<String, Object> params) {
+    public CommandOutput execute(String commandName, Map<String, Object> params) 
+    {
+        CommandOutput output = new CommandOutput();
         try 
         {
             // Pass the parameters to the command executor
-            CommandOutput output = commandExecutor.executeCommand(commandName, params);
-            return output.isSuccessful();
+            output = commandExecutor.executeCommand(commandName, params);
+            return output;
         } 
         catch (Exception e) 
         {
             e.printStackTrace();
-            return false;
+            return output;
         }
     }
 

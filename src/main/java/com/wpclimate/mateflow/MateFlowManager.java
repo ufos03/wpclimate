@@ -94,4 +94,29 @@ public class MateFlowManager
         flowFiles.remove(flowName);
         return true;
     }
+
+    /**
+     * Returns a collection of all available MateFlow objects.
+     * This method loads all flows from the files identified by their names.
+     *
+     * @return A collection of all available MateFlow objects.
+     * @throws IOException If there's an error reading the flow files.
+     * @throws MateFlowException If there's an error parsing the flow JSON.
+     */
+    public Collection<MateFlow> getAvailableFlows() throws IOException, MateFlowException {
+        List<MateFlow> flows = new ArrayList<>();
+        
+        for (String flowName : getAllFlowNames()) {
+            try {
+                MateFlow flow = getMateFlow(flowName);
+                flows.add(flow);
+            } catch (IOException | MateFlowException e) {
+                System.err.println("Error loading flow '" + flowName + "': " + e.getMessage());
+                // Optionally, decide if you want to throw the exception or continue loading other flows
+                // throw e;
+            }
+        }
+        
+        return flows;
+    }
 }   

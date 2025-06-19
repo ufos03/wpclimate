@@ -11,6 +11,9 @@ import com.wpclimate.shell.Shell;
 
 import java.util.Scanner;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 /**
  * The {@code WpCliInitializer} class is responsible for initializing the core components
  * required by the WP-CLI application.
@@ -121,17 +124,53 @@ public class WpCliInitializer {
      * @param configurator  The {@link Configurator} instance.
      * @return An instance of {@link WpCliModel}.
      */
-    public WpCliModel initializeModel(ResourceManager resource, Configurator configurator) {
+    public WpCliModel initializeModelC(ResourceManager resource, Configurator configurator) 
+    {
         WpCliModel model = new WpCliModel();
 
-        try {
+        try 
+        {
             model.setFromModel(configurator.read(resource.getFile(ResourceType.WPCLI_CONFIG).toString()));
-        } catch (Exception e) {
+        }
+        catch (Exception e) 
+        {
             this.promptForConfiguration(resource, model, configurator);
         }
 
         return model;
     }
+
+    /*public WpCliModel initializeModel(ResourceManager resource, Configurator configurator, JFrame parentFrame) 
+    {
+        WpCliModel model = new WpCliModel();
+
+        try 
+        {
+            model.setFromModel(configurator.read(resource.getFile(ResourceType.WPCLI_CONFIG).toString()));
+        } 
+        catch (Exception e) 
+        {
+            // Mostra dialog grafico invece di prompt console
+            WpCliConfigDialog dialog = new WpCliConfigDialog(parentFrame, model);
+            dialog.setModal(true);
+            dialog.setVisible(true);
+            if (dialog.isConfirmed()) 
+            {
+                model = dialog.getModel();
+                try 
+                {
+                    configurator.save(resource.getFile(ResourceType.WPCLI_CONFIG).toString(), model);
+                } 
+                catch (Exception saveException)
+                {
+                    JOptionPane.showMessageDialog(parentFrame, "Failed to save configuration: " + saveException.getMessage());
+                }
+            } 
+                throw new RuntimeException("WP-CLI configuration cancelled by user.");
+        }
+
+        return model;   
+    }   */
 
     /**
      * Prompts the user to provide configuration parameters and saves them.

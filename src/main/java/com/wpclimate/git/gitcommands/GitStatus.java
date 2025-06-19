@@ -16,6 +16,6 @@ public class GitStatus extends BaseGitCommand
     @Override
     public CommandOutput execute() throws ConfigurationMissing
     {    
-        return super.context.getShell().executeCommand("git status", super.context.getCredentials().getGitEnvironment());
+        return super.context.getShell().executeCommand("git status --porcelain", super.context.getCredentials().getGitEnvironment());
     }
 }

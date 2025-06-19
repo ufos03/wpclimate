@@ -7,7 +7,7 @@ public class MateFlowStep implements Serializable
 {
     private final String group;
     private final String command;
-    private final Map<String, Object> parametes;
+    private Map<String, Object> parametes;
 
     public MateFlowStep(String command, Map<String, Object> parametes, String group)
     {
@@ -32,5 +32,10 @@ public class MateFlowStep implements Serializable
 
     public Map<String, Object> getParametes() {
         return parametes;
+    }
+
+    public void setParamteres(Map<String, Object> para)
+    {
+        this.parametes = para;
     }
 }

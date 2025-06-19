@@ -2,6 +2,7 @@ package com.wpclimate.mateflow;
 
 import com.wpclimate.cli.WpCli;
 import com.wpclimate.git.Git;
+import com.wpclimate.shell.CommandOutput;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class MateFlowExecutor {
             String command = step.getCommand();
             Map<String, Object> params = step.getParametes();
 
-            boolean result;
+            CommandOutput result;
             if ("WP".equalsIgnoreCase(group))
                 result = wpCli.execute(command, params);
             else if ("GIT".equalsIgnoreCase(group)) 
@@ -51,7 +52,7 @@ public class MateFlowExecutor {
                 continue;
             }
 
-            if (!result) 
+            if (result.hasErrors()) 
             {
                 System.err.println("Step failed: " + command + " (group: " + group + ")");
                 break;

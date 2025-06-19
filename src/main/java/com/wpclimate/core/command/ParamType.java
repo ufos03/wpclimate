@@ -89,5 +89,7 @@ public enum ParamType {
      * such as configuration files, logs, or working directories.
      * </p>
      */
-    PATH
+    PATH,
+
+    LIST
 }

@@ -26,7 +26,7 @@ public class GitClone extends BaseGitCommand
             "%s",
             super.context.getCredentials().getGitCommand("clone")
         );
-
+            
         return super.context.getShell().executeCommand(command, super.context.getCredentials().getGitEnvironment());
     }
 }

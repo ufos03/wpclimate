@@ -23,6 +23,11 @@ public class MateFlow
         return this.commands.add(command);
     }
 
+    public void addCommands(List<MateFlowStep> commandsP)
+    {
+        this.commands.addAll(commandsP);
+    }
+
     public void moveCommandUp(int index) 
     {
         if (index > 0 && index < this.commands.size()) 
@@ -55,6 +60,11 @@ public class MateFlow
     public String getFlowName() 
     {
         return flowName;
+    }
+
+    public String getDescription()
+    {
+        return this.description;
     }
 
     public String toJson() 

@@ -10,6 +10,7 @@ import com.wpclimate.git.credentials.Credential;
 import com.wpclimate.git.gitcommands.GitCommandExecutor;
 import com.wpclimate.resourcer.ResourceManager;
 import com.wpclimate.shell.CommandOutput;
+import com.wpclimate.shell.RealTimeConsoleSpoofer;
 import com.wpclimate.shell.Shell;
 
 /**
@@ -80,18 +81,29 @@ public class Git
      * </p>
      * 
      * @param workingDirectory The working directory for Git operations.
-     * @param outputHandler    The {@link OutputHandlerFactory} used to handle command outputs.
-     * @throws Exception If an error occurs during initialization, such as missing configurations
-     *                   or invalid paths.
      */
-    public Git(String workingDirectory) throws Exception
+    public Git(String workingDirectory, RealTimeConsoleSpoofer spoofer)
+    {
+        GitInitializer initializer = new GitInitializer();
+        ResourceManager settings = initializer.loadResources(workingDirectory);
+        Configurator configurator = initializer.initializeConfigurator(settings);
+        if (spoofer == null)
+            spoofer = new ConsoleRCS();
+        Shell shell = initializer.initializeShell(settings, spoofer);
+        Credential credentials = initializer.initializeCredentials(settings, configurator);
+        Dependency dependency = new Dependency(shell);
+
+        this.context = new GitContext(shell, settings, dependency, configurator, credentials);
+        this.commandExecutor = new GitCommandExecutor(context);
+    }
+
+    public Git(String workingDirectory, Credential credentials)
     {
         GitInitializer initializer = new GitInitializer();
         ResourceManager settings = initializer.loadResources(workingDirectory);
         Configurator configurator = initializer.initializeConfigurator(settings);
         ConsoleRCS consoleInteractor = new ConsoleRCS();
         Shell shell = initializer.initializeShell(settings, consoleInteractor);
-        Credential credentials = initializer.initializeCredentials(settings, configurator);
         Dependency dependency = new Dependency(shell);
 
         this.context = new GitContext(shell, settings, dependency, configurator, credentials);
@@ -110,18 +122,19 @@ public class Git
      * @param params      A map of parameters to pass to the command, or {@code null} if no parameters are required.
      * @return {@code true} if the command was successful, {@code false} otherwise.
      */
-    public boolean execute(String commandName, Map<String, Object> params) 
+    public CommandOutput execute(String commandName, Map<String, Object> params) 
     {
+        CommandOutput output = new CommandOutput();
         try 
         {
             // Pass the parameters to the command executor
-            CommandOutput output = this.commandExecutor.executeCommand(commandName, params);
-            return output.isSuccessful();
+            output = this.commandExecutor.executeCommand(commandName, params);
+            return output;
         } 
         catch (Exception e) 
         {
             e.printStackTrace();
-            return false;
+            return output;
         }
     }
 }
